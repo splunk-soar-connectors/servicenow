@@ -11,7 +11,7 @@
     "product_vendor": "ServiceNow",
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
-    "min_phantom_version": "2.0.264",
+    "min_phantom_version": "2.1.452",
     "logo": "servicenow.png",
     "license": "Copyright (c) Phantom Cyber Corporation 2015-2017",
     "configuration": {
