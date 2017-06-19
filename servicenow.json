@@ -39,6 +39,18 @@
         "order": 3,
         "description": "Password",
         "required": false
+      },
+      "client_id": {
+        "data_type": "string",
+        "order": 4,
+        "description": "Client ID. OAuth will be preferred if provided",
+        "required": false
+      },
+      "client_secret": {
+        "data_type": "password",
+        "order": 5,
+        "description": "Client Secret. Required with Client ID",
+        "required": false
       }
     },
     "actions": [

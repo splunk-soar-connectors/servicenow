@@ -21,14 +21,21 @@ from phantom.vault import Vault
 # THIS Connector imports
 from servicenow_consts import *
 
-import requests
 import os
 import json
-import inspect
-from bs4 import BeautifulSoup
 import magic
+import inspect
+import requests
+from bs4 import BeautifulSoup
+from datetime import datetime
 
 requests.packages.urllib3.disable_warnings()
+
+DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+
+class UnauthorizedOAuthTokenException(Exception):
+    pass
 
 
 class RetVal(tuple):
@@ -50,6 +57,8 @@ class ServicenowConnector(BaseConnector):
         super(ServicenowConnector, self).__init__()
 
         self._state_file_path = None
+        self._try_oauth = False
+        self._use_token = False
         self._state = {}
 
     def _load_state(self):
@@ -108,6 +117,14 @@ class ServicenowConnector(BaseConnector):
         self._headers = {'Accept': 'application/json'}
         # self._headers.update({'X-no-response-body': 'true'})
         self._api_uri = '/api/now'
+        self._client_id = config.get(SERVICENOW_JSON_CLIENT_ID, None)
+        if (self._client_id):
+            try:
+                self._client_secret = config[SERVICENOW_JSON_CLIENT_SECRET]
+                self._use_token = True
+            except KeyError:
+                self.save_progress("Missing Client Secret")
+                return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
 
@@ -188,6 +205,10 @@ class ServicenowConnector(BaseConnector):
         if (200 <= r.status_code < 205):
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
+        if (r.status_code == 401 and self._try_oauth):
+            if resp_json.get('error') == 'invalid_token':
+                raise UnauthorizedOAuthTokenException
+
         if (r.status_code != requests.codes.ok):  # pylint: disable=E1101
             action_result.add_data(resp_json)
             error_details = self._get_error_details(resp_json)
@@ -223,12 +244,9 @@ class ServicenowConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _upload_file(self, endpoint, action_result, headers={}, params=None, data=None):
+    def _upload_file(self, action_result, endpoint, headers={}, params=None, data=None, auth=None):
 
         config = self.get_config()
-
-        username = config[SERVICENOW_JSON_USERNAME]
-        password = config[SERVICENOW_JSON_PASSSWORD]
 
         # Create the headers
         headers.update(self._headers)
@@ -236,8 +254,8 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
-            r = requests.post(self._base_url + self._api_uri + endpoint,
-                    auth=(username, password),
+            r = requests.post(self._base_url + endpoint,
+                    auth=auth,
                     data=data,
                     headers=headers,
                     verify=config[phantom.APP_JSON_VERIFY],
@@ -247,12 +265,28 @@ class ServicenowConnector(BaseConnector):
 
         return self._process_response(r, action_result)
 
-    def _make_rest_call(self, endpoint, action_result, headers={}, params=None, data=None, method="get"):
-
+    def _make_rest_call_oauth(self, action_result, headers={}, data={}):
+        """ The API for retrieving the OAuth token is annoyingly different enough to where its just easier to make a new function
+        """
+        resp_json = None
         config = self.get_config()
 
-        username = config[SERVICENOW_JSON_USERNAME]
-        password = config[SERVICENOW_JSON_PASSSWORD]
+        try:
+            r = requests.post(
+                    self._base_url + '/oauth_token.do',
+                    data=data,  # Mostly this line is the annoying part
+                    verify=config[phantom.APP_JSON_VERIFY]
+            )
+        except Exception as e:
+            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
+
+        self.debug_print(r.text)
+
+        return self._process_response(r, action_result)
+
+    def _make_rest_call(self, action_result, endpoint, headers={}, params=None, data=None, auth=None, method="get"):
+
+        config = self.get_config()
 
         # Create the headers
         headers.update(self._headers)
@@ -269,7 +303,7 @@ class ServicenowConnector(BaseConnector):
 
         try:
             r = request_func(self._base_url + self._api_uri + endpoint,
-                    auth=(username, password),
+                    auth=auth,
                     json=data,
                     headers=headers,
                     verify=config[phantom.APP_JSON_VERIFY],
@@ -277,15 +311,127 @@ class ServicenowConnector(BaseConnector):
         except Exception as e:
             return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
 
+        self.debug_print(r.text)
+
         return self._process_response(r, action_result)
 
+    def _make_rest_call_helper(self, action_result, endpoint, params={}, data={}, headers={}, method="get", auth=None):
+        try:
+            return self._make_rest_call(action_result, endpoint, params=params, data=data, headers=headers, method=method, auth=auth)
+        except UnauthorizedOAuthTokenException:
+            # We should only be here if we didn't generate a new token, and if the old token wasn't valid
+            # (Hopefully) this should only happen rarely
+            self.debug_print("UnauthorizedOAuthTokenException")
+            if self._try_oauth:
+                self._try_oauth = False
+                ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
+                if (phantom.is_fail(ret_val)):
+                    return RetVal(phantom.APP_ERROR, None)
+                return self._make_rest_call_helper(
+                    action_result, endpoint, params=params, data=data, headers=headers, method=method, auth=auth
+                )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
+
+    def _upload_file_helper(self, action_result, endpoint, params={}, data={}, headers={}, auth=None):
+        try:
+            return self._upload_file(action_result, endpoint, params=params, data=data, headers=headers, auth=auth)
+        except UnauthorizedOAuthTokenException:
+            # We should only be here if we didn't generate a new token, and if the old token wasn't valid
+            # (Hopefully) this should only happen rarely
+            self.debug_print("UnauthorizedOAuthTokenException")
+            if self._try_oauth:
+                self._try_oauth = False
+                ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
+                if (phantom.is_fail(ret_val)):
+                    return RetVal(phantom.APP_ERROR, None)
+                return self._upload_file_helper(
+                    action_result, endpoint, params=params, data=data, headers=headers, auth=auth
+                )
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
+
+    def _get_new_oauth_token(self, action_result):
+        """Generate a new oauth token using the refresh token, if available
+        """
+        params = {}
+        params['client_id'] = self._client_id
+        params['client_secret'] = self._client_secret
+        try:
+            params['refresh_token'] = self._state['oauth_token']['refresh_token']
+            params['grant_type'] = "refresh_token"
+        except KeyError:
+            config = self.get_config()
+            params['username'] = config[SERVICENOW_JSON_USERNAME]
+            params['password'] = config[SERVICENOW_JSON_PASSWORD]
+            params['grant_type'] = "password"
+
+        ret_val, response_json = self._make_rest_call_oauth(action_result, data=params)
+
+        if (phantom.is_fail(ret_val) and params['grant_type'] == 'refresh_token'):
+            self.debug_print("Unable to generate new key with refresh token")
+            self._state = {}
+            # Try again, using a password
+            return self._get_new_oauth_token(action_result)
+
+        if (phantom.is_fail(ret_val)):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error in token request"), None)
+
+        self._state['oauth_token'] = response_json
+        self._state['retrieval_time'] = datetime.now().strftime(DT_STR_FORMAT)
+        try:
+            return RetVal(phantom.APP_SUCCESS, response_json['access_token'])
+        except Exception as e:
+            self._state = {}
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse access token", e), None)
+
+    def _get_oauth_token(self, action_result, force_new=False):
+        if (self._state.get('oauth_token') and not force_new):
+            expires_in = self._state.get('oauth_token', {}).get('expires_in', 0)
+            try:
+                diff = (datetime.now() - datetime.strptime(self._state['retrieval_time'], DT_STR_FORMAT)).total_seconds()
+                self.debug_print(diff)
+                if (diff < expires_in):
+                    self.debug_print("Using old OAuth Token")
+                    return RetVal(action_result.set_status(phantom.APP_SUCCESS), self._state['oauth_token']['access_token'])
+            except KeyError:
+                self.debug_print("Key Error")
+                pass
+
+        self.debug_print("Generating new OAuth Token")
+        return self._get_new_oauth_token(action_result)
+
+    def _get_authorization_credentials(self, action_result, force_new=False):
+        auth = None
+        headers = {}
+        if (self._use_token):
+            self.save_progress("Connecting with OAuth Token")
+            ret_val, oauth_token = self._get_oauth_token(action_result, force_new)
+            if (phantom.is_fail(ret_val)):
+                return ret_val, None, None
+            self.save_progress("OAuth Token Retrieved")
+            headers = {'Authorization': 'Bearer {0}'.format(oauth_token)}
+            self._try_oauth = True
+        else:
+            ret_val = phantom.APP_SUCCESS
+            self.save_progress("Connecting with HTTP Basic Auth")
+            config = self.get_config()
+            auth = requests.auth.HTTPBasicAuth(config[SERVICENOW_JSON_USERNAME], config[SERVICENOW_JSON_PASSWORD])
+            headers = {}
+
+        return ret_val, auth, headers
+
     def _test_connectivity(self, param):
+
+        action_result = ActionResult()
 
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
 
         endpoint = '/table/incident'
         request_params = {'sysparm_limit': '1'}
@@ -294,7 +440,7 @@ class ServicenowConnector(BaseConnector):
 
         self.save_progress(SERVICENOW_MSG_GET_INCIDENT_TEST)
 
-        ret_val, response = self._make_rest_call(endpoint, action_result, params=request_params)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=request_params, headers=headers, auth=auth)
 
         if (phantom.is_fail(ret_val)):
             self.debug_print(action_result.get_message())
@@ -334,6 +480,10 @@ class ServicenowConnector(BaseConnector):
 
         table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
 
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
         endpoint = '/table/{0}'.format(table)
 
         ret_val, fields = self._get_fields(param, action_result)
@@ -357,7 +507,7 @@ class ServicenowConnector(BaseConnector):
         data.update({'description': '{0}\n\n{1}{2}'.format(param.get(SERVICENOW_JSON_DESCRIPTION, ''), SERVICENOW_TICKET_FOOTNOTE,
                 self.get_container_id())})
 
-        ret_val, response = self._make_rest_call(endpoint, action_result, data=data, method="post")
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=data, auth=auth, headers=headers, method="post")
 
         if (phantom.is_fail(ret_val)):
             self.debug_print(action_result.get_message())
@@ -392,6 +542,10 @@ class ServicenowConnector(BaseConnector):
         if (not vault_id):
             return (phantom.APP_SUCCESS, None)
 
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
         # Check for file in vault
         meta = Vault.get_file_info(vault_id)  # Vault IDs are unique
         if (not meta):
@@ -404,7 +558,7 @@ class ServicenowConnector(BaseConnector):
 
         mime = magic.Magic(mime=True)
         magic_str = mime.from_file(filepath)
-        headers = {'Content-Type': magic_str}
+        headers.update({'Content-Type': magic_str})
 
         try:
             data = open(filepath, 'rb').read()
@@ -420,7 +574,7 @@ class ServicenowConnector(BaseConnector):
                 'table_sys_id': ticket_id,
                 'file_name': filename}
 
-        ret_val, response = self._upload_file('/attachment/file', action_result, headers=headers, params=params, data=data)
+        ret_val, response = self._upload_file(action_result, '/attachment/file', headers=headers, params=params, data=data, auth=auth)
 
         if (phantom.is_fail(ret_val)):
             return (action_result.get_status(), response)
@@ -442,6 +596,10 @@ class ServicenowConnector(BaseConnector):
 
         endpoint = '/table/{0}/{1}'.format(table, ticket_id)
 
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
         ret_val, fields = self._get_fields(param, action_result)
 
         if (phantom.is_fail(ret_val)):
@@ -454,7 +612,7 @@ class ServicenowConnector(BaseConnector):
 
         if (fields):
             self.save_progress("Updating ticket with the provided fields")
-            ret_val, response = self._make_rest_call(endpoint, action_result, data=fields, method="put")
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=fields, auth=auth, headers=headers, method="put")
 
             if (phantom.is_fail(ret_val)):
                 return action_result.get_status()
@@ -486,9 +644,13 @@ class ServicenowConnector(BaseConnector):
 
     def _get_ticket_details(self, action_result, table, sys_id):
 
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
         endpoint = '/table/{0}/{1}'.format(table, sys_id)
 
-        ret_val, response = self._make_rest_call(endpoint, action_result)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
         if (phantom.is_fail(ret_val)):
             self.debug_print(action_result.get_message())
@@ -502,7 +664,7 @@ class ServicenowConnector(BaseConnector):
         params = {'sysparm_query': 'table_sys_id={0}'.format(ticket_sys_id)}
 
         # get the attachment details
-        ret_val, attach_resp = self._make_rest_call('/attachment', action_result, params=params)
+        ret_val, attach_resp = self._make_rest_call_helper(action_result, '/attachment', auth=auth, headers=headers, params=params)
 
         # is some versions of servicenow fail the attachment query if not present
         # some pass it with no data if not present, so only add data if present and valid
@@ -553,7 +715,11 @@ class ServicenowConnector(BaseConnector):
         endpoint = '/table/{0}'.format(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
         request_params = {'sysparm_limit': param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)}
 
-        ret_val, response = self._make_rest_call(endpoint, action_result, params=request_params)
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
 
         if (phantom.is_fail(ret_val)):
             self.debug_print(action_result.get_message())
