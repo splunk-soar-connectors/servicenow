@@ -228,7 +228,7 @@ class ServicenowConnector(BaseConnector):
         return self._process_response(r, action_result)
 
     def _make_rest_call_oauth(self, action_result, headers={}, data={}):
-        """ The API for retrieving the OAuth token is annoyingly different enough to where its just easier to make a new function
+        """ The API for retrieving the OAuth token is different enough to where its just easier to make a new function
         """
         resp_json = None
         config = self.get_config()
@@ -236,7 +236,7 @@ class ServicenowConnector(BaseConnector):
         try:
             r = requests.post(
                     self._base_url + '/oauth_token.do',
-                    data=data,  # Mostly this line is the annoying part
+                    data=data,  # Mostly this line
                     verify=config[phantom.APP_JSON_VERIFY]
             )
         except Exception as e:
