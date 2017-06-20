@@ -11,7 +11,7 @@
     "product_vendor": "ServiceNow",
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
-    "min_phantom_version": "2.0.264",
+    "min_phantom_version": "2.1.452",
     "logo": "servicenow.png",
     "license": "Copyright (c) Phantom Cyber Corporation 2015-2017",
     "configuration": {
@@ -38,6 +38,18 @@
         "data_type": "password",
         "order": 3,
         "description": "Password",
+        "required": false
+      },
+      "client_id": {
+        "data_type": "string",
+        "order": 4,
+        "description": "Client ID. OAuth will be preferred if provided",
+        "required": false
+      },
+      "client_secret": {
+        "data_type": "password",
+        "order": 5,
+        "description": "Client Secret. Required with Client ID",
         "required": false
       }
     },
