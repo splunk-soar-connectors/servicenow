@@ -242,8 +242,6 @@ class ServicenowConnector(BaseConnector):
         except Exception as e:
             return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
 
-        self.debug_print(r.text)
-
         return self._process_response(r, action_result)
 
     def _make_rest_call(self, action_result, endpoint, headers={}, params=None, data=None, auth=None, method="get"):
@@ -272,8 +270,6 @@ class ServicenowConnector(BaseConnector):
                     params=params)
         except Exception as e:
             return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
-
-        self.debug_print(r.text)
 
         return self._process_response(r, action_result)
 
