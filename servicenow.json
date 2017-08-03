@@ -1,7 +1,7 @@
 {
     "appid"    : "a590c3bc-ca41-4a0e-b063-8066ca868794",
     "name"   : "Servicenow",
-    "description": "This app implements various <b>ticketing</b> actions on <b>ServiceNow</b>.",
+    "description": "This app provides <b>ServiceNow</b> integration for <b>tickets</b> and <b>records</b>",
     "publisher": "Phantom",
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
@@ -56,7 +56,7 @@
     "actions": [
       {
         "action": "test connectivity",
-        "description": "Validate the asset configuration for connectivity. This action runs a quick query on the device to check the connection and credentials.",
+        "description": "Run a query on the device to test connection and credentials",
         "type": "test",
         "identifier": "test_asset_connectivity",
         "read_only": true,
@@ -67,7 +67,7 @@
       },
       {
         "action": "list tickets",
-        "description": "Get a list of incidents",
+        "description": "Get a list of tickets/records",
         "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>. If <b>max_results</b> value is not specified, the action defaults to <b>100</b>.",
         "type": "generic",
         "identifier": "list_tickets",
@@ -538,7 +538,7 @@
       },
       {
         "action": "create ticket",
-        "description": "Create an incident",
+        "description": "Create a new ticket/record",
         "type": "generic",
         "identifier": "create_ticket",
         "read_only": false,
@@ -1066,7 +1066,7 @@
       },
       {
         "action": "get ticket",
-        "description": "Get record information",
+        "description": "Get ticket/record information",
         "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>.",
         "type": "generic",
         "identifier": "get_ticket",
@@ -1627,7 +1627,7 @@
       },
       {
         "action": "update ticket",
-        "description": "Update record information",
+        "description": "Update ticket/record information",
         "type": "generic",
         "identifier": "update_ticket",
         "read_only": false,
