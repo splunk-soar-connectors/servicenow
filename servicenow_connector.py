@@ -21,10 +21,8 @@ from phantom.vault import Vault
 # THIS Connector imports
 from servicenow_consts import *
 
-import os
 import json
 import magic
-import inspect
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -216,7 +214,7 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
-            r = requests.post(self._base_url + endpoint,
+            r = requests.post(self._base_url + self._api_uri + endpoint,
                     auth=auth,
                     data=data,
                     headers=headers,
@@ -532,7 +530,7 @@ class ServicenowConnector(BaseConnector):
                 'table_sys_id': ticket_id,
                 'file_name': filename}
 
-        ret_val, response = self._upload_file(action_result, '/attachment/file', headers=headers, params=params, data=data, auth=auth)
+        ret_val, response = self._upload_file_helper(action_result, '/attachment/file', headers=headers, params=params, data=data, auth=auth)
 
         if (phantom.is_fail(ret_val)):
             return (action_result.get_status(), response)
