@@ -1,7 +1,7 @@
 {
     "appid"    : "a590c3bc-ca41-4a0e-b063-8066ca868794",
     "name"   : "Servicenow",
-    "description": "This app provides <b>ServiceNow</b> integration for <b>tickets</b> and <b>records</b>",
+    "description": "This app provides <b>Servicenow</b> integration for <b>tickets</b> and <b>records</b>",
     "publisher": "Phantom",
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
