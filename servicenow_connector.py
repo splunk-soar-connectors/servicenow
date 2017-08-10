@@ -27,7 +27,6 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-requests.packages.urllib3.disable_warnings()
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
