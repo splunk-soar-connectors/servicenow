@@ -413,15 +413,15 @@ class ServicenowConnector(BaseConnector):
 
         # fields is an optional field
         if (not fields):
-            return (phantom.APP_SUCCESS, None)
+            return RetVal(phantom.APP_SUCCESS, None)
 
         # we take in as a dictionary string, first try to load it as is
         try:
             fields = json.loads(fields)
         except Exception as e:
-            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE, e), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE, e), None)
 
-        return (phantom.APP_SUCCESS, fields)
+        return RetVal(phantom.APP_SUCCESS, fields)
 
     def _create_ticket(self, param):
 
