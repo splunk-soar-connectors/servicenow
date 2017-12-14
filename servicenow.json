@@ -5,8 +5,8 @@
     "publisher": "Phantom",
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
-    "app_version": "1.2.33",
-    "utctime_updated": "2017-08-10T00:17:26.000000Z",
+    "app_version": "1.2.34",
+    "utctime_updated": "2017-12-14T02:58:10.000000Z",
     "package_name": "phantom_servicenow",
     "product_vendor": "ServiceNow",
     "product_name": "ServiceNow",
@@ -15,2205 +15,2242 @@
     "logo": "servicenow.png",
     "license": "Copyright (c) Phantom Cyber Corporation, 2015-2017",
     "configuration": {
-      "url": {
-        "data_type": "string",
-        "order": 0,
-        "description": "Device URL including the port, e.g. https://myservicenow.enterprise.com:8080",
-        "required": true
-      },
-      "verify_server_cert": {
-        "data_type": "boolean",
-        "description": "Verify server certificate",
-        "required": true,
-        "order": 1,
-        "default": true
-      },
-      "username": {
-        "data_type": "string",
-        "order": 2,
-        "description": "Username",
-        "required": false
-      },
-      "password": {
-        "data_type": "password",
-        "order": 3,
-        "description": "Password",
-        "required": false
-      },
-      "client_id": {
-        "data_type": "string",
-        "order": 4,
-        "description": "Client ID. OAuth will be preferred if provided",
-        "required": false
-      },
-      "client_secret": {
-        "data_type": "password",
-        "order": 5,
-        "description": "Client Secret. Required with Client ID",
-        "required": false
-      }
-    },
-    "actions": [
-      {
-        "action": "test connectivity",
-        "description": "Run a query on the device to test connection and credentials",
-        "type": "test",
-        "identifier": "test_asset_connectivity",
-        "read_only": true,
-        "parameters": {
-        },
-        "output": [],
-        "versions":"EQ(*)"
-      },
-      {
-        "action": "list tickets",
-        "description": "Get a list of tickets/records",
-        "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>. If <b>max_results</b> value is not specified, the action defaults to <b>100</b>.",
-        "type": "generic",
-        "identifier": "list_tickets",
-        "read_only": true,
-        "parameters": {
-          "max_results": {
-            "description": "Max number of records to return",
-            "data_type": "numeric",
+        "url": {
+            "data_type": "string",
             "order": 0,
-            "default": 100
-          },
-          "table": {
-            "description": "Table to query",
-            "data_type": "string",
+            "description": "Device URL including the port, e.g. https://myservicenow.enterprise.com:8080",
+            "required": true
+        },
+        "verify_server_cert": {
+            "data_type": "boolean",
+            "description": "Verify server certificate",
+            "required": true,
             "order": 1,
-            "contains": ["servicenow table"],
-            "default": "incident",
-            "primary": true
-          }
+            "default": true
         },
-        "render": {
-          "width": 12,
-          "title": "List Tickets",
-          "type": "table",
-          "height": 5
-        },
-        "output": [
-          {
-            "data_path": "action_result.status",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.parameter.max_results",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "action_result.parameter.table",
-            "data_type": "string",
-            "contains": ["servicenow table"]
-          },
-          {
-            "data_path": "action_result.message",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.escalation",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.watch_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.follow_up",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.made_sla",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_task",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sla_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.number",
-            "data_type": "string",
-            "column_order": 0,
-            "column_name": "Number"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_mod_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.notify",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_at",
-            "data_type": "string",
-            "column_name": "Closed On",
-            "column_order": 6
-          },
-          {
-            "data_path": "action_result.data.*.sys_tags",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.subcategory",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.category",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.expected_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.knowledge",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.impact",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caused_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.comments",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.activity_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_id",
-            "data_type": "string",
-            "column_name": "ID",
-            "column_order": 4,
-            "contains": ["servicenow ticket id"]
-          },
-          {
-            "data_path": "action_result.data.*.opened_at",
-            "data_type": "string",
-            "column_name": "Opened On",
-            "column_order": 5
-          },
-          {
-            "data_path": "action_result.data.*.child_incidents",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.short_description",
-            "data_type": "string",
-            "column_name": "Short Description",
-            "column_order": 0
-          },
-          {
-            "data_path": "action_result.data.*.comments_and_work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.time_worked",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.upon_reject",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reassignment_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.due_date",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_class_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_plan",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.description",
-            "data_type": "string",
-            "column_name": "Description",
-            "column_order": 1
-          },
-          {
-            "data_path": "action_result.data.*.parent",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.rfc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_history",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.user_input",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_at",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.group_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.active",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.parent_incident",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain_path",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.severity",
-            "data_type": "string",
-            "column_name": "Severity",
-            "column_order": 2
-          },
-          {
-            "data_path": "action_result.data.*.upon_approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.incident_state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reopen_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.contact_type",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_end",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_display",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_code",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_set",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.order",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.urgency",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.priority",
-            "data_type": "string",
-            "column_name": "Priority",
-            "column_order": 3
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.total_tickets",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "summary.total_objects",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "summary.total_objects_successful",
-            "data_type": "numeric"
-          }
-        ],
-        "versions": "EQ(*)"
-      },
-      {
-        "action": "create ticket",
-        "description": "Create a new ticket/record",
-        "type": "generic",
-        "identifier": "create_ticket",
-        "read_only": false,
-        "parameters": {
-          "short_description": {
-            "description": "Ticket short description",
-            "data_type": "string",
-            "order": 0
-          },
-          "description": {
-            "description": "Ticket description",
-            "data_type": "string",
-            "order": 1
-          },
-          "table": {
-            "description": "Table to add to",
+        "username": {
             "data_type": "string",
             "order": 2,
-            "contains": ["servicenow table"],
-            "default": "incident"
-          },
-          "fields": {
-            "description": "JSON containing field values", 
-            "data_type": "string",
-            "order": 3
-          },
-          "vault_id": {
-            "description": "Vault ID of file to attach to ticket",
-            "contains": ["vault id"],
-            "data_type": "string",
-            "required": false,
-            "order": 4
-          }
+            "description": "Username",
+            "required": false
         },
-        "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple action need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than <i>incident</i> to create the ticket in. Do note that the fields for user generated tables, usually are named with a <i>u_</i> prefix. In such cases it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
-        "render": {
-          "width": 12,
-          "title": "Create Ticket",
-          "type": "table",
-          "height": 5
+        "password": {
+            "data_type": "password",
+            "order": 3,
+            "description": "Password",
+            "required": false
         },
-        "output": [
-          {
-            "data_path": "action_result.status",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.parameter.short_description",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.parameter.table",
+        "client_id": {
             "data_type": "string",
-            "contains": ["servicenow table"]
-          },
-          {
-            "data_path": "action_result.parameter.fields",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.parameter.description",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.created_ticket_id",
-            "data_type": "string",
-            "contains": ["servicenow ticket id"]
-          },
-          {
-            "data_path": "action_result.parameter.vault_id",
-            "data_type": "string",
-            "contains": ["vault id"]
-          },
-          {
-            "data_path": "action_result.message",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.escalation",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.watch_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.follow_up",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.made_sla",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_task",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sla_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.number",
-            "data_type": "string",
-            "column_order": 0,
-            "column_name": "Number"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_mod_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.notify",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_at",
-            "data_type": "string",
-            "column_name": "Closed On",
-            "column_order": 6
-          },
-          {
-            "data_path": "action_result.data.*.sys_tags",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.subcategory",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.category",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.expected_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.knowledge",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.impact",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caused_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.comments",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.activity_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_id",
-            "data_type": "string",
-            "column_name": "ID",
-            "column_order": 4,
-            "contains": ["servicenow ticket id"]
-          },
-          {
-            "data_path": "action_result.data.*.opened_at",
-            "data_type": "string",
-            "column_name": "Opened On",
-            "column_order": 5
-
-          },
-          {
-            "data_path": "action_result.data.*.child_incidents",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.short_description",
-            "data_type": "string",
-            "column_name": "Short Description",
-            "column_order": 0
-          },
-          {
-            "data_path": "action_result.data.*.comments_and_work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.time_worked",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.upon_reject",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reassignment_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.due_date",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_class_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_plan",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.description",
-            "data_type": "string",
-            "column_name": "Description",
-            "column_order": 1
-
-          },
-          {
-            "data_path": "action_result.data.*.parent",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.rfc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_history",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.user_input",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_at",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.group_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.active",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.parent_incident",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain_path",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.severity",
-            "data_type": "string",
-            "column_name": "Severity",
-            "column_order": 2
-
-          },
-          {
-            "data_path": "action_result.data.*.upon_approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.incident_state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reopen_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.contact_type",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_end",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_display",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_code",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_set",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.order",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.urgency",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.priority",
-            "data_type": "string",
-            "column_name": "Priority",
-            "column_order": 2
-
-          },
-          {
-            "data_path": "action_result.data.*.hold_reason",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_service",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_tags",
-            "data_type": "string"
-          },
-          {
-            "contains": [
-              "file name"
+            "order": 4,
+            "description": "Client ID. OAuth will be preferred if provided",
+            "required": false
+        },
+        "client_secret": {
+            "data_type": "password",
+            "order": 5,
+            "description": "Client Secret. Required with Client ID",
+            "required": false
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "description": "Run a query on the device to test connection and credentials",
+            "type": "test",
+            "identifier": "test_asset_connectivity",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "list tickets",
+            "description": "Get a list of tickets/records",
+            "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>. If <b>max_results</b> value is not specified, the action defaults to <b>100</b>.",
+            "type": "generic",
+            "identifier": "list_tickets",
+            "read_only": true,
+            "parameters": {
+                "max_results": {
+                    "description": "Max number of records to return",
+                    "data_type": "numeric",
+                    "order": 0,
+                    "default": 100
+                },
+                "table": {
+                    "description": "Table to query",
+                    "data_type": "string",
+                    "order": 1,
+                    "contains": [
+                        "servicenow table"
+                    ],
+                    "default": "incident",
+                    "primary": true
+                }
+            },
+            "render": {
+                "width": 12,
+                "title": "List Tickets",
+                "type": "table",
+                "height": 5
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.max_results",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.parameter.table",
+                    "data_type": "string",
+                    "contains": [
+                        "servicenow table"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.escalation",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.watch_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.follow_up",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.made_sla",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_task",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sla_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.number",
+                    "data_type": "string",
+                    "column_order": 0,
+                    "column_name": "Number"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.notify",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_at",
+                    "data_type": "string",
+                    "column_name": "Closed On",
+                    "column_order": 6
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.subcategory",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.category",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.expected_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.knowledge",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.impact",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caused_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.comments",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.activity_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "column_name": "ID",
+                    "column_order": 4,
+                    "contains": [
+                        "servicenow ticket id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.opened_at",
+                    "data_type": "string",
+                    "column_name": "Opened On",
+                    "column_order": 5
+                },
+                {
+                    "data_path": "action_result.data.*.child_incidents",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.short_description",
+                    "data_type": "string",
+                    "column_name": "Short Description",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.comments_and_work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.time_worked",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.upon_reject",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reassignment_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.due_date",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "column_name": "Description",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.parent",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.rfc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_history",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.user_input",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_at",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.group_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.parent_incident",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain_path",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.severity",
+                    "data_type": "string",
+                    "column_name": "Severity",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.upon_approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.incident_state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopen_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.contact_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_end",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_code",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_set",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.order",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.urgency",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.priority",
+                    "data_type": "string",
+                    "column_name": "Priority",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.total_tickets",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
             ],
-            "data_path": "action_result.data.*.attachment_details.*.file_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.compressed",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.size_bytes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.table_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.image_width",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.content_type",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.image_height",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.table_sys_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.download_link",
-            "contains": [ "url" ],
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_mod_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_created_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_created_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_updated_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_updated_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.size_compressed",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.average_image_color",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.additional_assignee_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.attachment_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.attachment_added",
-            "data_type": "boolean"
-          },
-          {
-            "data_path": "summary.total_objects",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "summary.total_objects_successful",
-            "data_type": "numeric"
-          }
-        ],
-        "versions": "EQ(*)"
-      },
-      {
-        "action": "get ticket",
-        "description": "Get ticket/record information",
-        "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>.",
-        "type": "generic",
-        "identifier": "get_ticket",
-        "read_only": true,
-        "parameters": {
-          "id": {
-            "description": "Ticket ID",
-            "data_type": "string",
-            "order": 0,
-            "contains": ["servicenow ticket id"],
-            "primary": true,
-            "required": true
-          },
-          "table": {
-            "description": "Table to query",
-            "data_type": "string",
-            "order": 1,
-            "contains": ["servicenow table"],
-            "default": "incident"
-          }
+            "versions": "EQ(*)"
         },
-        "render": {
-          "width": 12,
-          "title": "Get Ticket Info",
-          "type": "table",
-          "height": 5
+        {
+            "action": "create ticket",
+            "description": "Create a new ticket/record",
+            "type": "generic",
+            "identifier": "create_ticket",
+            "read_only": false,
+            "parameters": {
+                "short_description": {
+                    "description": "Ticket short description",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "description": {
+                    "description": "Ticket description",
+                    "data_type": "string",
+                    "order": 1
+                },
+                "table": {
+                    "description": "Table to add to",
+                    "data_type": "string",
+                    "order": 2,
+                    "contains": [
+                        "servicenow table"
+                    ],
+                    "default": "incident"
+                },
+                "fields": {
+                    "description": "JSON containing field values",
+                    "data_type": "string",
+                    "order": 3
+                },
+                "vault_id": {
+                    "description": "Vault ID of file to attach to ticket",
+                    "contains": [
+                        "vault id"
+                    ],
+                    "data_type": "string",
+                    "required": false,
+                    "order": 4
+                }
+            },
+            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple action need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than <i>incident</i> to create the ticket in. Do note that the fields for user generated tables, usually are named with a <i>u_</i> prefix. In such cases it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "render": {
+                "width": 12,
+                "title": "Create Ticket",
+                "type": "table",
+                "height": 5
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.short_description",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.table",
+                    "data_type": "string",
+                    "contains": [
+                        "servicenow table"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.fields",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.description",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.created_ticket_id",
+                    "data_type": "string",
+                    "contains": [
+                        "servicenow ticket id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.vault_id",
+                    "data_type": "string",
+                    "contains": [
+                        "vault id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.escalation",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.watch_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.follow_up",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.made_sla",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_task",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sla_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.number",
+                    "data_type": "string",
+                    "column_order": 0,
+                    "column_name": "Number"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.notify",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_at",
+                    "data_type": "string",
+                    "column_name": "Closed On",
+                    "column_order": 6
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.subcategory",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.category",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.expected_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.knowledge",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.impact",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caused_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.comments",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.activity_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "column_name": "ID",
+                    "column_order": 4,
+                    "contains": [
+                        "servicenow ticket id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.opened_at",
+                    "data_type": "string",
+                    "column_name": "Opened On",
+                    "column_order": 5
+                },
+                {
+                    "data_path": "action_result.data.*.child_incidents",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.short_description",
+                    "data_type": "string",
+                    "column_name": "Short Description",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.comments_and_work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.time_worked",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.upon_reject",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reassignment_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.due_date",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "column_name": "Description",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.parent",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.rfc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_history",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.user_input",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_at",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.group_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.parent_incident",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain_path",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.severity",
+                    "data_type": "string",
+                    "column_name": "Severity",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.upon_approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.incident_state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopen_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.contact_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_end",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_code",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_set",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.order",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.urgency",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.priority",
+                    "data_type": "string",
+                    "column_name": "Priority",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.hold_reason",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_service",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "contains": [
+                        "file name"
+                    ],
+                    "data_path": "action_result.data.*.attachment_details.*.file_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.size_bytes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.table_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.image_width",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.content_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.image_height",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.table_sys_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.download_link",
+                    "contains": [
+                        "url"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_mod_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_created_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_created_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_updated_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_updated_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.size_compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.average_image_color",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.additional_assignee_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.attachment_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.attachment_added",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)"
         },
-        "output": [
-          {
-            "data_path": "action_result.status",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.parameter.table",
-            "data_type": "string",
-            "contains": ["servicenow table"]
-          },
-          {
-            "data_path": "action_result.parameter.id",
-            "data_type": "string",
-            "contains": ["servicenow ticket id"]
-          },
-          {
-            "data_path": "action_result.message",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.escalation",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.watch_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.follow_up",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.made_sla",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_task",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sla_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.number",
-            "data_type": "string",
-            "column_order": 0,
-            "column_name": "Number"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_mod_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.notify",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_at",
-            "data_type": "string",
-            "column_name": "Closed On",
-            "column_order": 6
-          },
-          {
-            "data_path": "action_result.data.*.sys_tags",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.subcategory",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.category",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.expected_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.knowledge",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.impact",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caused_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.comments",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.activity_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_id",
-            "data_type": "string",
-            "column_name": "ID",
-            "column_order": 4,
-            "contains": ["servicenow ticket id"]
-          },
-          {
-            "data_path": "action_result.data.*.opened_at",
-            "data_type": "string",
-            "column_name": "Opened On",
-            "column_order": 5
-          },
-          {
-            "data_path": "action_result.data.*.child_incidents",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.short_description",
-            "data_type": "string",
-            "column_name": "Short Description",
-            "column_order": 0
-          },
-          {
-            "data_path": "action_result.data.*.comments_and_work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.time_worked",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.upon_reject",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reassignment_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.due_date",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_class_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_plan",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.description",
-            "data_type": "string",
-            "column_name": "Description",
-            "column_order": 1
-          },
-          {
-            "data_path": "action_result.data.*.parent",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.rfc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_history",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.user_input",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_at",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.group_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.active",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.parent_incident",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain_path",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.severity",
-            "data_type": "string",
-            "column_name": "Severity",
-            "column_order": 2
-          },
-          {
-            "data_path": "action_result.data.*.upon_approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.incident_state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reopen_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.contact_type",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_end",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_display",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_code",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_set",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.order",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.urgency",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.priority",
-            "data_type": "string",
-            "column_name": "Priority",
-            "column_order": 3
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.hold_reason",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_service",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_tags",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.file_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.compressed",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.size_bytes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.table_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.image_width",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.content_type",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.image_height",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.table_sys_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.download_link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_mod_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_created_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_created_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_updated_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_updated_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.size_compressed",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.average_image_color",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.additional_assignee_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.queried_ticket_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.total_tickets",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "summary.total_objects",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "summary.total_objects_successful",
-            "data_type": "numeric"
-          }
-        ],
-        "versions": "EQ(*)"
-      },
-      {
-        "action": "update ticket",
-        "description": "Update ticket/record information",
-        "type": "generic",
-        "identifier": "update_ticket",
-        "read_only": false,
-        "parameters": {
-          "id": {
-            "description": "Ticket ID",
-            "data_type": "string",
-            "order": 0,
-            "contains": ["servicenow ticket id"],
-            "primary": true,
-            "required": true
-          },
-          "table": {
-            "description": "Ticket table",
-            "data_type": "string",
-            "order": 1,
-            "contains": ["servicenow table"],
-            "default": "incident"
-          },
-          "fields": {
-            "description": "JSON containing field values",
-            "data_type": "string",
-            "required": false,
-            "order": 2
-          },
-          "vault_id": {
-            "description": "Vault ID of file to attach to ticket",
-            "contains": ["vault id"],
-            "data_type": "string",
-            "required": false,
-            "order": 3
-          }
+        {
+            "action": "get ticket",
+            "description": "Get ticket/record information",
+            "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>.",
+            "type": "generic",
+            "identifier": "get_ticket",
+            "read_only": true,
+            "parameters": {
+                "id": {
+                    "description": "Ticket ID",
+                    "data_type": "string",
+                    "order": 0,
+                    "contains": [
+                        "servicenow ticket id"
+                    ],
+                    "primary": true,
+                    "required": true
+                },
+                "table": {
+                    "description": "Table to query",
+                    "data_type": "string",
+                    "order": 1,
+                    "contains": [
+                        "servicenow table"
+                    ],
+                    "default": "incident"
+                }
+            },
+            "render": {
+                "width": 12,
+                "title": "Get Ticket Info",
+                "type": "table",
+                "height": 5
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.table",
+                    "data_type": "string",
+                    "contains": [
+                        "servicenow table"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.id",
+                    "data_type": "string",
+                    "contains": [
+                        "servicenow ticket id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.escalation",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.watch_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.follow_up",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.made_sla",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_task",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sla_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.number",
+                    "data_type": "string",
+                    "column_order": 0,
+                    "column_name": "Number"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.notify",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_at",
+                    "data_type": "string",
+                    "column_name": "Closed On",
+                    "column_order": 6
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.subcategory",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.category",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.expected_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.knowledge",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.impact",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caused_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.comments",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.activity_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "column_name": "ID",
+                    "column_order": 4,
+                    "contains": [
+                        "servicenow ticket id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.opened_at",
+                    "data_type": "string",
+                    "column_name": "Opened On",
+                    "column_order": 5
+                },
+                {
+                    "data_path": "action_result.data.*.child_incidents",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.short_description",
+                    "data_type": "string",
+                    "column_name": "Short Description",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.comments_and_work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.time_worked",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.upon_reject",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reassignment_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.due_date",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "column_name": "Description",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.parent",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.rfc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_history",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.user_input",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_at",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.group_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.parent_incident",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain_path",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.severity",
+                    "data_type": "string",
+                    "column_name": "Severity",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.upon_approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.incident_state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopen_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.contact_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_end",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_code",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_set",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.order",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.urgency",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.priority",
+                    "data_type": "string",
+                    "column_name": "Priority",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.hold_reason",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_service",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.file_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.size_bytes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.table_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.image_width",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.content_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.image_height",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.table_sys_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.download_link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_mod_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_created_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_created_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_updated_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_updated_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.size_compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.average_image_color",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.additional_assignee_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.queried_ticket_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.total_tickets",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)"
         },
-        "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple action need to be taken\", \"made_sla\": false}<br><br>The action first attemps to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
-        "render": {
-          "width": 12,
-          "title": "Update Ticket",
-          "type": "table",
-          "height": 5
-        },
-        "output": [
-          {
-            "data_path": "action_result.status",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.parameter.table",
-            "data_type": "string",
-            "contains": ["servicenow table"]
-          },
-          {
-            "data_path": "action_result.parameter.fields",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.parameter.id",
-            "data_type": "string",
-            "column_name": "ID",
-            "column_order": 4,
-            "contains": ["servicenow ticket id"]
-          },
-          {
-            "data_path": "action_result.parameter.vault_id",
-            "data_type": "string",
-            "contains": ["vault id"]
-          },
-          {
-            "data_path": "action_result.message",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_updated_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.escalation",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.watch_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.follow_up",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.made_sla",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_task",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sla_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.number",
-            "data_type": "string",
-            "column_order": 0,
-            "column_name": "Number"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_mod_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.notify",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_at",
-            "data_type": "string",
-            "column_name": "Closed On",
-            "column_order": 6
-          },
-          {
-            "data_path": "action_result.data.*.sys_tags",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.subcategory",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.category",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.expected_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.knowledge",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.impact",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caused_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.comments",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.activity_due",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.opened_at",
-            "data_type": "string",
-            "column_name": "Opened On",
-            "column_order": 5
-          },
-          {
-            "data_path": "action_result.data.*.child_incidents",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.short_description",
-            "data_type": "string",
-            "column_name": "Short Description",
-            "column_order": 0
-          },
-          {
-            "data_path": "action_result.data.*.comments_and_work_notes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.time_worked",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.upon_reject",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reassignment_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_stc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.due_date",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_class_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.delivery_plan",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.description",
-            "data_type": "string",
-            "column_name": "Description",
-            "column_order": 1
-          },
-          {
-            "data_path": "action_result.data.*.parent",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.rfc",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_history",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.user_input",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_start",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.resolved_at",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.calendar_duration",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.group_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.active",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.parent_incident",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_domain_path",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.severity",
-            "data_type": "string",
-            "column_name": "Severity",
-            "column_order": 2
-          },
-          {
-            "data_path": "action_result.data.*.upon_approval",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.incident_state",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.reopen_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.contact_type",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_end",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.work_notes_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.sys_created_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.correlation_display",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.close_code",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.approval_set",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.order",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.urgency",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.priority",
-            "data_type": "string",
-            "column_name": "Priority",
-            "column_order": 3
-          },
-          {
-            "data_path": "action_result.data.*.resolved_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.closed_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.caller_id.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.cmdb_ci",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.problem_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company.link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.company.value",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.location",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assignment_group",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.assigned_to",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.hold_reason",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.business_service",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_tags",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.file_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.compressed",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.size_bytes",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.table_name",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.image_width",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.content_type",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.image_height",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.table_sys_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.download_link",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_mod_count",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_created_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_created_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_updated_by",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.sys_updated_on",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.size_compressed",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.attachment_details.*.average_image_color",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.data.*.additional_assignee_list",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.attachment_id",
-            "data_type": "string"
-          },
-          {
-            "data_path": "action_result.summary.fields_updated",
-            "data_type": "boolean"
-          },
-          {
-            "data_path": "action_result.summary.attachment_added",
-            "data_type": "boolean"
-          },
-          {
-            "data_path": "action_result.summary.total_tickets",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "summary.total_objects",
-            "data_type": "numeric"
-          },
-          {
-            "data_path": "summary.total_objects_successful",
-            "data_type": "numeric"
-          }
-        ],
-        "versions": "EQ(*)"
-      }
+        {
+            "action": "update ticket",
+            "description": "Update ticket/record information",
+            "type": "generic",
+            "identifier": "update_ticket",
+            "read_only": false,
+            "parameters": {
+                "id": {
+                    "description": "Ticket ID",
+                    "data_type": "string",
+                    "order": 0,
+                    "contains": [
+                        "servicenow ticket id"
+                    ],
+                    "primary": true,
+                    "required": true
+                },
+                "table": {
+                    "description": "Ticket table",
+                    "data_type": "string",
+                    "order": 1,
+                    "contains": [
+                        "servicenow table"
+                    ],
+                    "default": "incident"
+                },
+                "fields": {
+                    "description": "JSON containing field values",
+                    "data_type": "string",
+                    "required": false,
+                    "order": 2
+                },
+                "vault_id": {
+                    "description": "Vault ID of file to attach to ticket",
+                    "contains": [
+                        "vault id"
+                    ],
+                    "data_type": "string",
+                    "required": false,
+                    "order": 3
+                }
+            },
+            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple action need to be taken\", \"made_sla\": false}<br><br>The action first attemps to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "render": {
+                "width": 12,
+                "title": "Update Ticket",
+                "type": "table",
+                "height": 5
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.table",
+                    "data_type": "string",
+                    "contains": [
+                        "servicenow table"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.fields",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.id",
+                    "data_type": "string",
+                    "column_name": "ID",
+                    "column_order": 4,
+                    "contains": [
+                        "servicenow ticket id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.vault_id",
+                    "data_type": "string",
+                    "contains": [
+                        "vault id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.escalation",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.watch_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.follow_up",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.made_sla",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_task",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sla_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.number",
+                    "data_type": "string",
+                    "column_order": 0,
+                    "column_name": "Number"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.notify",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_at",
+                    "data_type": "string",
+                    "column_name": "Closed On",
+                    "column_order": 6
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.subcategory",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.category",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.expected_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.knowledge",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.impact",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caused_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.comments",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.activity_due",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.opened_at",
+                    "data_type": "string",
+                    "column_name": "Opened On",
+                    "column_order": 5
+                },
+                {
+                    "data_path": "action_result.data.*.child_incidents",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.short_description",
+                    "data_type": "string",
+                    "column_name": "Short Description",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.comments_and_work_notes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.time_worked",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.upon_reject",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reassignment_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_stc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.due_date",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "column_name": "Description",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.parent",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.rfc",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_history",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.user_input",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_start",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_at",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_duration",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.group_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.parent_incident",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain_path",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.severity",
+                    "data_type": "string",
+                    "column_name": "Severity",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.upon_approval",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.incident_state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopen_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.contact_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_end",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.close_code",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.approval_set",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.order",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.urgency",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.priority",
+                    "data_type": "string",
+                    "column_name": "Priority",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company.link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.company.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.hold_reason",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_service",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.file_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.size_bytes",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.table_name",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.image_width",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.content_type",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.image_height",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.table_sys_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.download_link",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_mod_count",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_created_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_created_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_updated_by",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.sys_updated_on",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.size_compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.average_image_color",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.additional_assignee_list",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.attachment_id",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.fields_updated",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.summary.attachment_added",
+                    "data_type": "boolean"
+                },
+                {
+                    "data_path": "action_result.summary.total_tickets",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "versions": "EQ(*)"
+        }
     ]
 }
