@@ -14,7 +14,7 @@
     "min_phantom_version": "3.0.190",
     "logo": "logo_servicenow.svg",
     "logo_dark": "logo_servicenow_dark.svg",
-    "license": "Copyright (c) Phantom Cyber Corporation 2015-2017",
+    "license": "Copyright (c) Phantom Cyber Corporation, 2015-2018",
     "configuration": {
         "url": {
             "data_type": "string",
