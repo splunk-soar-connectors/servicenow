@@ -6,7 +6,7 @@
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
     "app_version": "1.2.36",
-    "utctime_updated": "2018-01-25T03:07:01.000000Z",
+    "utctime_updated": "2018-01-26T00:50:33.000000Z",
     "package_name": "phantom_servicenow",
     "product_vendor": "ServiceNow",
     "product_name": "ServiceNow",
