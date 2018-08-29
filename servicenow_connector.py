@@ -668,7 +668,8 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         endpoint = '/table/{0}'.format(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
-        request_params = {'sysparm_limit': param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)}
+        request_params = json.loads(param.get(SERVICENOW_JSON_FILTER, "{}"))
+        request_params['sysparm_limit'] = param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):

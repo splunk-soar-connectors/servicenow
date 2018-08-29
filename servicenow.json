@@ -88,6 +88,12 @@
                     ],
                     "default": "incident",
                     "primary": true
+                },
+                "filter": {
+                    "description": "Key-Value pairs to filter the results on (in JSON format)",
+                    "data_type": "string",
+                    "order": 2,
+                    "required": false
                 }
             },
             "render": {
@@ -111,6 +117,10 @@
                     "contains": [
                         "servicenow table"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.query",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
