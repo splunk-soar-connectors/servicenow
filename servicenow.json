@@ -119,7 +119,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.parameter.query",
+                    "data_path": "action_result.parameter.filter",
                     "data_type": "string"
                 },
                 {
