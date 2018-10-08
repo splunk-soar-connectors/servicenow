@@ -24,6 +24,7 @@ from servicenow_consts import *
 import json
 import magic
 import requests
+import time
 from bs4 import BeautifulSoup
 from datetime import datetime
 
@@ -47,6 +48,8 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_CREATE_TICKET = "create_ticket"
     ACTION_ID_GET_TICKET = "get_ticket"
     ACTION_ID_UPDATE_TICKET = "update_ticket"
+    ACTION_ID_GET_VARIABLES = "get_variables"
+    ACTION_ID_ON_POLL = "on_poll"
 
     def __init__(self):
 
@@ -668,7 +671,10 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         endpoint = '/table/{0}'.format(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
-        request_params = {'sysparm_limit': param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)}
+        request_params = {
+            'sysparm_query': param.get(SERVICENOW_JSON_FILTER, ""),
+            'sysparm_limit': param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)
+        }
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
@@ -687,6 +693,173 @@ class ServicenowConnector(BaseConnector):
 
         for ticket in tickets:
             action_result.add_data(ticket)
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _get_variables(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        endpoint = '/table/{0}'.format(SERVICENOW_ITEM_OPT_MTOM_TABLE)
+        request_params = {'request_item': param[SERVICENOW_JSON_TICKET_ID]}
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+
+        if (phantom.is_fail(ret_val)):
+            self.debug_print(action_result.get_message())
+            self.set_status(phantom.APP_ERROR, action_result.get_message())
+            return phantom.APP_ERROR
+
+        variables = {}
+
+        for item in response['result']:
+            item_option_id = item['sc_item_option']['value']
+
+            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_TABLE, item_option_id)
+
+            ret_val, auth, headers = self._get_authorization_credentials(action_result)
+            if (phantom.is_fail(ret_val)):
+                return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers,)
+
+            if (phantom.is_fail(ret_val)):
+                self.debug_print(action_result.get_message())
+                self.set_status(phantom.APP_ERROR, action_result.get_message())
+                return phantom.APP_ERROR
+
+            response_value = response['result']['value']
+            question_id = response['result']['item_option_new']['value']
+
+            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
+
+            ret_val, auth, headers = self._get_authorization_credentials(action_result)
+            if (phantom.is_fail(ret_val)):
+                return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+            if (phantom.is_fail(ret_val)):
+                self.debug_print(action_result.get_message())
+                self.set_status(phantom.APP_ERROR, action_result.get_message())
+                return phantom.APP_ERROR
+
+            response_question = response['result']['question_text']
+
+            variables[response_question] = response_value
+
+        action_result.add_data(variables)
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _on_poll(self, param):
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        state = self.load_state()
+
+        # Get config
+        config = self.get_config()
+
+        # Add action result
+        action_result = self.add_action_result(phantom.ActionResult(param))
+
+        # Get time from last poll, save now as time for this poll
+        last_time = state.get('last_time', 0)
+        state['last_time'] = time.time()
+
+        # Build the query for the issue search (sysparm_query)
+        query = "ORDERBYsys_created_on"
+
+        action_query = config.get(SERVICENOW_JSON_ON_POLL_FILTER, "")
+
+        if (len(action_query) > 0):
+            query += '^' + action_query
+
+        # If it's a poll now don't filter based on update time
+        if self.is_poll_now():
+            max_tickets = param.get(phantom.APP_JSON_CONTAINER_COUNT)
+        # If it's the first poll, don't filter based on update time
+        elif (state.get('first_run', True)):
+            state['first_run'] = False
+            max_tickets = ON_POLL_MAX_RESULTS
+        # If it's scheduled polling add a filter for update time being greater than the last poll time
+        else:
+            last_time_dt = datetime.fromtimestamp(last_time)
+            d = last_time_dt.strftime("%Y-%m-%d")
+            t = last_time_dt.strftime("%H:%M:%S")
+            query += "^sys_created_on>javascript:gs.dateGenerate('{}','{}}')".format(d, t)
+            max_tickets = DEFAULT_MAX_RESULTS
+
+        # Query for issues
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        endpoint = '/table/' + config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
+        params = {
+            'sysparm_query': query,
+            'sysparm_limit': max_tickets}
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+        if (phantom.is_fail(ret_val)):
+            self.debug_print(action_result.get_message())
+            self.set_status(phantom.APP_ERROR, action_result.get_message())
+            return phantom.APP_ERROR
+
+        issues = response['result']
+
+        # TODO: handle cases where we go over the ingestions limit
+
+        # Ingest the issues
+        failed = 0
+        label = self.get_config().get('ingest', {}).get('container_label')
+        for issue in issues:
+            container = dict(
+                data=issue,
+                description=issue['description'],
+                label=label,
+                name='{}'.format(issue['short_description']),
+                source_data_identifier=issue['sys_id']
+            )
+
+            ret_val, _, container_id = self.save_container(container)
+
+            if phantom.is_fail(ret_val):
+                failed += 1
+                continue
+
+            artifact = dict(
+                container_id=container_id,
+                data=issue,
+                description=issue['short_description'],
+                label='issue',
+                name=issue['number'],
+                source_data_identifier=issue['sys_id']
+            )
+            self.save_artifact(artifact)
+
+        action_result.set_status(phantom.APP_SUCCESS, 'Containers created')
+
+        self.save_state(state)
+
+        if (failed):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FAILURES)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -712,6 +885,10 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._get_ticket(param)
         elif (action == self.ACTION_ID_UPDATE_TICKET):
             ret_val = self._update_ticket(param)
+        elif (action == self.ACTION_ID_GET_VARIABLES):
+            ret_val = self._get_variables(param)
+        elif (action == self.ACTION_ID_ON_POLL):
+            ret_val = self._on_poll(param)
         elif (action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY):
             ret_val = self._test_connectivity(param)
         return ret_val

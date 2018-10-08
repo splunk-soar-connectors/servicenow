@@ -52,6 +52,18 @@
             "order": 5,
             "description": "Client Secret. Required with Client ID",
             "required": false
+        },
+        "on_poll_table": {
+            "data_type": "string",
+            "order": 6,
+            "description": "Table to ingest issues from",
+            "required": false
+        },
+        "on_poll_filter": {
+            "data_type": "string",
+            "order": 7,
+            "description": "Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=john.smith)",
+            "required": false
         }
     },
     "actions": [
@@ -88,6 +100,12 @@
                     ],
                     "default": "incident",
                     "primary": true
+                },
+                "filter": {
+                    "description": "Filter to use with action separated by '^' (e.g. description=This is a test^assigned_to=john.smith)",
+                    "data_type": "string",
+                    "order": 2,
+                    "required": false
                 }
             },
             "render": {
@@ -111,6 +129,10 @@
                     "contains": [
                         "servicenow table"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.filter",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -2251,6 +2273,82 @@
                     "data_type": "numeric"
                 }
             ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "get variables",
+            "description": "Get variables for a ticket/record",
+            "type": "generic",
+            "identifier": "get_variables",
+            "read_only": true,
+            "parameters": {
+                "id": {
+                    "description": "Ticket ID",
+                    "data_type": "string",
+                    "order": 0,
+                    "contains": [
+                        "servicenow ticket id"
+                    ],
+                    "primary": true,
+                    "required": true
+                }
+            },
+            "render": {
+                "width": 12,
+                "title": "Get Ticket Variables",
+                "type": "table",
+                "height": 5
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.id",
+                    "data_type": "string",
+                    "contains": [
+                        "servicenow ticket id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                }
+            ],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "on poll",
+            "description": "Ingest tickets from SNOW",
+            "type": "ingest",
+            "identifier": "on_poll",
+            "read_only": true,
+            "parameters": {
+                "start_time": {
+                    "data_type": "numeric",
+                    "description": "Parameter ignored in this app"
+                },
+                "end_time": {
+                    "data_type": "numeric",
+                    "description": "Parameter ignored in this app"
+                },
+                "container_id": {
+                    "data_type": "string",
+                    "description": "Parameter ignored in this app"
+                },
+                "container_count": {
+                    "data_type": "numeric",
+                    "description": "Maximum numer of tickets ingest during poll now",
+                    "required": false,
+                    "default": 1
+                },
+                "artifact_count": {
+                    "data_type": "numeric",
+                    "description": "Parameter ignored in this app"
+                }
+            },
+            "output": [],
             "versions": "EQ(*)"
         }
     ]
