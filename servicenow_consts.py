@@ -35,6 +35,8 @@ SERVICENOW_JSON_VAULT_ID = "vault_id"
 SERVICENOW_JSON_FILTER = "filter"
 SERVICENOW_JSON_ON_POLL_FILTER = "on_poll_filter"
 SERVICENOW_JSON_ON_POLL_TABLE = "on_poll_table"
+SERVICENOW_JSON_QUERY_TABLE = "query_table"
+SERVICENOW_JSON_QUERY = "query"
 
 SERVICENOW_ERR_API_INITIALIZATION = "API Initialization failed"
 SERVICENOW_ERR_CONNECTIVITY_TEST = "Connectivity test failed"
@@ -54,6 +56,7 @@ SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs fo
 SERVICENOW_CREATED_TICKET = "Created ticket"
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"
 SERVICENOW_ERR_JSON_PARSE = "Unable to parse reply as a Json, raw string reply: '{raw_text}'"
+SERVICENOW_BASE_QUERY_URI = "/table/"
 
 DEFAULT_MAX_RESULTS = 100
 SERVICENOW_TICKET_FOOTNOTE = "Added by Phantom for container id: "

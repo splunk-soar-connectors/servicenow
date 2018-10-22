@@ -2319,6 +2319,594 @@
             "versions": "EQ(*)"
         },
         {
+            "action": "run query",
+            "identifier": "run_query",
+            "description": "Gets object data according to specified query",
+            "verbose": "",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "query_table": {
+                    "description": "Name of the table to be searched task",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "order": 0
+                },
+                "query": {
+                    "description": "The query to search for e.g. sysparm_query=short_descriptionLIKEaudit",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Important data: value"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.user_input",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.work_notes_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.escalation",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.watch_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.due_date",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.made_sla",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.delivery_task",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.number",
+                    "data_type": "string",
+                    "example_values": [
+                        "CHG0040003"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.group_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.correlation_id",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_mod_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.time_worked",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.assigned_to",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.closed_at",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.additional_assignee_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sla_due",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.upon_approval",
+                    "data_type": "string",
+                    "example_values": [
+                        "proceed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.follow_up",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.close_notes",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.expected_start",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.knowledge",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_updated_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_created_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.comments",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.priority",
+                    "data_type": "string",
+                    "example_values": [
+                        "4"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.state",
+                    "data_type": "string",
+                    "example_values": [
+                        "-5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "0126961347c12200e0ef563dbb9a717e"
+                    ],
+                    "column_name": "sys_id",
+                    "column_order": 0,
+                    "contains": [
+                        "ServiceNOW ID"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.opened_at",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-08-10 16:10:41"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.cmdb_ci.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev62051.service-now.com/api/now/table/cmdb_ci/b0ccabf1c0a80009001f14fd151d8df0"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.cmdb_ci.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "b0ccabf1c0a80009001f14fd151d8df0"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.work_start",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.comments_and_work_notes",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.upon_reject",
+                    "data_type": "string",
+                    "example_values": [
+                        "cancel"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.company",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.location",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_tags",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "change_request"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.work_notes",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.parent",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.business_duration",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_domain.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev62051.service-now.com/api/now/table/sys_user_group/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_domain.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.reassignment_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.delivery_plan",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.approval_history",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.short_description",
+                    "data_type": "string",
+                    "column_name": "Short Description",
+                    "column_order": 1,
+                    "example_values": [
+                        "Please reboot ApplicationServerHelpdesk"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.business_service",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.calendar_duration",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.active",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.approval",
+                    "data_type": "string",
+                    "example_values": [
+                        "approved"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_domain_path",
+                    "data_type": "string",
+                    "example_values": [
+                        "/"
+                    ],
+                    "contains": [
+                        "domain"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.closed_by",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.activity_due",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_updated_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-08-10 16:10:41"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.impact",
+                    "data_type": "string",
+                    "example_values": [
+                        "3"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.work_end",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.contact_type",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.sys_created_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-08-10 16:10:41"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.order",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.opened_by.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev62051.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.opened_by.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "6816f79cc0a8016401c5a33be04be441"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.assignment_group.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev62051.service-now.com/api/now/table/sys_user_group/5f721d93c0a8010e015533746de18bf9"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.assignment_group.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "5f721d93c0a8010e015533746de18bf9"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.approval_set",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.correlation_display",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.urgency",
+                    "data_type": "string",
+                    "example_values": [
+                        "3"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result.*.cmdb_ci",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.query",
+                    "data_type": "string",
+                    "example_values": [
+                        "assignment_group=5f721d93c0a8010e015533746de18bf9"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.table",
+                    "data_type": "string",
+                    "example_values": [
+                        "task"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.important_data",
+                    "data_type": "string",
+                    "example_values": [
+                        "value"
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
             "action": "on poll",
             "description": "Ingest tickets from SNOW",
             "type": "ingest",
