@@ -2319,6 +2319,853 @@
             "versions": "EQ(*)"
         },
         {
+            "action": "run query",
+            "identifier": "run_query",
+            "description": "Gets object data according to specified query",
+            "verbose": "",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "query_table": {
+                    "description": "Name of the table to be searched task",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "order": 0
+                },
+                "query": {
+                    "description": "The query to search for e.g. sysparm_query=short_descriptionLIKEaudit",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [],
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Important data: value",
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.query",
+                    "data_type": "string",
+                    "example_values": [
+                        "sysparm_query=short_descriptionLIKEunable"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.query_table",
+                    "data_type": "string",
+                    "example_values": [
+                        "incident"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.user_input",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_stc",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.escalation",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.watch_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.made_sla",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_task",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.number",
+                    "data_type": "string",
+                    "example_values": [
+                        "INC0000059"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2006"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.caller_id.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "5137153cc611227c000bbd1bd8cd2006"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_id",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.notify",
+                    "data_type": "string",
+                    "example_values": [
+                        "1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.closed_at",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.additional_assignee_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.category",
+                    "data_type": "string",
+                    "example_values": [
+                        "inquiry"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sla_due",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.subcategory",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.follow_up",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.correlation_display",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.expected_start",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.severity",
+                    "data_type": "string",
+                    "example_values": [
+                        "3"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.caused_by",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.comments",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.priority",
+                    "data_type": "string",
+                    "example_values": [
+                        "3"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.state",
+                    "data_type": "string",
+                    "example_values": [
+                        "1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "85071a1347c12200e0ef563dbb9a71c1"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.opened_at",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-08-10 16:14:29"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.work_start",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.comments_and_work_notes",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.upon_approval",
+                    "data_type": "string",
+                    "example_values": [
+                        "proceed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.upon_reject",
+                    "data_type": "string",
+                    "example_values": [
+                        "cancel"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.company",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.rfc",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/sys_user_group/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.due_date",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "incident"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.work_notes",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        "I can access my personal folder but can't access my team's folder on our file share."
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.parent",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.close_notes",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.business_duration",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.knowledge",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.reassignment_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.approval_history",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.short_description",
+                    "data_type": "string",
+                    "example_values": [
+                        "Unable to access team file share"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.business_service",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_at",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_duration",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.group_list",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.approval",
+                    "data_type": "string",
+                    "example_values": [
+                        "not requested"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.parent_incident",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.time_worked",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.problem_id",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain_path",
+                    "data_type": "string",
+                    "example_values": [
+                        "/"
+                    ],
+                    "contains": [
+                        "domain"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.activity_due",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.incident_state",
+                    "data_type": "string",
+                    "example_values": [
+                        "1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.reopen_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-08-10 16:14:29"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.child_incidents",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.impact",
+                    "data_type": "string",
+                    "example_values": [
+                        "2"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.work_end",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.hold_reason",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.contact_type",
+                    "data_type": "string",
+                    "example_values": [
+                        "self-service"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-08-10 16:14:29"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.order",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.opened_by.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "6816f79cc0a8016401c5a33be04be441"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.close_code",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_by",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.approval_set",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.business_stc",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_time",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.urgency",
+                    "data_type": "string",
+                    "example_values": [
+                        "2"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.resolved_by.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "5137153cc611227c000bbd1bd8cd2007"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "5137153cc611227c000bbd1bd8cd2007"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.closed_by.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "681ccaf9c0a8016400b98a06818d57c7"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cmdb_ci.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "109562a3c611227500a7b7ff98cc0dc7"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.company.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.company.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "31bea3d53790200044e0bfc8bcbe5dec"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.business_service.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.business_service.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "27d32778c0a8000b00db970eeaa60f16"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev51696.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.assignment_group.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "287ebd7da9fe198100f92cc8d1d2154e"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.total_tickets",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
             "action": "on poll",
             "description": "Ingest tickets from SNOW",
             "type": "ingest",

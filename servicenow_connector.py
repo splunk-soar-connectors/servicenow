@@ -46,6 +46,7 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_UPDATE_TICKET = "update_ticket"
     ACTION_ID_GET_VARIABLES = "get_variables"
     ACTION_ID_ON_POLL = "on_poll"
+    ACTION_ID_RUN_QUERY = "run_query"
 
     def __init__(self):
 
@@ -758,6 +759,37 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _run_query(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_BASE_QUERY_URI, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
+        query = param[SERVICENOW_JSON_QUERY]
+        endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        tickets = response['result']
+
+        action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: len(tickets)})
+
+        for ticket in tickets:
+            action_result.add_data(ticket)
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def _on_poll(self, param):
 
         # Progress
@@ -887,6 +919,8 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._on_poll(param)
         elif (action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY):
             ret_val = self._test_connectivity(param)
+        elif (action == self.ACTION_ID_RUN_QUERY):
+            ret_val = self._run_query(param)
         return ret_val
 
 
