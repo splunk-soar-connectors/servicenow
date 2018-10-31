@@ -785,11 +785,12 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
-        action_result.add_data(response)
-
         tickets = response['result']
 
         action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: len(tickets)})
+
+        for ticket in tickets:
+            action_result.add_data(ticket)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
