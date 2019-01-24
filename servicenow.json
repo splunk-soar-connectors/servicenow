@@ -14,7 +14,7 @@
     "min_phantom_version": "3.5.210",
     "logo": "logo_servicenow.svg",
     "logo_dark": "logo_servicenow_dark.svg",
-    "license": "Copyright (c) 2016-2018 Splunk Inc.",
+    "license": "Copyright (c) 2016-2019 Splunk Inc.",
     "configuration": {
         "url": {
             "data_type": "string",
