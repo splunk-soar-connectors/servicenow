@@ -1,5 +1,5 @@
 # File: servicenow_connector.py
-# Copyright (c) 2016-2018 Splunk Inc.
+# Copyright (c) 2016-2019 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -21,6 +21,8 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime
+import re, pytz
+from dateutil import parser
 
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -769,7 +771,7 @@ class ServicenowConnector(BaseConnector):
 
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        # action_result = self.add_action_result(ActionResult(dict(param)))
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
         endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
@@ -790,6 +792,21 @@ class ServicenowConnector(BaseConnector):
 
     def _on_poll(self, param):
 
+        URI_REGEX = '[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+        HASH_REGEX = '\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b'
+        IP_REGEX = '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'
+        IPV6_REGEX = '\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))'
+        IPV6_REGEX += '|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*'
+        uri_regexc = re.compile(URI_REGEX)
+        hash_regexc = re.compile(HASH_REGEX)
+        ip_regexc = re.compile(IP_REGEX)
+        ipv6_regexc = re.compile(IPV6_REGEX)
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
@@ -839,6 +856,8 @@ class ServicenowConnector(BaseConnector):
         endpoint = '/table/' + config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
         params = {
             'sysparm_query': query,
+            'sysparm_display_value': 'true',
+            'sysparm_exclude_reference_link': 'true',
             'sysparm_limit': max_tickets}
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
@@ -869,16 +888,55 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 failed += 1
                 continue
-
-            artifact = dict(
+            artifacts = []
+            artifact_dict = dict(
                 container_id=container_id,
                 data=issue,
                 description=issue['short_description'],
+                cef=issue,
                 label='issue',
                 name=issue['number'],
                 source_data_identifier=issue['sys_id']
             )
-            self.save_artifact(artifact)
+            artifacts.append(artifact_dict)
+            extract_ips = config.get(SERVICENOW_JSON_EXTRACT_IPS)
+            extract_hashes = config.get(SERVICENOW_JSON_EXTRACT_HASHES)
+            extract_url = config.get(SERVICENOW_JSON_EXTRACT_URLS)
+            if extract_ips:
+                for match in ip_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['ip_address'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'IP Address',
+                       'cef': cef}
+                    artifacts.append(art)
+
+                for match in ipv6_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['ipv6_address'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'IPV6 Address',
+                       'cef': cef}
+                    artifacts.append(art)
+
+            if extract_hashes:
+                for match in hash_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['hash'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'Hash',
+                       'cef': cef}
+                    artifacts.append(art)
+
+            if extract_url:
+                for match in uri_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['URL'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'URL',
+                       'cef': cef}
+                    artifacts.append(art)
+            self.save_artifacts(artifacts)
 
         action_result.set_status(phantom.APP_SUCCESS, 'Containers created')
 
