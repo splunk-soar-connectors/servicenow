@@ -1841,7 +1841,8 @@
                 },
                 "id": {
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ],
                     "description": "Ticket ID",
                     "data_type": "string",
@@ -2789,7 +2790,8 @@
                 },
                 "id": {
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ],
                     "description": "Ticket ID",
                     "data_type": "string",
