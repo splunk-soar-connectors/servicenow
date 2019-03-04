@@ -5,7 +5,7 @@
     "product_vendor": "ServiceNow",
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
-    "publisher": "Phantom",
+    "publisher": "Splunk",
     "license": "Copyright (c) 2016-2019 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
