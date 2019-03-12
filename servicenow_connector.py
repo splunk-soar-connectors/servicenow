@@ -21,7 +21,7 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from datetime import datetime
-import re, pytz
+import re
 from dateutil import parser
 
 
