@@ -3822,7 +3822,6 @@
                     "required": true,
                     "description": "The query to search for e.g. sysparm_query=short_descriptionLIKEaudit",
                     "data_type": "string",
-                    "contains": [],
                     "primary": true,
                     "order": 1
                 },
@@ -3830,7 +3829,6 @@
                     "required": true,
                     "description": "Name of the table to be searched task",
                     "data_type": "string",
-                    "contains": [],
                     "primary": true,
                     "order": 0
                 }
