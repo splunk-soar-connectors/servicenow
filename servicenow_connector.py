@@ -22,7 +22,6 @@ import time
 from bs4 import BeautifulSoup
 from datetime import datetime
 import re
-from dateutil import parser
 
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -798,10 +797,14 @@ class ServicenowConnector(BaseConnector):
         IPV6_REGEX = '\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|'
         IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))'
         IPV6_REGEX += '|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+            '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+    '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+    '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+    '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
         IPV6_REGEX += '(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*'
         uri_regexc = re.compile(URI_REGEX)
         hash_regexc = re.compile(HASH_REGEX)
@@ -875,11 +878,13 @@ class ServicenowConnector(BaseConnector):
         failed = 0
         label = self.get_config().get('ingest', {}).get('container_label')
         for issue in issues:
+            d = issue['description']
+            sd = issue['short_description']
             container = dict(
                 data=issue,
-                description=issue['description'],
+                description=d.encode('utf-8'),
                 label=label,
-                name='{}'.format(issue['short_description']),
+                name='{}'.format(sd.encode('utf-8')),
                 source_data_identifier=issue['sys_id']
             )
 
@@ -892,7 +897,7 @@ class ServicenowConnector(BaseConnector):
             artifact_dict = dict(
                 container_id=container_id,
                 data=issue,
-                description=issue['short_description'],
+                description=sd.encode('utf-8'),
                 cef=issue,
                 label='issue',
                 name=issue['number'],
