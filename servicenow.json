@@ -9,12 +9,12 @@
     "license": "Copyright (c) 2016-2019 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
-    "app_version": "1.2.43",
+    "app_version": "1.2.44",
     "min_phantom_version": "4.0.1068",
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",
-    "utctime_updated": "2019-03-12T23:24:21.000000Z",
+    "utctime_updated": "2019-05-22T23:23:23.000000Z",
     "configuration": {
         "username": {
             "required": false,
@@ -3759,8 +3759,9 @@
             "render": {
                 "width": 12,
                 "height": 5,
-                "type": "table",
-                "title": "Get Ticket Variables"
+                "type": "custom",
+                "title": "Get Ticket Variables",
+                "view": "servicenow_view.display_view"
             },
             "action": "get variables",
             "output": [
@@ -3769,7 +3770,9 @@
                     "example_values": [
                         "success"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Status",
+                    "column_order": 1
                 },
                 {
                     "contains": [
@@ -3779,7 +3782,9 @@
                     "example_values": [
                         "INC0010005"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "ID",
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data",
@@ -3822,7 +3827,6 @@
                     "required": true,
                     "description": "The query to search for e.g. sysparm_query=short_descriptionLIKEaudit",
                     "data_type": "string",
-                    "contains": [],
                     "primary": true,
                     "order": 1
                 },
@@ -3830,7 +3834,6 @@
                     "required": true,
                     "description": "Name of the table to be searched task",
                     "data_type": "string",
-                    "contains": [],
                     "primary": true,
                     "order": 0
                 }

@@ -46,6 +46,7 @@ SERVICENOW_ERR_FROM_SERVER = "API failed, Status code: {status}, Message: {messa
 SERVICENOW_MSG_GET_INCIDENT_TEST = "Querying a single Incident to check credentials"
 SERVICENOW_ERR_FIELDS_JSON_PARSE = "Unable to parse the fields parameter into a dictionary"
 SERVICENOW_ERR_API_UNSUPPORTED_METHOD = "Unsupported method"
+SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = 'Provide username and password to generate OAuth token for running Test Connectivity for the first time'
 SERVICENOW_ERR_EMPTY_FIELDS = "The fields dictionary was detected to be empty"
 SERVICENOW_ERR_ONE_PARAM_REQ = "Please specify at least one of the parameters short_description, description, or fields to create the ticket with"
 SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details."
