@@ -36,7 +36,7 @@
         },
         "verify_server_cert": {
             "default": true,
-            "required": true,
+            "required": false,
             "description": "Verify server certificate",
             "data_type": "boolean",
             "order": 1
@@ -68,18 +68,22 @@
     },
     "actions": [
         {
-            "read_only": true,
-            "description": "Run a query on the device to test connection and credentials",
-            "parameters": {},
-            "versions": "EQ(*)",
             "action": "test connectivity",
-            "output": [],
+            "description": "Run a query on the device to test connection and credentials",
+            "type": "test",
             "identifier": "test_asset_connectivity",
-            "type": "test"
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
         },
         {
-            "read_only": true,
+            "action": "list tickets",
             "description": "Get a list of tickets/records",
+            "type": "generic",
+            "identifier": "list_tickets",
+            "verbose": "Steps for getting required filter query are mentioned here. In the ServiceNow instance navigate to the required table's page. Create the query on UI of ServiceNow. On the top-left corner of the page, right click on the query string and select 'Copy query' option to copy the required query string. This query string can be further used or modified as per the user's need to provide in the filter parameter in the action. If <b>table</b> value is not specified, the action defaults to <b>incident</b>. If <b>max_results</b> value is not specified, the action defaults to <b>100</b>.",
+            "read_only": true,
             "parameters": {
                 "filter": {
                     "required": false,
@@ -104,14 +108,6 @@
                     "order": 0
                 }
             },
-            "versions": "EQ(*)",
-            "render": {
-                "width": 12,
-                "height": 5,
-                "type": "table",
-                "title": "List Tickets"
-            },
-            "action": "list tickets",
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -660,6 +656,20 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.parent_incident.link",
+                    "example_values": [
+                        "https://dev86320.service-now.com/api/now/table/incident/f12ca184735123002728660c4cf6a7ef"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.parent_incident.value",
+                    "example_values": [
+                        "f12ca184735123002728660c4cf6a7ef"
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "column_order": 3,
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
@@ -706,6 +716,34 @@
                     "data_path": "action_result.data.*.reopen_count",
                     "example_values": [
                         ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_by",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_time",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.request_item.link",
+                    "example_values": [
+                        "https://dev42704.service-now.com/api/now/table/sc_req_item/aeed229047801200e0ef563dbb9a71c2"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.request_item.value",
+                    "example_values": [
+                        "aeed229047801200e0ef563dbb9a71c2"
                     ],
                     "data_type": "string"
                 },
@@ -767,6 +805,13 @@
                     "data_path": "action_result.data.*.rfc.value",
                     "example_values": [
                         "15e9cf93db792300134cd100cf96192d"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sc_item_option",
+                    "example_values": [
+                        ""
                     ],
                     "data_type": "string"
                 },
@@ -997,13 +1042,21 @@
                     "data_type": "numeric"
                 }
             ],
-            "identifier": "list_tickets",
-            "type": "generic",
-            "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>. If <b>max_results</b> value is not specified, the action defaults to <b>100</b>."
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "List Tickets"
+            },
+            "versions": "EQ(*)"
         },
         {
-            "read_only": false,
+            "action": "create ticket",
             "description": "Create a new ticket/record",
+            "type": "generic",
+            "identifier": "create_ticket",
+            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than <i>incident</i> to create the ticket in. Do note that the fields for user generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "read_only": false,
             "parameters": {
                 "short_description": {
                     "description": "Ticket short description",
@@ -1039,14 +1092,6 @@
                     "order": 3
                 }
             },
-            "versions": "EQ(*)",
-            "render": {
-                "width": 12,
-                "height": 5,
-                "type": "table",
-                "title": "Create Ticket"
-            },
-            "action": "create ticket",
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -1140,6 +1185,20 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.assigned_to.link",
+                    "example_values": [
+                        "https://dev42704.service-now.com/api/now/table/sys_user/d8f57f140b20220050192f15d6673a98"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.assigned_to.value",
+                    "example_values": [
+                        "d8f57f140b20220050192f15d6673a98"
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.assignment_group",
                     "example_values": [
                         ""
@@ -1148,6 +1207,13 @@
                 },
                 {
                     "data_path": "action_result.data.*.attachment_details.*.average_image_color",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.chunk_size_bytes",
+                    "example_values": [
+                        "734003"
+                    ],
                     "data_type": "string"
                 },
                 {
@@ -1186,6 +1252,13 @@
                 },
                 {
                     "data_path": "action_result.data.*.attachment_details.*.size_compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.state",
+                    "example_values": [
+                        "available"
+                    ],
                     "data_type": "string"
                 },
                 {
@@ -1563,6 +1636,20 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.reopened_by",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_time",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.resolved_at",
                     "example_values": [
                         ""
@@ -1786,6 +1873,13 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.summary.attachment_error",
+                    "example_values": [
+                        "File not found in Vault"
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.summary.attachment_id",
                     "data_type": "string"
                 },
@@ -1822,13 +1916,21 @@
                     "data_type": "numeric"
                 }
             ],
-            "identifier": "create_ticket",
-            "type": "generic",
-            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than <i>incident</i> to create the ticket in. Do note that the fields for user generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes."
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "Create Ticket"
+            },
+            "versions": "EQ(*)"
         },
         {
-            "read_only": true,
+            "action": "get ticket",
             "description": "Get ticket/record information",
+            "type": "generic",
+            "identifier": "get_ticket",
+            "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>.",
+            "read_only": true,
             "parameters": {
                 "table": {
                     "default": "incident",
@@ -1851,14 +1953,6 @@
                     "order": 0
                 }
             },
-            "versions": "EQ(*)",
-            "render": {
-                "width": 12,
-                "height": 5,
-                "type": "table",
-                "title": "Get Ticket Info"
-            },
-            "action": "get ticket",
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -1983,6 +2077,13 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.attachment_details.*.chunk_size_bytes",
+                    "example_values": [
+                        "734003"
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.attachment_details.*.compressed",
                     "data_type": "string"
                 },
@@ -2012,6 +2113,13 @@
                 },
                 {
                     "data_path": "action_result.data.*.attachment_details.*.size_compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.state",
+                    "example_values": [
+                        "available"
+                    ],
                     "data_type": "string"
                 },
                 {
@@ -2061,6 +2169,20 @@
                     "data_path": "action_result.data.*.business_service",
                     "example_values": [
                         ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_service.link",
+                    "example_values": [
+                        "https://dev86320.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_service.value",
+                    "example_values": [
+                        "27d32778c0a8000b00db970eeaa60f16"
                     ],
                     "data_type": "string"
                 },
@@ -2485,6 +2607,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopen_count",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_by",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_time",
                     "example_values": [
                         ""
                     ],
@@ -2762,13 +2898,21 @@
                     "data_type": "numeric"
                 }
             ],
-            "identifier": "get_ticket",
-            "type": "generic",
-            "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>."
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "Get Ticket Info"
+            },
+            "versions": "EQ(*)"
         },
         {
-            "read_only": false,
+            "action": "update ticket",
             "description": "Update ticket/record information",
+            "type": "generic",
+            "identifier": "update_ticket",
+            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "read_only": false,
             "parameters": {
                 "table": {
                     "default": "incident",
@@ -2806,14 +2950,6 @@
                     "order": 2
                 }
             },
-            "versions": "EQ(*)",
-            "render": {
-                "width": 12,
-                "height": 5,
-                "type": "table",
-                "title": "Update Ticket"
-            },
-            "action": "update ticket",
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -2954,6 +3090,13 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.attachment_details.*.chunk_size_bytes",
+                    "example_values": [
+                        "734003"
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.attachment_details.*.compressed",
                     "data_type": "string"
                 },
@@ -2983,6 +3126,13 @@
                 },
                 {
                     "data_path": "action_result.data.*.attachment_details.*.size_compressed",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.attachment_details.*.state",
+                    "example_values": [
+                        "available"
+                    ],
                     "data_type": "string"
                 },
                 {
@@ -3032,6 +3182,20 @@
                     "data_path": "action_result.data.*.business_service",
                     "example_values": [
                         ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_service.link",
+                    "example_values": [
+                        "https://dev86320.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.business_service.value",
+                    "example_values": [
+                        "27d32778c0a8000b00db970eeaa60f16"
                     ],
                     "data_type": "string"
                 },
@@ -3456,6 +3620,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopen_count",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_by",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.reopened_time",
                     "example_values": [
                         ""
                     ],
@@ -3736,34 +3914,30 @@
                     "data_type": "numeric"
                 }
             ],
-            "identifier": "update_ticket",
-            "type": "generic",
-            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes."
-        },
-        {
-            "read_only": true,
-            "description": "Get variables for a ticket/record",
-            "parameters": {
-                "id": {
-                    "contains": [
-                        "servicenow ticket id"
-                    ],
-                    "description": "Ticket ID",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": true,
-                    "order": 0
-                }
-            },
-            "versions": "EQ(*)",
             "render": {
                 "width": 12,
                 "height": 5,
-                "type": "custom",
-                "title": "Get Ticket Variables",
-                "view": "servicenow_view.display_view"
+                "type": "table",
+                "title": "Update Ticket"
             },
+            "versions": "EQ(*)"
+        },
+        {
             "action": "get variables",
+            "description": "Get variables for a ticket/record",
+            "verbose": "The System ID for this action can be obtained by following below steps. Navigate to ServiceNow platform and enter sc_item_option_mtom.LIST in the search panel in the left navigation pane. This opens the list of variables in a new tab. Click on the Parent Item and it will open the Requested Item page. Click on the Options menu available in the top-left corner of the page and select 'Copy sys_id' option to copy the required System ID.",
+            "type": "generic",
+            "identifier": "get_variables",
+            "read_only": true,
+            "parameters": {
+                "sys_id": {
+                    "description": "Request Item System ID",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "order": 0
+                }
+            },
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -3775,12 +3949,9 @@
                     "column_order": 1
                 },
                 {
-                    "contains": [
-                        "servicenow ticket id"
-                    ],
-                    "data_path": "action_result.parameter.id",
+                    "data_path": "action_result.parameter.sys_id",
                     "example_values": [
-                        "INC0010005"
+                        "16df47e2db653300885ab0803996191f"
                     ],
                     "data_type": "string",
                     "column_name": "ID",
@@ -3816,33 +3987,38 @@
                     "data_type": "numeric"
                 }
             ],
-            "identifier": "get_variables",
-            "type": "generic"
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "custom",
+                "title": "Get Ticket Variables",
+                "view": "servicenow_view.display_view"
+            },
+            "versions": "EQ(*)"
         },
         {
-            "read_only": false,
+            "action": "run query",
             "description": "Gets object data according to the specified query",
+            "type": "generic",
+            "identifier": "run_query",
+            "verbose": "",
+            "read_only": false,
             "parameters": {
                 "query": {
                     "required": true,
                     "description": "The query to search for e.g. sysparm_query=short_descriptionLIKEaudit",
                     "data_type": "string",
-                    "primary": true,
+                    "primary": false,
                     "order": 1
                 },
                 "query_table": {
                     "required": true,
                     "description": "Name of the table to be searched task",
                     "data_type": "string",
-                    "primary": true,
+                    "primary": false,
                     "order": 0
                 }
             },
-            "versions": "EQ(*)",
-            "render": {
-                "type": "table"
-            },
-            "action": "run query",
             "output": [
                 {
                     "data_path": "action_result.status",
@@ -3884,6 +4060,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.admin_password",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.admin_user",
                     "example_values": [
                         ""
                     ],
@@ -4103,7 +4293,9 @@
                         "",
                         "2018-02-08 23:10:06"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Closed On",
+                    "column_order": 7
                 },
                 {
                     "data_path": "action_result.data.*.closed_by",
@@ -4131,6 +4323,13 @@
                     "example_values": [
                         "681ccaf9c0a8016400b98a06818d57c7",
                         "9ee1b13dc6112271007f9d0efdb69cd0"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cluster_node",
+                    "example_values": [
+                        ""
                     ],
                     "data_type": "string"
                 },
@@ -4228,6 +4427,48 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.database_name",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.database_password",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.database_tablespace",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.database_type",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.database_url",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.database_user",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.delivery_plan",
                     "example_values": [
                         ""
@@ -4247,7 +4488,9 @@
                         "I can access my personal folder but can't access my team's folder on our file share.",
                         "User can't access email on mail.company.com.\n\t\t"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "colunm_order": 2,
+                    "column_name": "Description"
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
@@ -4308,6 +4551,27 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.instance_id",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.instance_name",
+                    "example_values": [
+                        "Source Instance"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.instance_url",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.knowledge",
                     "example_values": [
                         "false"
@@ -4362,7 +4626,9 @@
                         "INC0000059",
                         "INC0000001"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Number",
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.opened_at",
@@ -4370,7 +4636,9 @@
                         "2016-08-10 16:14:29",
                         "2018-02-07 23:09:51"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Opened On",
+                    "column_order": 6
                 },
                 {
                     "contains": [
@@ -4416,12 +4684,35 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.data.*.parent_incident.link",
+                    "example_values": [
+                        "https://dev86300.service-now.com/api/now/table/incident/f12ca184735123002720060c4cf6a7ef"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.parent_incident.value",
+                    "example_values": [
+                        "f12ca184735123002720060c4cf6a7ef"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.primary",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
                         "3",
                         "1"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Priority",
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
@@ -4447,6 +4738,13 @@
                     "data_path": "action_result.data.*.problem_id.value",
                     "example_values": [
                         "9d3a266ac6112287004e37fb2ceb0133"
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.production",
+                    "example_values": [
+                        "true"
                     ],
                     "data_type": "string"
                 },
@@ -4550,7 +4848,9 @@
                         "3",
                         "1"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Severity",
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.short_description",
@@ -4558,12 +4858,21 @@
                         "Unable to access team file share",
                         "phapp_servicenow_update, Run file reputation actions only"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Short Description",
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
                     "example_values": [
                         ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.source",
+                    "example_values": [
+                        "true"
                     ],
                     "data_type": "string"
                 },
@@ -4642,7 +4951,9 @@
                         "85071a1347c12200e0ef563dbb9a71c1",
                         "9c573169c611228700193229fff72400"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "ID",
+                    "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.sys_mod_count",
@@ -4707,6 +5018,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.validation_error",
+                    "example_values": [
+                        ""
+                    ],
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.war_version",
                     "example_values": [
                         ""
                     ],
@@ -4779,13 +5104,20 @@
                     "data_type": "numeric"
                 }
             ],
-            "identifier": "run_query",
-            "type": "generic",
-            "verbose": ""
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "Run Query"
+            },
+            "versions": "EQ(*)"
         },
         {
-            "read_only": true,
+            "action": "on poll",
             "description": "Ingest tickets from SNOW",
+            "type": "ingest",
+            "identifier": "on_poll",
+            "read_only": true,
             "parameters": {
                 "container_count": {
                     "default": 1,
@@ -4810,11 +5142,8 @@
                     "data_type": "numeric"
                 }
             },
-            "versions": "EQ(*)",
-            "action": "on poll",
             "output": [],
-            "identifier": "on_poll",
-            "type": "ingest"
+            "versions": "EQ(*)"
         }
     ]
 }

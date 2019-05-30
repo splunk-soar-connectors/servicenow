@@ -709,6 +709,7 @@ class ServicenowConnector(BaseConnector):
     def _get_variables(self, param):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
+        sys_id = param[SERVICENOW_JSON_SYS_ID]
 
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
@@ -717,60 +718,76 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         endpoint = '/table/{0}'.format(SERVICENOW_ITEM_OPT_MTOM_TABLE)
-        request_params = {'request_item': param[SERVICENOW_JSON_TICKET_ID]}
+        request_params = {'request_item': sys_id}
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
-            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
 
         if (phantom.is_fail(ret_val)):
-            self.debug_print(action_result.get_message())
-            self.set_status(phantom.APP_ERROR, action_result.get_message())
-            return phantom.APP_ERROR
+            return action_result.get_status()
 
-        variables = {}
+        if not response.get('result'):
+            return action_result.set_status(phantom.APP_ERROR, 'No data found for the requested item having System ID: {0}'.format(sys_id))
 
+        variables = dict()
         for item in response['result']:
-            item_option_id = item['sc_item_option']['value']
+            sc_item_option = item.get('sc_item_option')
+            if not sc_item_option or not item['sc_item_option'].get('value'):
+                return action_result.set_status(phantom.APP_ERROR, 'Error occurred while fetching variable info for the System ID: {0}'.format(sys_id))
 
-            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_TABLE, item_option_id)
+            item_option_value = item['sc_item_option']['value']
 
+            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_TABLE, item_option_value)
             ret_val, auth, headers = self._get_authorization_credentials(action_result)
             if (phantom.is_fail(ret_val)):
-                return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
-
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers,)
-
-            if (phantom.is_fail(ret_val)):
-                self.debug_print(action_result.get_message())
-                self.set_status(phantom.APP_ERROR, action_result.get_message())
-                return phantom.APP_ERROR
-
-            if not response.get('result', {}).get('value'):
-                return self.set_status_save_progress(phantom.APP_ERROR, "Unable to find Option Item")
-            response_value = response['result']['value']
-            if not response.get('result', {}).get('item_option_new', {}).get('value'):
-                return self.set_status_save_progress(phantom.APP_ERROR, "")
-            question_id = response['result']['item_option_new']['value']
-
-            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
-
-            ret_val, auth, headers = self._get_authorization_credentials(action_result)
-            if (phantom.is_fail(ret_val)):
-                return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+                return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
             if (phantom.is_fail(ret_val)):
-                self.debug_print(action_result.get_message())
-                self.set_status(phantom.APP_ERROR, action_result.get_message())
-                return phantom.APP_ERROR
+                return action_result.get_status()
+
+            # If no result found or no key for value found, throw error
+            if not response.get('result') or response['result'].get('value') is None:
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_VALUE.format(item_opt_value=item_option_value, sys_id=sys_id))
+
+            response_value = response['result']['value']
+
+            # If no result found or no key for item_option_new found or no key found for value inside item_option_new dictionary, throw error
+            if not response.get('result') or response['result'].get('item_option_new') is None or \
+                    (isinstance(response['result']['item_option_new'], dict) and not response['result']['item_option_new'].get('value')):
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_QUESTION_ID.format(item_opt_value=item_option_value, sys_id=sys_id))
+
+            # The dictionary for item_option_new can be empty if no question is available for a given variable which is a valid scenario
+            if not response['result']['item_option_new']:
+                response_question = ""
+                variables[response_question] = response_value
+                continue
+            question_id = response['result']['item_option_new']['value']
+
+            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
+            ret_val, auth, headers = self._get_authorization_credentials(action_result)
+            if (phantom.is_fail(ret_val)):
+                return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
+
+            # If no result found or no key for question_text found, throw error
+            if not response.get('result') or response['result'].get('question_text') is None:
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_QUESTION.format(question_id=question_id, item_opt_value=item_option_value, sys_id=sys_id))
 
             response_question = response['result']['question_text']
 
             variables[response_question] = response_value
+
+        summary = action_result.update_summary({})
+        summary['num_variables'] = len(variables)
 
         action_result.add_data(variables)
 
