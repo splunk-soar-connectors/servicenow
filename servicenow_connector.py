@@ -312,7 +312,7 @@ class ServicenowConnector(BaseConnector):
         try:
             params['refresh_token'] = self._state['oauth_token']['refresh_token']
             params['grant_type'] = "refresh_token"
-        except KeyError as e:
+        except KeyError:
             config = self.get_config()
 
             if config.get(SERVICENOW_JSON_USERNAME) and config.get(SERVICENOW_JSON_PASSWORD):
