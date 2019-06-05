@@ -1,14 +1,8 @@
-# --
 # File: servicenow_connector.py
+# Copyright (c) 2016-2019 Splunk Inc.
 #
-# Copyright (c) Phantom Cyber Corporation, 2014-2018
-#
-# This unpublished material is proprietary to Phantom Cyber.
-# All rights reserved. The methods and
-# techniques described herein are considered trade secrets
-# and/or confidential. Reproduction or distribution, in whole
-# or in part, is forbidden except by express written permission
-# of Phantom Cyber Corporation.
+# SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+# without a valid written license from Splunk Inc. is PROHIBITED.
 #
 # --
 
@@ -24,8 +18,10 @@ from servicenow_consts import *
 import json
 import magic
 import requests
+import time
 from bs4 import BeautifulSoup
 from datetime import datetime
+import re
 
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -47,6 +43,9 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_CREATE_TICKET = "create_ticket"
     ACTION_ID_GET_TICKET = "get_ticket"
     ACTION_ID_UPDATE_TICKET = "update_ticket"
+    ACTION_ID_GET_VARIABLES = "get_variables"
+    ACTION_ID_ON_POLL = "on_poll"
+    ACTION_ID_RUN_QUERY = "run_query"
 
     def __init__(self):
 
@@ -315,9 +314,13 @@ class ServicenowConnector(BaseConnector):
             params['grant_type'] = "refresh_token"
         except KeyError:
             config = self.get_config()
-            params['username'] = config[SERVICENOW_JSON_USERNAME]
-            params['password'] = config[SERVICENOW_JSON_PASSWORD]
-            params['grant_type'] = "password"
+
+            if config.get(SERVICENOW_JSON_USERNAME) and config.get(SERVICENOW_JSON_PASSWORD):
+                params['username'] = config[SERVICENOW_JSON_USERNAME]
+                params['password'] = config[SERVICENOW_JSON_PASSWORD]
+                params['grant_type'] = "password"
+            else:
+                return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME), None)
 
         ret_val, response_json = self._make_rest_call_oauth(action_result, data=params)
 
@@ -369,14 +372,18 @@ class ServicenowConnector(BaseConnector):
             ret_val = phantom.APP_SUCCESS
             self.save_progress("Connecting with HTTP Basic Auth")
             config = self.get_config()
-            auth = requests.auth.HTTPBasicAuth(config[SERVICENOW_JSON_USERNAME], config[SERVICENOW_JSON_PASSWORD])
+            if config.get(SERVICENOW_JSON_USERNAME) and config.get(SERVICENOW_JSON_PASSWORD):
+                auth = requests.auth.HTTPBasicAuth(config[SERVICENOW_JSON_USERNAME], config[SERVICENOW_JSON_PASSWORD])
+            else:
+                action_result.set_status(phantom.APP_ERROR, 'Unable to get authorization credentials')
+                return action_result.get_status(), None, {}
             headers = {}
 
         return ret_val, auth, headers
 
     def _test_connectivity(self, param):
 
-        action_result = ActionResult()
+        action_result = self.add_action_result(ActionResult(dict(param)))
 
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
@@ -386,7 +393,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
-            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.get_status()
 
         endpoint = '/table/incident'
         request_params = {'sysparm_limit': '1'}
@@ -413,15 +420,15 @@ class ServicenowConnector(BaseConnector):
 
         # fields is an optional field
         if (not fields):
-            return (phantom.APP_SUCCESS, None)
+            return RetVal(phantom.APP_SUCCESS, None)
 
         # we take in as a dictionary string, first try to load it as is
         try:
             fields = json.loads(fields)
         except Exception as e:
-            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE, e), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE, e), None)
 
-        return (phantom.APP_SUCCESS, fields)
+        return RetVal(phantom.APP_SUCCESS, fields)
 
     def _create_ticket(self, param):
 
@@ -478,7 +485,10 @@ class ServicenowConnector(BaseConnector):
         if (vault_id):
             self.save_progress("Attaching file to the ticket")
 
-            vault_process, response = self._add_attachment(action_result, table, created_ticket_id, vault_id)
+            try:
+                vault_process, response = self._add_attachment(action_result, table, created_ticket_id, vault_id)
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", e)
             if (phantom.is_success(vault_process)):
                 action_result.update_summary({'attachment_added': True, 'attachment_id': response['result']['sys_id']})
             else:
@@ -578,8 +588,11 @@ class ServicenowConnector(BaseConnector):
         if (vault_id):
             self.save_progress("Attaching file to the ticket")
 
-            ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
-            action_result.update_summary({'attachment_added': ret_val})
+            try:
+                ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
+                action_result.update_summary({'attachment_added': ret_val})
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", e)
 
             if (phantom.is_success(ret_val)):
                 action_result.update_summary({'attachment_id': response['result']['sys_id']})
@@ -668,7 +681,10 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         endpoint = '/table/{0}'.format(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
-        request_params = {'sysparm_limit': param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)}
+        request_params = {
+            'sysparm_query': param.get(SERVICENOW_JSON_FILTER, ""),
+            'sysparm_limit': param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)
+        }
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
@@ -687,6 +703,294 @@ class ServicenowConnector(BaseConnector):
 
         for ticket in tickets:
             action_result.add_data(ticket)
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _get_variables(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        sys_id = param[SERVICENOW_JSON_SYS_ID]
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        endpoint = '/table/{0}'.format(SERVICENOW_ITEM_OPT_MTOM_TABLE)
+        request_params = {'request_item': sys_id}
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        if not response.get('result'):
+            return action_result.set_status(phantom.APP_ERROR, 'No data found for the requested item having System ID: {0}'.format(sys_id))
+
+        variables = dict()
+        for item in response['result']:
+            sc_item_option = item.get('sc_item_option')
+            if not sc_item_option or not item['sc_item_option'].get('value'):
+                return action_result.set_status(phantom.APP_ERROR, 'Error occurred while fetching variable info for the System ID: {0}'.format(sys_id))
+
+            item_option_value = item['sc_item_option']['value']
+
+            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_TABLE, item_option_value)
+            ret_val, auth, headers = self._get_authorization_credentials(action_result)
+            if (phantom.is_fail(ret_val)):
+                return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
+
+            # If no result found or no key for value found, throw error
+            if not response.get('result') or response['result'].get('value') is None:
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_VALUE.format(item_opt_value=item_option_value, sys_id=sys_id))
+
+            response_value = response['result']['value']
+
+            # If no result found or no key for item_option_new found or no key found for value inside item_option_new dictionary, throw error
+            if not response.get('result') or response['result'].get('item_option_new') is None or \
+                    (isinstance(response['result']['item_option_new'], dict) and not response['result']['item_option_new'].get('value')):
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_QUESTION_ID.format(item_opt_value=item_option_value, sys_id=sys_id))
+
+            # The dictionary for item_option_new can be empty if no question is available for a given variable which is a valid scenario
+            if not response['result']['item_option_new']:
+                response_question = ""
+                variables[response_question] = response_value
+                continue
+            question_id = response['result']['item_option_new']['value']
+
+            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
+            ret_val, auth, headers = self._get_authorization_credentials(action_result)
+            if (phantom.is_fail(ret_val)):
+                return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
+
+            # If no result found or no key for question_text found, throw error
+            if not response.get('result') or response['result'].get('question_text') is None:
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_QUESTION.format(question_id=question_id, item_opt_value=item_option_value, sys_id=sys_id))
+
+            response_question = response['result']['question_text']
+
+            variables[response_question] = response_value
+
+        summary = action_result.update_summary({})
+        summary['num_variables'] = len(variables)
+
+        action_result.add_data(variables)
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _run_query(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_BASE_QUERY_URI, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        # action_result = self.add_action_result(ActionResult(dict(param)))
+        lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
+        query = param[SERVICENOW_JSON_QUERY]
+        endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        tickets = response['result']
+
+        action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: len(tickets)})
+
+        for ticket in tickets:
+            action_result.add_data(ticket)
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _on_poll(self, param):
+
+        URI_REGEX = '[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+        HASH_REGEX = '\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b'
+        IP_REGEX = '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'
+        IPV6_REGEX = '\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))'
+        IPV6_REGEX += '|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+            '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+    '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+    '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+    '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
+        IPV6_REGEX += '(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*'
+        uri_regexc = re.compile(URI_REGEX)
+        hash_regexc = re.compile(HASH_REGEX)
+        ip_regexc = re.compile(IP_REGEX)
+        ipv6_regexc = re.compile(IPV6_REGEX)
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        state = self.load_state()
+
+        # Get config
+        config = self.get_config()
+
+        # Add action result
+        action_result = self.add_action_result(phantom.ActionResult(param))
+
+        # Get time from last poll, save now as time for this poll
+        last_time = state.get('last_time', 0)
+        state['last_time'] = time.time()
+
+        # Build the query for the issue search (sysparm_query)
+        query = "ORDERBYsys_created_on"
+
+        action_query = config.get(SERVICENOW_JSON_ON_POLL_FILTER, "")
+
+        if (len(action_query) > 0):
+            query += '^' + action_query
+
+        # If it's a poll now don't filter based on update time
+        if self.is_poll_now():
+            max_tickets = param.get(phantom.APP_JSON_CONTAINER_COUNT)
+        # If it's the first poll, don't filter based on update time
+        elif (state.get('first_run', True)):
+            state['first_run'] = False
+            max_tickets = ON_POLL_MAX_RESULTS
+        # If it's scheduled polling add a filter for update time being greater than the last poll time
+        else:
+            last_time_dt = datetime.fromtimestamp(last_time)
+            d = last_time_dt.strftime("%Y-%m-%d")
+            t = last_time_dt.strftime("%H:%M:%S")
+            query += "^sys_created_on>javascript:gs.dateGenerate('{}','{}}')".format(d, t)
+            max_tickets = DEFAULT_MAX_RESULTS
+
+        # Query for issues
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        endpoint = '/table/' + config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
+        params = {
+            'sysparm_query': query,
+            'sysparm_display_value': 'true',
+            'sysparm_exclude_reference_link': 'true',
+            'sysparm_limit': max_tickets}
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+        if (phantom.is_fail(ret_val)):
+            self.debug_print(action_result.get_message())
+            self.set_status(phantom.APP_ERROR, action_result.get_message())
+            return phantom.APP_ERROR
+
+        issues = response.get('result')
+
+        if not issues:
+            return action_result.set_status(phantom.APP_ERROR, 'No issues found')
+
+        # TODO: handle cases where we go over the ingestions limit
+
+        # Ingest the issues
+        failed = 0
+        label = self.get_config().get('ingest', {}).get('container_label')
+        for issue in issues:
+            d = issue.get('description')
+            sd = issue.get('short_description')
+            container = dict(
+                data=issue,
+                description=d.encode('utf-8'),
+                label=label,
+                name='{}'.format(sd.encode('utf-8')),
+                source_data_identifier=issue['sys_id']
+            )
+
+            ret_val, _, container_id = self.save_container(container)
+
+            if phantom.is_fail(ret_val):
+                failed += 1
+                continue
+            artifacts = []
+            artifact_dict = dict(
+                container_id=container_id,
+                data=issue,
+                description=sd.encode('utf-8'),
+                cef=issue,
+                label='issue',
+                name=issue['number'],
+                source_data_identifier=issue['sys_id']
+            )
+            artifacts.append(artifact_dict)
+            extract_ips = config.get(SERVICENOW_JSON_EXTRACT_IPS)
+            extract_hashes = config.get(SERVICENOW_JSON_EXTRACT_HASHES)
+            extract_url = config.get(SERVICENOW_JSON_EXTRACT_URLS)
+            if extract_ips:
+                for match in ip_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['ip_address'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'IP Address',
+                       'cef': cef}
+                    artifacts.append(art)
+
+                for match in ipv6_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['ipv6_address'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'IPV6 Address',
+                       'cef': cef}
+                    artifacts.append(art)
+
+            if extract_hashes:
+                for match in hash_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['hash'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'Hash',
+                       'cef': cef}
+                    artifacts.append(art)
+
+            if extract_url:
+                for match in uri_regexc.finditer(str(issue)):
+                    cef = {}
+                    cef['URL'] = match.group()
+                    art = {'container_id': container_id,
+                       'label': 'URL',
+                       'cef': cef}
+                    artifacts.append(art)
+            self.save_artifacts(artifacts)
+
+        action_result.set_status(phantom.APP_SUCCESS, 'Containers created')
+
+        self.save_state(state)
+
+        if (failed):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FAILURES)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -712,8 +1016,14 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._get_ticket(param)
         elif (action == self.ACTION_ID_UPDATE_TICKET):
             ret_val = self._update_ticket(param)
+        elif (action == self.ACTION_ID_GET_VARIABLES):
+            ret_val = self._get_variables(param)
+        elif (action == self.ACTION_ID_ON_POLL):
+            ret_val = self._on_poll(param)
         elif (action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY):
             ret_val = self._test_connectivity(param)
+        elif (action == self.ACTION_ID_RUN_QUERY):
+            ret_val = self._run_query(param)
         return ret_val
 
 
