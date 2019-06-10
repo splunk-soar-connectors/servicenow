@@ -887,7 +887,7 @@ class ServicenowConnector(BaseConnector):
             last_time_dt = datetime.fromtimestamp(last_time)
             d = last_time_dt.strftime("%Y-%m-%d")
             t = last_time_dt.strftime("%H:%M:%S")
-            query += "^sys_created_on>javascript:gs.dateGenerate('{}','{}}')".format(d, t)
+            query += "^sys_created_on>javascript:gs.dateGenerate('{}','{}')".format(d, t)
             max_tickets = DEFAULT_MAX_RESULTS
 
         # Query for issues
