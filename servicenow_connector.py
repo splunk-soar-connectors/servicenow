@@ -326,7 +326,13 @@ class ServicenowConnector(BaseConnector):
 
         if (phantom.is_fail(ret_val) and params['grant_type'] == 'refresh_token'):
             self.debug_print("Unable to generate new key with refresh token")
-            self._state = {}
+            if 'first_run' in self._state:
+                if 'last_time' in self._state:
+                    self._state = {'first_run': self._state.get('first_run'), 'last_time': self._state.get('last_time')}
+                else:
+                    self._state = {'first_run': self._state.get('first_run')}
+            else:
+                self._state = {}
             # Try again, using a password
             return self._get_new_oauth_token(action_result)
 
@@ -338,7 +344,13 @@ class ServicenowConnector(BaseConnector):
         try:
             return RetVal(phantom.APP_SUCCESS, response_json['access_token'])
         except Exception as e:
-            self._state = {}
+            if 'first_run' in self._state:
+                if 'last_time' in self._state:
+                    self._state = {'first_run': self._state.get('first_run'), 'last_time': self._state.get('last_time')}
+                else:
+                    self._state = {'first_run': self._state.get('first_run')}
+            else:
+                self._state = {}
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse access token", e), None)
 
     def _get_oauth_token(self, action_result, force_new=False):
@@ -855,8 +867,6 @@ class ServicenowConnector(BaseConnector):
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
-        state = self.load_state()
-
         # Get config
         config = self.get_config()
 
@@ -864,8 +874,8 @@ class ServicenowConnector(BaseConnector):
         action_result = self.add_action_result(phantom.ActionResult(param))
 
         # Get time from last poll, save now as time for this poll
-        last_time = state.get('last_time', 0)
-        state['last_time'] = time.time()
+        last_time = self._state.get('last_time', 0)
+        self._state['last_time'] = time.time()
 
         # Build the query for the issue search (sysparm_query)
         query = "ORDERBYsys_created_on"
@@ -879,15 +889,15 @@ class ServicenowConnector(BaseConnector):
         if self.is_poll_now():
             max_tickets = param.get(phantom.APP_JSON_CONTAINER_COUNT)
         # If it's the first poll, don't filter based on update time
-        elif (state.get('first_run', True)):
-            state['first_run'] = False
+        elif (self._state.get('first_run', True)):
+            self._state['first_run'] = False
             max_tickets = ON_POLL_MAX_RESULTS
         # If it's scheduled polling add a filter for update time being greater than the last poll time
         else:
             last_time_dt = datetime.fromtimestamp(last_time)
             d = last_time_dt.strftime("%Y-%m-%d")
             t = last_time_dt.strftime("%H:%M:%S")
-            query += "^sys_created_on>javascript:gs.dateGenerate('{}','{}}')".format(d, t)
+            query += "^sys_created_on>{} {}".format(d, t)
             max_tickets = DEFAULT_MAX_RESULTS
 
         # Query for issues
@@ -987,10 +997,10 @@ class ServicenowConnector(BaseConnector):
 
         action_result.set_status(phantom.APP_SUCCESS, 'Containers created')
 
-        self.save_state(state)
-
         if (failed):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FAILURES)
+
+        self.save_state(self._state)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
