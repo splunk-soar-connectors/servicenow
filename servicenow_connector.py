@@ -204,8 +204,6 @@ class ServicenowConnector(BaseConnector):
 
     def _upload_file(self, action_result, endpoint, headers={}, params=None, data=None, auth=None):
 
-        config = self.get_config()
-
         # Create the headers
         headers.update(self._headers)
 
@@ -216,7 +214,6 @@ class ServicenowConnector(BaseConnector):
                     auth=auth,
                     data=data,
                     headers=headers,
-                    verify=config[phantom.APP_JSON_VERIFY],
                     params=params)
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
@@ -227,13 +224,11 @@ class ServicenowConnector(BaseConnector):
         """ The API for retrieving the OAuth token is different enough to where its just easier to make a new function
         """
         resp_json = None
-        config = self.get_config()
 
         try:
             r = requests.post(
                     self._base_url + '/oauth_token.do',
-                    data=data,  # Mostly this line
-                    verify=config[phantom.APP_JSON_VERIFY]
+                    data=data  # Mostly this line
             )
         except Exception as e:
             return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
@@ -241,8 +236,6 @@ class ServicenowConnector(BaseConnector):
         return self._process_response(r, action_result)
 
     def _make_rest_call(self, action_result, endpoint, headers={}, params=None, data=None, auth=None, method="get"):
-
-        config = self.get_config()
 
         # Create the headers
         headers.update(self._headers)
@@ -262,7 +255,6 @@ class ServicenowConnector(BaseConnector):
                     auth=auth,
                     json=data,
                     headers=headers,
-                    verify=config[phantom.APP_JSON_VERIFY],
                     params=params)
         except Exception as e:
             return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)

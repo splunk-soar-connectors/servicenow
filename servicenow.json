@@ -18,7 +18,7 @@
     "configuration": {
         "username": {
             "required": false,
-            "order": 2,
+            "order": 1,
             "data_type": "string",
             "description": "Username"
         },
@@ -30,38 +30,31 @@
         },
         "on_poll_table": {
             "required": false,
-            "order": 6,
+            "order": 5,
             "data_type": "string",
             "description": "Table to ingest issues from"
         },
-        "verify_server_cert": {
-            "default": true,
-            "required": false,
-            "description": "Verify server certificate",
-            "data_type": "boolean",
-            "order": 1
-        },
         "on_poll_filter": {
             "required": false,
-            "order": 7,
+            "order": 6,
             "data_type": "string",
             "description": "Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=john.smith)"
         },
         "client_id": {
             "required": false,
-            "order": 4,
+            "order": 3,
             "data_type": "string",
             "description": "Client ID. OAuth will be preferred if provided"
         },
         "client_secret": {
             "required": false,
-            "order": 5,
+            "order": 4,
             "data_type": "password",
             "description": "Client Secret. Required with Client ID"
         },
         "password": {
             "required": false,
-            "order": 3,
+            "order": 2,
             "data_type": "password",
             "description": "Password"
         }
