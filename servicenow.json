@@ -10,7 +10,7 @@
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
     "app_version": "1.2.48",
-    "min_phantom_version": "4.0.1068",
+    "min_phantom_version": "4.2.7532",
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",
@@ -18,7 +18,7 @@
     "configuration": {
         "username": {
             "required": false,
-            "order": 2,
+            "order": 1,
             "data_type": "string",
             "description": "Username"
         },
@@ -30,38 +30,31 @@
         },
         "on_poll_table": {
             "required": false,
-            "order": 6,
+            "order": 5,
             "data_type": "string",
             "description": "Table to ingest issues from"
         },
-        "verify_server_cert": {
-            "default": true,
-            "required": false,
-            "description": "Verify server certificate",
-            "data_type": "boolean",
-            "order": 1
-        },
         "on_poll_filter": {
             "required": false,
-            "order": 7,
+            "order": 6,
             "data_type": "string",
             "description": "Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=john.smith)"
         },
         "client_id": {
             "required": false,
-            "order": 4,
+            "order": 3,
             "data_type": "string",
             "description": "Client ID. OAuth will be preferred if provided"
         },
         "client_secret": {
             "required": false,
-            "order": 5,
+            "order": 4,
             "data_type": "password",
             "description": "Client Secret. Required with Client ID"
         },
         "password": {
             "required": false,
-            "order": 3,
+            "order": 2,
             "data_type": "password",
             "description": "Password"
         }
@@ -80,9 +73,9 @@
         {
             "action": "list tickets",
             "description": "Get a list of tickets/records",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "list_tickets",
-            "verbose": "Steps for getting required the filter query are as follows: In the ServiceNow instance, navigate to the required table's page. Create the query in the ServiceNow UI. On the top-left corner of the page, right click on the query string and select the 'Copy query' option to copy the required query string. This query string can be further used or modified as per the user's need to provide in the filter parameter in the action. If <b>table</b> value is not specified, the action defaults to <b>incident</b>. If the <b>max_results</b> value is not specified, the action defaults to <b>100</b>. For specifying and getting the filter work correctly for the date-time fields, follow the next steps. If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:MM:SS'). If the user provides date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:MM:SS",
+            "verbose": "Steps for getting the required filter query are as follows: In the ServiceNow instance, navigate to the required table's page. Create the query in the ServiceNow UI. On the top-left corner of the page, right-click on the query string and select the 'Copy query' option to copy the required query string. This query string can be further used or modified as per the user's need to provide in the filter parameter of the action. If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>. If the <b>max_results</b> value is not specified, the action defaults to <b>100</b>. For specifying and getting the filter to work correctly, below is the criteria for the date-time fields: <ul><li>If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:mm:SS'). </li> <li>If the user provides date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:mm:SS</li></ul>",
             "read_only": true,
             "parameters": {
                 "filter": {
@@ -112,7 +105,8 @@
                 {
                     "data_path": "action_result.status",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ],
                     "data_type": "string"
                 },
@@ -1055,7 +1049,7 @@
             "description": "Create a new ticket/record",
             "type": "generic",
             "identifier": "create_ticket",
-            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than <i>incident</i> to create the ticket in. Do note that the fields for user generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
             "read_only": false,
             "parameters": {
                 "short_description": {
@@ -1065,6 +1059,7 @@
                 },
                 "table": {
                     "default": "incident",
+                    "primary": true,
                     "contains": [
                         "servicenow table"
                     ],
@@ -1074,6 +1069,7 @@
                 },
                 "vault_id": {
                     "order": 4,
+                    "primary": true,
                     "contains": [
                         "vault id"
                     ],
@@ -1096,7 +1092,8 @@
                 {
                     "data_path": "action_result.status",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ],
                     "data_type": "string"
                 },
@@ -1457,7 +1454,7 @@
                     "column_order": 1,
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "Investigative actions to check for the presence of phapp_servicenow\n\nAdded by Phantom for container id: 495"
+                        "Investigative actions to check for the presence of phapp_servicenow\n\nAdded by Splunk for container id: 495"
                     ],
                     "data_type": "string",
                     "column_name": "Description"
@@ -1927,13 +1924,14 @@
         {
             "action": "get ticket",
             "description": "Get ticket/record information",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "get_ticket",
-            "verbose": "If <b>table</b> value is not specified, the action defaults to <b>incident</b>.",
+            "verbose": "If <b>table</b> value is not specified, the action defaults to the <b>incident</b>",
             "read_only": true,
             "parameters": {
                 "table": {
                     "default": "incident",
+                    "primary": true,
                     "contains": [
                         "servicenow table"
                     ],
@@ -1957,7 +1955,8 @@
                 {
                     "data_path": "action_result.status",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ],
                     "data_type": "string"
                 },
@@ -2911,11 +2910,12 @@
             "description": "Update ticket/record information",
             "type": "generic",
             "identifier": "update_ticket",
-            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
             "read_only": false,
             "parameters": {
                 "table": {
                     "default": "incident",
+                    "primary": true,
                     "contains": [
                         "servicenow table"
                     ],
@@ -2925,6 +2925,7 @@
                 },
                 "vault_id": {
                     "order": 3,
+                    "primary": true,
                     "contains": [
                         "vault id"
                     ],
@@ -2954,7 +2955,8 @@
                 {
                     "data_path": "action_result.status",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ],
                     "data_type": "string"
                 },
@@ -3926,7 +3928,7 @@
             "action": "get variables",
             "description": "Get variables for a ticket/record",
             "verbose": "The System ID for this action can be obtained by following below steps. Navigate to ServiceNow platform and enter sc_item_option_mtom.LIST in the search panel in the left navigation pane. This opens the list of variables in a new tab. Click on the Parent Item and it will open the Requested Item page. Click on the Options menu available in the top-left corner of the page and select 'Copy sys_id' option to copy the required System ID.",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "get_variables",
             "read_only": true,
             "parameters": {
@@ -3934,7 +3936,6 @@
                     "description": "Request Item System ID",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "order": 0
                 }
             },
@@ -3942,7 +3943,8 @@
                 {
                     "data_path": "action_result.status",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ],
                     "data_type": "string",
                     "column_name": "Status",
@@ -4001,21 +4003,18 @@
             "description": "Gets object data according to the specified query",
             "type": "generic",
             "identifier": "run_query",
-            "verbose": "",
             "read_only": false,
             "parameters": {
                 "query": {
                     "required": true,
                     "description": "The query to search for e.g. sysparm_query=short_descriptionLIKEaudit",
                     "data_type": "string",
-                    "primary": false,
                     "order": 1
                 },
                 "query_table": {
                     "required": true,
                     "description": "Name of the table to be searched task",
                     "data_type": "string",
-                    "primary": false,
                     "order": 0
                 }
             },
@@ -4485,11 +4484,10 @@
                 {
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "I can access my personal folder but can't access my team's folder on our file share.",
-                        "User can't access email on mail.company.com.\n\t\t"
+                        "I can access my personal folder but can't access my team's folder on our file share"
                     ],
                     "data_type": "string",
-                    "colunm_order": 2,
+                    "column_order": 2,
                     "column_name": "Description"
                 },
                 {
