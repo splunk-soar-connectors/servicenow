@@ -39,3 +39,6 @@ def display_view(provides, all_app_runs, context):
 
     if provides == 'get variables':
         return 'servicenow_get_variables.html'
+
+    if provides == 'list services':
+        return 'servicenow_list_services.html'

@@ -40,6 +40,8 @@ class ServicenowConnector(BaseConnector):
 
     # actions supported by this script
     ACTION_ID_LIST_TICKETS = "list_tickets"
+    ACTION_ID_LIST_SERVICES = "list_services"
+    ACTION_ID_LIST_SERVICE_CATALOGS = "list_service_catalogs"
     ACTION_ID_CREATE_TICKET = "create_ticket"
     ACTION_ID_GET_TICKET = "get_ticket"
     ACTION_ID_UPDATE_TICKET = "update_ticket"
@@ -65,6 +67,7 @@ class ServicenowConnector(BaseConnector):
 
         self._state = self.load_state()
         config = self.get_config()
+        sn_sc_actions = ["list_services"]
 
         # Base URL
         self._base_url = config[SERVICENOW_JSON_DEVICE_URL]
@@ -75,6 +78,9 @@ class ServicenowConnector(BaseConnector):
         self._headers = {'Accept': 'application/json'}
         # self._headers.update({'X-no-response-body': 'true'})
         self._api_uri = '/api/now'
+        if self.get_action_identifier() in sn_sc_actions:
+            self._api_uri = '/api/sn_sc'
+
         self._client_id = config.get(SERVICENOW_JSON_CLIENT_ID, None)
         if (self._client_id):
             try:
@@ -674,6 +680,111 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _paginator(self, endpoint, action_result, payload=None, limit=None):
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            action_result.set_status("Unable to get authorization credentials")
+            return None
+
+        items_list = list()
+        if not payload:
+            payload = dict()
+
+        payload['sysparm_offset'] = SERVICENOW_DEFAULT_OFFSET
+        payload['sysparm_limit'] = SERVICENOW_DEFAULT_LIMIT
+
+        while True:
+            ret_val, items = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=payload)
+
+            if phantom.is_fail(ret_val):
+                return None
+
+            items_list.extend(items.get("result"))
+
+            if limit and len(items_list) >= limit:
+                return items_list[:limit]
+
+            if len(items.get("result")) < SERVICENOW_DEFAULT_LIMIT:
+                break
+
+            payload['sysparm_offset'] = payload['sysparm_offset'] + SERVICENOW_DEFAULT_LIMIT
+
+        return items_list
+
+    def _list_services(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        limit = param.get("max_results")
+
+        if limit == 0 or (limit and (not str(limit).isdigit() or limit <= 0)):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results"))
+
+        payload = dict()
+
+        if param.get("catalog_sys_id"):
+            payload["sysparm_catalog"] = param.get("catalog_sys_id")
+
+        if param.get("category_sys_id"):
+            payload["sysparm_category"] = param.get("category_sys_id")
+
+        if param.get("search_text"):
+            payload["sysparm_text"] = param.get("search_text")
+
+        endpoint = '/servicecatalog/items'
+
+        services = self._paginator(endpoint, action_result, payload=payload, limit=limit)
+
+        if services is None:
+            return action_result.get_status()
+
+        for sc in services:
+            if param.get("catalog_sys_id"):
+                sys_id_list = list()
+                for catalog in sc.get("catalogs", []):
+                    sys_id_list.append(catalog.get("sys_id"))
+
+                if param.get("catalog_sys_id") in sys_id_list:
+                    action_result.add_data(sc)
+            else:
+                action_result.add_data(sc)
+
+        summary = action_result.update_summary({})
+        summary['services_returned'] = action_result.get_data_size()
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _list_service_catalogs(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        limit = param.get("max_results")
+
+        if limit == 0 or (limit and (not str(limit).isdigit() or limit <= 0)):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results"))
+
+        endpoint = '/table/sc_catalog'
+
+        service_catalogs = self._paginator(endpoint, action_result, limit=limit)
+
+        if service_catalogs is None:
+            return action_result.get_status()
+
+        for sc in service_catalogs:
+            action_result.add_data(sc)
+
+        summary = action_result.update_summary({})
+        summary['service_catalogs_returned'] = action_result.get_data_size()
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def _list_tickets(self, param):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -1012,6 +1123,10 @@ class ServicenowConnector(BaseConnector):
 
         if (action == self.ACTION_ID_CREATE_TICKET):
             ret_val = self._create_ticket(param)
+        elif (action == self.ACTION_ID_LIST_SERVICES):
+            ret_val = self._list_services(param)
+        elif (action == self.ACTION_ID_LIST_SERVICE_CATALOGS):
+            ret_val = self._list_service_catalogs(param)
         elif (action == self.ACTION_ID_LIST_TICKETS):
             ret_val = self._list_tickets(param)
         elif (action == self.ACTION_ID_GET_TICKET):

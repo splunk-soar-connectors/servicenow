@@ -54,6 +54,7 @@ SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = 'Provide username and password 
 SERVICENOW_ERR_EMPTY_FIELDS = "The fields dictionary was detected to be empty"
 SERVICENOW_ERR_ONE_PARAM_REQ = "Please specify at least one of the parameters short_description, description, or fields to create the ticket with"
 SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details."
+SERVICENOW_ERR_INVALID_PARAM = "Please provide non-zero positive integer in '{param}'"
 
 SERVICENOW_CREATED_TICKET = "Created ticket"
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"
@@ -72,3 +73,6 @@ SERVICENOW_INGEST_OLDEST_ITEMS = "oldest first"
 SERVICENOW_ITEM_OPT_MTOM_TABLE = "sc_item_option_mtom"
 SERVICENOW_ITEM_OPT_TABLE = "sc_item_option"
 SERVICENOW_ITEM_OPT_NEW_TABLE = "item_option_new"
+
+SERVICENOW_DEFAULT_OFFSET = 0
+SERVICENOW_DEFAULT_LIMIT = 10000

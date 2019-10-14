@@ -71,6 +71,596 @@
             "versions": "EQ(*)"
         },
         {
+            "action": "list services",
+            "description": "Get a list of items",
+            "type": "investigate",
+            "identifier": "list_services",
+            "read_only": true,
+            "parameters": {
+                "catalog_sys_id": {
+                    "data_type": "string",
+                    "order": 0,
+                    "description": "Items of the catalog to be fetched",
+                    "contains": [
+                        "servicenow catalog sys id"
+                    ],
+                    "primary": true
+                },
+                "category_sys_id": {
+                    "data_type": "string",
+                    "order": 1,
+                    "description": "Items of a catergory to be fetched"
+                },
+                "search_text": {
+                    "data_type": "string",
+                    "order": 2,
+                    "description": "Text pattern to search over"
+                },
+                "max_results": {
+                    "default": 100,
+                    "description": "Max number of service catalogs to return",
+                    "data_type": "numeric",
+                    "order": 3
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.category.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e15706fc0a0a0aa7007fc21e1ab70c2f"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.category.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Can We Help You?"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.picture",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_wishlist",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.catalogs.*.active",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.catalogs.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.catalogs.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Service Catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Request Knowledge Base"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.url",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "81c887819f203100d8f8700c267fcfb5"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.visible_standalone",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_price",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_cat_item_producer"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_delivery_time",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.kb_article",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.request_method",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.content_type",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.short_description",
+                    "data_type": "string",
+                    "example_values": [
+                        "Request for a Knowledge Base"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_quantity",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.icon",
+                    "data_type": "string",
+                    "example_values": [
+                        "images/icons/catalog_item.gifx"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "record_producer"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.order",
+                    "data_type": "numeric",
+                    "example_values": [
+                        0
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.mandatory_attachment",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        "<p>Here you can request a new Knowledge Base to be used. A Knowledge Base can be used to store Knowledge in an organization and anyone can request for a new one to be created.</p>"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.recurring_frequency",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.price_currency",
+                    "data_type": "string",
+                    "example_values": [
+                        "USD"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.recurring_price_currency",
+                    "data_type": "string",
+                    "example_values": [
+                        "USD"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.localized_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$5,600.00"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.recurring_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$0.00"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$5,600.00"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.local_currency",
+                    "data_type": "string",
+                    "example_values": [
+                        "USD"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.localized_recurring_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$0.00"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Services returned: 5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.catalog_sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "742ce428d7211100f2d224837e61036d"
+                    ],
+                    "contains": [
+                        "servicenow catalog sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.services_returned",
+                    "data_type": "numeric",
+                    "example_values": [
+                        5
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "custom",
+                "width": 10,
+                "height": 10,
+                "view": "servicenow_view.display_view"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "list service catalogs",
+            "description": "Get a list of catalogs",
+            "type": "investigate",
+            "identifier": "list_service_catalogs",
+            "read_only": true,
+            "parameters": {
+                "max_results": {
+                    "default": 100,
+                    "description": "Max number of service catalogs to return",
+                    "data_type": "numeric",
+                    "order": 0
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.desktop_image",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_policy",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.manager",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.background_color",
+                    "data_type": "string",
+                    "example_values": [
+                        "white"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "test_catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ],
+                    "column_name": "Created By",
+                    "column_order": 3
+                },
+                {
+                    "data_path": "action_result.data.*.editors",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "6ca4222f1b1c00106cc640c6cc4bcbd1"
+                    ],
+                    "contains": [
+                        "servicenow catalog sys id"
+                    ],
+                    "column_name": "SYS ID",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.data.*.desktop_home_page",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_scope.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_scope.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.enable_wish_list",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2019-10-11 06:12:27"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_package.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_package/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_package.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ],
+                    "column_name": "Active",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.data.*.desktop_continue_shopping",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "test_catalog"
+                    ],
+                    "column_name": "Catalog Name",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2019-10-11 06:12:27"
+                    ],
+                    "column_name": "Created On",
+                    "column_order": 4
+                },
+                {
+                    "data_path": "action_result.data.*.sys_update_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_catalog_6ca4222f1b1c00106cc640c6cc4bcbd1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Service catalogs returned: 2"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.max_results",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.service_catalogs_returned",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "table",
+                "title": "List Service Catalogs"
+            },
+            "versions": "EQ(*)"
+        },
+        {
             "action": "list tickets",
             "description": "Get a list of tickets/records",
             "type": "investigate",
