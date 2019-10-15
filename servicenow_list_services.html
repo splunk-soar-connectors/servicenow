@@ -146,7 +146,7 @@
                         <th>SYS ID</th>
                         <th>Category Name</th>
                         <th>Category SYS ID</th>
-                        <th>Catalog Name : Category SYS ID</th>
+                        <th>Catalog Name : Catalog SYS ID</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -172,7 +172,11 @@
                             <td>
                                 {% for catalog in data.catalogs %}
                                     <ul>
-                                        <li> {{ catalog.title }} : {{ catalog.sys_id }} </li>
+                                        <li> {{ catalog.title }} : <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                                                {{ catalog.sys_id }}
+                                                &nbsp;
+                                                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                                            </a> </li>
                                     </ul>
                                 {% endfor %}
                             </td>

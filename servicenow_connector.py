@@ -40,6 +40,9 @@ class ServicenowConnector(BaseConnector):
 
     # actions supported by this script
     ACTION_ID_LIST_TICKETS = "list_tickets"
+    ACTION_ID_ADD_COMMENT = "add_comment"
+    ACTION_ID_ADD_WORK_NOTE = "add_work_note"
+    ACTION_ID_DESCRIBE_CATALOG_ITEM = "describe_catalog_item"
     ACTION_ID_LIST_SERVICES = "list_services"
     ACTION_ID_LIST_SERVICE_CATALOGS = "list_service_catalogs"
     ACTION_ID_CREATE_TICKET = "create_ticket"
@@ -712,6 +715,22 @@ class ServicenowConnector(BaseConnector):
 
         return items_list
 
+    def _describe_catalog_item(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        sys_id = param.get("sys_id")
+
+        endpoint = '/servicecatalog/items/{}'.format(sys_id)
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
     def _list_services(self, param):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -742,6 +761,9 @@ class ServicenowConnector(BaseConnector):
         if services is None:
             return action_result.get_status()
 
+        summary = action_result.update_summary({})
+        summary['total_services'] = len(services)
+
         for sc in services:
             if param.get("catalog_sys_id"):
                 sys_id_list = list()
@@ -753,7 +775,9 @@ class ServicenowConnector(BaseConnector):
             else:
                 action_result.add_data(sc)
 
-        summary = action_result.update_summary({})
+        if not action_result.get_data_size():
+            return action_result.set_status(phantom.APP_ERROR, 'No data found')
+
         summary['services_returned'] = action_result.get_data_size()
 
         return action_result.set_status(phantom.APP_SUCCESS)
@@ -784,6 +808,66 @@ class ServicenowConnector(BaseConnector):
         summary['service_catalogs_returned'] = action_result.get_data_size()
 
         return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _add_work_note(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        table_name = param.get("table_name")
+        sys_id = param.get("sys_id")
+        work_note = param.get("work_note")
+
+        endpoint = "/table/{}/{}".format(table_name, sys_id)
+        data = {"work_notes": work_note}
+
+        request_params = {}
+        request_params["sysparm_display_value"] = True
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        action_result.add_data(response.get("result", {}))
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Added the work note successfully")
+
+    def _add_comment(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        table_name = param.get("table_name")
+        sys_id = param.get("sys_id")
+        comment = param.get("comment")
+
+        endpoint = "/table/{}/{}".format(table_name, sys_id)
+        data = {"comments": comment}
+
+        request_params = {}
+        request_params["sysparm_display_value"] = True
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        action_result.add_data(response.get("result", {}))
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Added the comment successfully")
 
     def _list_tickets(self, param):
 
@@ -1123,6 +1207,12 @@ class ServicenowConnector(BaseConnector):
 
         if (action == self.ACTION_ID_CREATE_TICKET):
             ret_val = self._create_ticket(param)
+        elif (action == self.ACTION_ID_ADD_WORK_NOTE):
+            ret_val = self._add_work_note(param)
+        elif (action == self.ACTION_ID_ADD_COMMENT):
+            ret_val = self._add_comment(param)
+        elif (action == self.ACTION_ID_DESCRIBE_CATALOG_ITEM):
+            ret_val = self._describe_catalog_item(param)
         elif (action == self.ACTION_ID_LIST_SERVICES):
             ret_val = self._list_services(param)
         elif (action == self.ACTION_ID_LIST_SERVICE_CATALOGS):
