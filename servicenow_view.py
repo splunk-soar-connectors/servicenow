@@ -42,3 +42,6 @@ def display_view(provides, all_app_runs, context):
 
     if provides == 'list services':
         return 'servicenow_list_services.html'
+
+    if provides == 'describe catalog item':
+        return 'servicenow_describe_catalog_item.html'

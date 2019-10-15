@@ -70,7 +70,7 @@ class ServicenowConnector(BaseConnector):
 
         self._state = self.load_state()
         config = self.get_config()
-        sn_sc_actions = ["list_services"]
+        sn_sc_actions = ["list_services", "describe_catalog_item"]
 
         # Base URL
         self._base_url = config[SERVICENOW_JSON_DEVICE_URL]
@@ -724,12 +724,20 @@ class ServicenowConnector(BaseConnector):
 
         sys_id = param.get("sys_id")
 
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
         endpoint = '/servicecatalog/items/{}'.format(sys_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
+
+        action_result.add_data(response.get("result", {}))
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Details fetched successfully")
 
     def _list_services(self, param):
 

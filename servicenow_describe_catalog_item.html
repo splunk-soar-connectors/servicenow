@@ -9,7 +9,7 @@
 
 {% block widget_content %} <!-- Main Start Block -->
 
-<!-- File: servicenow_list_services.html
+<!-- File: servicenow_describe_catalog_item.html
   Copyright (c) 2016-2019 Splunk Inc.
 
   SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
@@ -93,49 +93,19 @@
     {% else %}
         <h4 class="wf-h3-style">Info</h4>
         <table class="wf-table-vertical">
-            {% if result.param.catalog_sys_id %}
-                <tr>
-                    <td>Catalog SYS ID</td>
-                    <td>
-                        <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.catalog_sys_id }}' }], 0, {{ container.id }}, null, false);">
-                            {{ result.param.catalog_sys_id }}
-                            &nbsp;
-                            <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                        </a>
-                    </td>
-                </tr>
-            {% endif %}
-            {% if result.param.category_sys_id %}
-                <tr>
-                    <td>Category SYS ID</td>
-                    <td>
-                        <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ result.param.category_sys_id }}' }], 0, {{ container.id }}, null, false);">
-                            {{ result.param.category_sys_id }}
-                            &nbsp;
-                            <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                        </a>
-                    </td>
-                </tr>
-            {% endif %}
-            {% if result.param.search_text %}
-                <tr>
-                    <td>Search Text</td>
-                    <td>
-                        {{ result.param.search_text }}
-                    </td>
-                </tr>
-            {% endif %}
-            {% if result.param.max_results %}
-                <tr>
-                    <td>Max Results</td>
-                    <td>
-                        {{ result.param.max_results }}
-                    </td>
-                </tr>
-            {% endif %}
+            <tr>
+                <td>SYS ID</td>
+                <td>
+                    <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ result.param.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                        {{ result.param.sys_id }}
+                        &nbsp;
+                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                    </a>
+                </td>
+            </tr>
         </table>
         <div class="results">
-            <h4 class="wf-h4-style">Services</h4>
+            <h4 class="wf-h4-style">Record Details</h4>
 
             <!--Default View-->
             <table class="wf-table-horizontal datatable">
@@ -143,10 +113,10 @@
                     <tr>
                         <th>Name</th>
                         <th>Short Description</th>
-                        <th>SYS ID</th>
                         <th>Category Name</th>
                         <th>Category SYS ID</th>
                         <th>Catalog Name : Catalog SYS ID</th>
+                        <th>Variable Details</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,13 +124,6 @@
                         <tr>
                             <td>{{ data.name }}</td>
                             <td>{{ data.short_description }}</td>
-                            <td>
-                                <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ data.sys_id }}' }], 0, {{ container.id }}, null, false);">
-                                    {{ data.sys_id }}
-                                    &nbsp;
-                                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                                </a>
-                            </td>
                             <td>{{ data.category.title }}</td>
                             {% if data.category.sys_id %}
                                 <td>
@@ -171,7 +134,7 @@
                                     </a>
                                 </td>
                             {% else %}
-                                <td>None</td>
+                                <td> None </td>
                             {% endif %}
                             <td>
                                 {% for catalog in data.catalogs %}
@@ -183,6 +146,26 @@
                                             </a> </li>
                                     </ul>
                                 {% endfor %}
+                            </td>
+                            <td>
+                                <table class="wf-table-horizontal datatable">
+                                    <thead>
+                                        <tr>
+                                            <th>Variable Name</th>
+                                            <th>Variable ID</th>
+                                            <th>Variable Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for variable in data.variables %}
+                                            <tr>
+                                                <td>{{ variable.name }}</td>
+                                                <td>{{ variable.id }}</td>
+                                                <td>{{ variable.value }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </td>
                         </tr>
                     {% endfor %}
