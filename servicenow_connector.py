@@ -43,6 +43,7 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_ADD_COMMENT = "add_comment"
     ACTION_ID_ADD_WORK_NOTE = "add_work_note"
     ACTION_ID_DESCRIBE_CATALOG_ITEM = "describe_catalog_item"
+    ACTION_ID_DESCRIBE_SERVICE_CATALOG = "describe_service_catalog"
     ACTION_ID_LIST_SERVICES = "list_services"
     ACTION_ID_LIST_SERVICE_CATALOGS = "list_service_catalogs"
     ACTION_ID_CREATE_TICKET = "create_ticket"
@@ -715,6 +716,41 @@ class ServicenowConnector(BaseConnector):
 
         return items_list
 
+    def _describe_service_catalog(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        catalog_sys_id = param.get("catalog_sys_id")
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        endpoint = '/table/sc_category'
+
+        request_params = dict()
+        request_params["sysparm_query"] = "sc_catalog={}".format(catalog_sys_id)
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        endpoint = '/table/sc_category'
+
+        request_params = dict()
+        request_params["sysparm_query"] = "sc_catalog={}".format(catalog_sys_id)
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        response.get("result")
+
     def _describe_catalog_item(self, param):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -739,9 +775,7 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, "Details fetched successfully")
 
-    def _list_services(self, param):
-
-        action_result = self.add_action_result(ActionResult(dict(param)))
+    def _list_services_helper(self, param, action_result):
 
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
@@ -749,7 +783,7 @@ class ServicenowConnector(BaseConnector):
         limit = param.get("max_results")
 
         if limit == 0 or (limit and (not str(limit).isdigit() or limit <= 0)):
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results"))
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results")), None
 
         payload = dict()
 
@@ -767,10 +801,9 @@ class ServicenowConnector(BaseConnector):
         services = self._paginator(endpoint, action_result, payload=payload, limit=limit)
 
         if services is None:
-            return action_result.get_status()
+            return action_result.get_status(), None
 
-        summary = action_result.update_summary({})
-        summary['total_services'] = len(services)
+        processed_services = list()
 
         for sc in services:
             if param.get("catalog_sys_id"):
@@ -779,13 +812,31 @@ class ServicenowConnector(BaseConnector):
                     sys_id_list.append(catalog.get("sys_id"))
 
                 if param.get("catalog_sys_id") in sys_id_list:
-                    action_result.add_data(sc)
+                    processed_services.append(sc)
             else:
-                action_result.add_data(sc)
+                processed_services.append(sc)
 
-        if not action_result.get_data_size():
+        return phantom.APP_SUCCESS, processed_services
+
+    def _list_services(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        ret_val, processed_services = self._list_services_helper(param, action_result)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        if not processed_services:
+            if param.get("catalog_sys_id") or param.get("category_sys_id") or param.get("search_text"):
+                return action_result.set_status(phantom.APP_ERROR, 'No data found for the given input parameters')
+
             return action_result.set_status(phantom.APP_ERROR, 'No data found')
 
+        for service in processed_services:
+            action_result.add_data(service)
+
+        summary = action_result.update_summary({})
         summary['services_returned'] = action_result.get_data_size()
 
         return action_result.set_status(phantom.APP_SUCCESS)
@@ -1219,6 +1270,8 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._add_work_note(param)
         elif (action == self.ACTION_ID_ADD_COMMENT):
             ret_val = self._add_comment(param)
+        elif (action == self.ACTION_ID_DESCRIBE_SERVICE_CATALOG):
+            ret_val = self._describe_service_catalog(param)
         elif (action == self.ACTION_ID_DESCRIBE_CATALOG_ITEM):
             ret_val = self._describe_catalog_item(param)
         elif (action == self.ACTION_ID_LIST_SERVICES):

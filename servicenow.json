@@ -94,7 +94,7 @@
                     "description": "SYS ID of a record",
                     "required": true,
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow ticket id"
                     ],
                     "primary": true
                 },
@@ -357,7 +357,7 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow ticket id"
                     ],
                     "column_name": "SYS ID",
                     "column_order": 0
@@ -764,7 +764,7 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow ticket id"
                     ]
                 },
                 {
@@ -831,7 +831,7 @@
                     "description": "SYS ID of a record",
                     "required": true,
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow ticket id"
                     ],
                     "primary": true
                 },
@@ -1097,7 +1097,7 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow ticket id"
                     ],
                     "column_name": "SYS ID",
                     "column_order": 0
@@ -1509,7 +1509,7 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow ticket id"
                     ]
                 },
                 {
@@ -1542,6 +1542,33 @@
                 "height": 5,
                 "type": "table",
                 "title": "Record Details"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "describe service catalog",
+            "description": "Fetches the details of a catalog",
+            "type": "investigate",
+            "identifier": "describe_service_catalog",
+            "read_only": true,
+            "parameters": {
+                "catalog_sys_id": {
+                    "data_type": "string",
+                    "order": 0,
+                    "description": "SYS ID of a catalog",
+                    "required": true,
+                    "contains": [
+                        "servicenow catalog sys id"
+                    ],
+                    "primary": true
+                }
+            },
+            "output": [],
+            "render": {
+                "type": "custom",
+                "width": 12,
+                "height": 5,
+                "view": "servicenow_view.display_view"
             },
             "versions": "EQ(*)"
         },
