@@ -704,7 +704,20 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return None
 
-            items_list.extend(items.get("result"))
+            processed_services = list()
+
+            for result in items.get("result"):
+                if payload.get("sysparm_catalog"):
+                    sys_id_list = list()
+                    for catalog in result.get("catalogs", []):
+                        sys_id_list.append(catalog.get("sys_id"))
+
+                    if payload.get("sysparm_catalog") in sys_id_list:
+                        processed_services.append(result)
+                else:
+                    processed_services.append(result)
+
+            items_list.extend(processed_services)
 
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
@@ -729,27 +742,48 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
+        endpoint = '/table/sc_catalog'
+
+        request_params = dict()
+        request_params["sysparm_query"] = "sys_id={}".format(catalog_sys_id)
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        if not response.get("result"):
+            return action_result.set_status(phantom.APP_SUCCESS, "Please enter a valid value for 'catalog_sys_id' parameter")
+
+        final_data = dict()
+        final_data.update(response.get("result")[0])
+
         endpoint = '/table/sc_category'
 
         request_params = dict()
         request_params["sysparm_query"] = "sc_catalog={}".format(catalog_sys_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
-        endpoint = '/table/sc_category'
+        final_data["categories"] = response.get("result")
+        self._api_uri = '/api/sn_sc'
 
-        request_params = dict()
-        request_params["sysparm_query"] = "sc_catalog={}".format(catalog_sys_id)
-
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params)
+        ret_val, processed_services = self._list_services_helper(param, action_result)
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
-        response.get("result")
+        if not processed_services:
+            return action_result.set_status(phantom.APP_ERROR, 'No data found')
+
+        final_data["items"] = processed_services
+
+        action_result.add_data(final_data)
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Details fetched successfully")
 
     def _describe_catalog_item(self, param):
 
@@ -803,20 +837,7 @@ class ServicenowConnector(BaseConnector):
         if services is None:
             return action_result.get_status(), None
 
-        processed_services = list()
-
-        for sc in services:
-            if param.get("catalog_sys_id"):
-                sys_id_list = list()
-                for catalog in sc.get("catalogs", []):
-                    sys_id_list.append(catalog.get("sys_id"))
-
-                if param.get("catalog_sys_id") in sys_id_list:
-                    processed_services.append(sc)
-            else:
-                processed_services.append(sc)
-
-        return phantom.APP_SUCCESS, processed_services
+        return phantom.APP_SUCCESS, services
 
     def _list_services(self, param):
 

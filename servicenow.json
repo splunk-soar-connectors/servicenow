@@ -1561,6 +1561,12 @@
                         "servicenow catalog sys id"
                     ],
                     "primary": true
+                },
+                "max_results": {
+                    "default": 100,
+                    "description": "Max number of service catalog items to return",
+                    "data_type": "numeric",
+                    "order": 1
                 }
             },
             "output": [],
