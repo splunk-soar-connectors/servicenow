@@ -1579,6 +1579,39 @@
             "versions": "EQ(*)"
         },
         {
+            "action": "order catalog item",
+            "description": "Orders an item",
+            "type": "generic",
+            "identifier": "order_catalog_item",
+            "read_only": false,
+            "parameters": {
+                "item_sys_id": {
+                    "data_type": "string",
+                    "order": 0,
+                    "description": "SYS ID of a record",
+                    "required": true,
+                    "contains": [
+                        "servicenow item sys id"
+                    ],
+                    "primary": true
+                },
+                "variables": {
+                    "data_type": "string",
+                    "order": 1,
+                    "description": "SYS ID of a record",
+                    "required": false
+                }
+            },
+            "output": [],
+            "render": {
+                "type": "table",
+                "width": 12,
+                "height": 5,
+                "title": "Order"
+            },
+            "versions": "EQ(*)"
+        },
+        {
             "action": "describe catalog item",
             "description": "Fetches the details of a catalog item",
             "type": "investigate",

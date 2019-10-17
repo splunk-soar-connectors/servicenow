@@ -41,6 +41,7 @@ class ServicenowConnector(BaseConnector):
     # actions supported by this script
     ACTION_ID_LIST_TICKETS = "list_tickets"
     ACTION_ID_ADD_COMMENT = "add_comment"
+    ACTION_ID_ORDER_ITEM = "order_catalog_item"
     ACTION_ID_ADD_WORK_NOTE = "add_work_note"
     ACTION_ID_DESCRIBE_CATALOG_ITEM = "describe_catalog_item"
     ACTION_ID_DESCRIBE_SERVICE_CATALOG = "describe_service_catalog"
@@ -71,7 +72,7 @@ class ServicenowConnector(BaseConnector):
 
         self._state = self.load_state()
         config = self.get_config()
-        sn_sc_actions = ["list_services", "describe_catalog_item"]
+        sn_sc_actions = ["list_services", "describe_catalog_item", "order_catalog_now"]
 
         # Base URL
         self._base_url = config[SERVICENOW_JSON_DEVICE_URL]
@@ -792,7 +793,10 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        sys_id = param.get("sys_id")
+        try:
+            sys_id = param.get("sys_id").encode('utf-8')
+        except:
+            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
@@ -900,8 +904,12 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
-        table_name = param.get("table_name")
-        sys_id = param.get("sys_id")
+        try:
+            sys_id = param.get("sys_id").encode('utf-8')
+            table_name = param.get("table_name").encode('utf-8')
+        except:
+            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+
         work_note = param.get("work_note")
 
         endpoint = "/table/{}/{}".format(table_name, sys_id)
@@ -915,9 +923,73 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
+        if response.get("result", {}).get("work_notes"):
+            response["result"]["work_notes"] = response["result"]["work_notes"].replace("\n\n", "\n, ").strip(", ")
+
         action_result.add_data(response.get("result", {}))
 
         return action_result.set_status(phantom.APP_SUCCESS, "Added the work note successfully")
+
+    def _order_catalog_item(self, param):
+
+        self.debug_print("hello 123")
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        try:
+            sys_id = param.get("sys_id").encode('utf-8')
+        except:
+            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+
+        try:
+            variables_param = json.loads(param.get("variables"))
+        except Exception as e:
+            return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON input. Error: {}".format(str(e)))
+
+        endpoint = '/servicecatalog/items/{}'.format(sys_id)
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        invalid_variables = list()
+
+        if response.get("variables"):
+            for variable in response.get("variables"):
+                if variable.get("mandatory") and variable.get("name") not in variables_param.keys():
+                    invalid_variables.append(variable.get("name"))
+
+        if invalid_variables:
+            return action_result.set_status(phantom.APP_ERROR, "Please provide the mandatory variables, {}, to order this item".format(', '.join(invalid_variables)))
+
+        endpoint = '/servicecatalog/items/{}/order_now'.format(sys_id)
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, method="post")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        request_sys_id = response.get("result", {}).get("sys_id")
+        table = response.get("result", {}).get("table")
+
+        self._api_uri = "/api/now"
+        endpoint = '/table/{}/{}'.format(table, request_sys_id)
+
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        action_result.add_data(response.get("result"))
+
+        return action_result.set_status(phantom.APP_SUCCESS, "The item has been ordered")
 
     def _add_comment(self, param):
 
@@ -930,8 +1002,11 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
-        table_name = param.get("table_name")
-        sys_id = param.get("sys_id")
+        try:
+            sys_id = param.get("sys_id").encode('utf-8')
+            table_name = param.get("table_name").encode('utf-8')
+        except:
+            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
         comment = param.get("comment")
 
         endpoint = "/table/{}/{}".format(table_name, sys_id)
@@ -944,6 +1019,9 @@ class ServicenowConnector(BaseConnector):
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
+
+        if response.get("result", {}).get("comments"):
+            response["result"]["comments"] = response["result"]["comments"].replace("\n\n", "\n, ").strip(", ")
 
         action_result.add_data(response.get("result", {}))
 
@@ -1289,6 +1367,8 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._create_ticket(param)
         elif (action == self.ACTION_ID_ADD_WORK_NOTE):
             ret_val = self._add_work_note(param)
+        elif (action == self.ACTION_ID_ORDER_ITEM):
+            ret_val = self._order_catalog_item(param)
         elif (action == self.ACTION_ID_ADD_COMMENT):
             ret_val = self._add_comment(param)
         elif (action == self.ACTION_ID_DESCRIBE_SERVICE_CATALOG):
