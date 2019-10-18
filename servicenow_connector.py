@@ -41,12 +41,13 @@ class ServicenowConnector(BaseConnector):
     # actions supported by this script
     ACTION_ID_LIST_TICKETS = "list_tickets"
     ACTION_ID_ADD_COMMENT = "add_comment"
-    ACTION_ID_ORDER_ITEM = "order_catalog_item"
+    ACTION_ID_ORDER_ITEM = "request_catalog_item"
     ACTION_ID_ADD_WORK_NOTE = "add_work_note"
     ACTION_ID_DESCRIBE_CATALOG_ITEM = "describe_catalog_item"
     ACTION_ID_DESCRIBE_SERVICE_CATALOG = "describe_service_catalog"
     ACTION_ID_LIST_SERVICES = "list_services"
     ACTION_ID_LIST_SERVICE_CATALOGS = "list_service_catalogs"
+    ACTION_ID_LIST_CATEGORIES = "list_categories"
     ACTION_ID_CREATE_TICKET = "create_ticket"
     ACTION_ID_GET_TICKET = "get_ticket"
     ACTION_ID_UPDATE_TICKET = "update_ticket"
@@ -72,7 +73,7 @@ class ServicenowConnector(BaseConnector):
 
         self._state = self.load_state()
         config = self.get_config()
-        sn_sc_actions = ["list_services", "describe_catalog_item", "order_catalog_now"]
+        sn_sc_actions = ["list_services", "describe_catalog_item", "request_catalog_item"]
 
         # Base URL
         self._base_url = config[SERVICENOW_JSON_DEVICE_URL]
@@ -866,6 +867,33 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _list_categories(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        limit = param.get("max_results")
+
+        if limit == 0 or (limit and (not str(limit).isdigit() or limit <= 0)):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results"))
+
+        endpoint = '/table/sc_category'
+
+        service_categories = self._paginator(endpoint, action_result, limit=limit)
+
+        if service_categories is None:
+            return action_result.get_status()
+
+        for category in service_categories:
+            action_result.add_data(category)
+
+        summary = action_result.update_summary({})
+        summary['categories_returned'] = action_result.get_data_size()
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def _list_service_catalogs(self, param):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -930,9 +958,8 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS, "Added the work note successfully")
 
-    def _order_catalog_item(self, param):
+    def _request_catalog_item(self, param):
 
-        self.debug_print("hello 123")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # Progress
@@ -942,15 +969,19 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
+        quantity = param.get("quantity")
+        variables_param = param.get("variables")
+
         try:
-            sys_id = param.get("sys_id").encode('utf-8')
+            sys_id = param.get("item_sys_id").encode('utf-8')
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
 
-        try:
-            variables_param = json.loads(param.get("variables"))
-        except Exception as e:
-            return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON input. Error: {}".format(str(e)))
+        if variables_param:
+            try:
+                variables_param = json.loads(variables_param)
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON input. Error: {}".format(str(e)))
 
         endpoint = '/servicecatalog/items/{}'.format(sys_id)
 
@@ -971,6 +1002,11 @@ class ServicenowConnector(BaseConnector):
 
         endpoint = '/servicecatalog/items/{}/order_now'.format(sys_id)
 
+        data = dict()
+        data["sysparm_quantity"] = quantity
+        if variables_param:
+            data["variables"] = variables_param
+
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, method="post")
 
         if (phantom.is_fail(ret_val)):
@@ -989,7 +1025,7 @@ class ServicenowConnector(BaseConnector):
 
         action_result.add_data(response.get("result"))
 
-        return action_result.set_status(phantom.APP_SUCCESS, "The item has been ordered")
+        return action_result.set_status(phantom.APP_SUCCESS, "The item has been requested")
 
     def _add_comment(self, param):
 
@@ -1368,7 +1404,7 @@ class ServicenowConnector(BaseConnector):
         elif (action == self.ACTION_ID_ADD_WORK_NOTE):
             ret_val = self._add_work_note(param)
         elif (action == self.ACTION_ID_ORDER_ITEM):
-            ret_val = self._order_catalog_item(param)
+            ret_val = self._request_catalog_item(param)
         elif (action == self.ACTION_ID_ADD_COMMENT):
             ret_val = self._add_comment(param)
         elif (action == self.ACTION_ID_DESCRIBE_SERVICE_CATALOG):
@@ -1377,6 +1413,8 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._describe_catalog_item(param)
         elif (action == self.ACTION_ID_LIST_SERVICES):
             ret_val = self._list_services(param)
+        elif (action == self.ACTION_ID_LIST_CATEGORIES):
+            ret_val = self._list_categories(param)
         elif (action == self.ACTION_ID_LIST_SERVICE_CATALOGS):
             ret_val = self._list_service_catalogs(param)
         elif (action == self.ACTION_ID_LIST_TICKETS):
