@@ -1569,7 +1569,774 @@
                     "order": 1
                 }
             },
-            "output": [],
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.desktop_image",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_policy",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.manager",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "48"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.background_color",
+                    "data_type": "string",
+                    "example_values": [
+                        "#FFFFFF"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Service Catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.editors",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "servicenow catalog sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.desktop_home_page",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_scope.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_scope.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.enable_wish_list",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        "Service Catalog - IT Now"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2016-06-16 05:19:58"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_package.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_package/15dd41d41bd000106cc640c6cc4bcb17"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_package.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "15dd41d41bd000106cc640c6cc4bcb17"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_policy",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.image",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.module",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.mobile_subcategory_render_type",
+                    "data_type": "string",
+                    "example_values": [
+                        "list"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_mod_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.header_icon",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Template Management"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Template Management"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.mobile_hide_description",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_updated_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_created_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "00728916937002002dcef157b67ffb6d"
+                    ],
+                    "contains": [
+                        "servicenow category sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.homepage_image",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.location",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.entitlement_script",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_tags",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_category"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        "Propose a new Standard Change Template. Modify or Retire an existing  Standard Change Template."
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.parent.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sc_category/b0fdfb01932002009ca87a75e57ffbe9"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.parent.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "b0fdfb01932002009ca87a75e57ffbe9"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_updated_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2015-06-24 04:54:20"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.mobile_picture",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.show_in_cms",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.active",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.icon",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_scope.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_scope.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.roles",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_created_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2015-06-24 04:53:17"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.homepage_renderer.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sc_homepage_renderer/Default"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.homepage_renderer.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "Default"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sc_catalog.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sc_catalog/e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sc_catalog.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_update_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_category_00728916937002002dcef157b67ffb6d"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.order",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_package.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_package.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "fe3f01141b1400106cc640c6cc4bcbc1"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.parent",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.homepage_renderer",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.desktop_continue_shopping",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Service Catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.category.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "00728916937002002dcef157b67ffb6d"
+                    ],
+                    "contains": [
+                        "servicenow category sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.category.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Template Management"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.picture",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.show_wishlist",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.catalogs.*.active",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.catalogs.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "servicenow catalog sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.catalogs.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Service Catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Retire a Standard Change Template"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.url",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "011f117a9f3002002920bde8132e7020"
+                    ],
+                    "contains": [
+                        "servicenow item sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.visible_standalone",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.show_price",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_cat_item_producer"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.show_delivery_time",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.kb_article",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.request_method",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.content_type",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.short_description",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.show_quantity",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.icon",
+                    "data_type": "string",
+                    "example_values": [
+                        "images/icons/catalog_item.gifx"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "record_producer"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.order",
+                    "data_type": "numeric",
+                    "example_values": [
+                        30
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.mandatory_attachment",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        "<p class=\"p1\"><font size=\"2\"><span class=\"s1\">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. \u00a0This will be confirmed by your Change Management team.</span></font></p>"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.recurring_frequency",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.price_currency",
+                    "data_type": "string",
+                    "example_values": [
+                        "USD"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.recurring_price_currency",
+                    "data_type": "string",
+                    "example_values": [
+                        "USD"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.localized_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$139.99"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.recurring_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$0.00"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$139.99"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.local_currency",
+                    "data_type": "string",
+                    "example_values": [
+                        "USD"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.items.*.localized_recurring_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "$0.00"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2013-09-19 11:03:11"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_update_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_catalog_e0d08b13c3330100c8b837659bba8fb4"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Details fetched successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.catalog_sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
             "render": {
                 "type": "custom",
                 "width": 12,
@@ -2229,7 +2996,360 @@
                     "primary": true
                 }
             },
-            "output": [],
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.mandatory_attachment",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_quantity",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.read_only",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.mandatory",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.name",
+                    "data_type": "string",
+                    "example_values": [
+                        "request_reason"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.render_label",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.value",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.label",
+                    "data_type": "string",
+                    "example_values": [
+                        "What is the reason for this Knowledge Base to be created?"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.max_length",
+                    "data_type": "numeric",
+                    "example_values": [
+                        0
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.display_type",
+                    "data_type": "string",
+                    "example_values": [
+                        "Multi Line Text"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.attributes",
+                    "data_type": "string",
+                    "example_values": [
+                        "edge_encryption_enabled=true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.help_text",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.displayvalue",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.type",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.id",
+                    "data_type": "string",
+                    "example_values": [
+                        "4e92cf349f203100d8f8700c267fcfe4"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.variables.*.friendly_type",
+                    "data_type": "string",
+                    "example_values": [
+                        "multi_line_text"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_wishlist",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.category.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e15706fc0a0a0aa7007fc21e1ab70c2f"
+                    ],
+                    "contains": [
+                        "servicenow category sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.category.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Can We Help You?"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_delivery_time",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.show_price",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.kb_article",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "81c887819f203100d8f8700c267fcfb5"
+                    ],
+                    "contains": [
+                        "servicenow item sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.short_description",
+                    "data_type": "string",
+                    "example_values": [
+                        "Request for a Knowledge Base"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.request_method",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "record_producer"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.visible_standalone",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.picture",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_cat_item_producer"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.catalogs.*.active",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.catalogs.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "servicenow catalog sys id"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.catalogs.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Service Catalog"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.description",
+                    "data_type": "string",
+                    "example_values": [
+                        "<p>Here you can request a new Knowledge Base to be used. A Knowledge Base can be used to store Knowledge in an organization and anyone can request for a new one to be created.</p>"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.content_type",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.active",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "e15706fc0a0a0aa7007fc21e1ab70c2f"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.categories.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "Can We Help You?"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.icon",
+                    "data_type": "string",
+                    "example_values": [
+                        "images/icons/catalog_item.gifx"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Request Knowledge Base"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.url",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.order",
+                    "data_type": "numeric",
+                    "example_values": [
+                        0
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Details fetched successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "81c887819f203100d8f8700c267fcfb5"
+                    ],
+                    "contains": [
+                        "servicenow item sys id"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
             "render": {
                 "type": "custom",
                 "width": 12,
