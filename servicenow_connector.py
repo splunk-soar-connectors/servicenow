@@ -738,7 +738,7 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        catalog_sys_id = param.get("catalog_sys_id")
+        catalog_sys_id = param.get("sys_id")
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
@@ -972,8 +972,11 @@ class ServicenowConnector(BaseConnector):
         quantity = param.get("quantity")
         variables_param = param.get("variables")
 
+        if quantity == 0 or (quantity and (not str(quantity).isdigit() or quantity <= 0)):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="quantity")), None
+
         try:
-            sys_id = param.get("item_sys_id").encode('utf-8')
+            sys_id = param.get("sys_id").encode('utf-8')
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
 
@@ -1075,27 +1078,24 @@ class ServicenowConnector(BaseConnector):
 
         endpoint = '/table/{0}'.format(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
         request_params = {
-            'sysparm_query': param.get(SERVICENOW_JSON_FILTER, ""),
-            'sysparm_limit': param.get(SERVICENOW_JSON_MAX_RESULTS, DEFAULT_MAX_RESULTS)
+            'sysparm_query': param.get(SERVICENOW_JSON_FILTER, "")
         }
+
+        limit = param.get(SERVICENOW_JSON_MAX_RESULTS)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
             return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+        tickets = self._paginator(endpoint, action_result, payload=request_params, limit=limit)
 
-        if (phantom.is_fail(ret_val)):
-            self.debug_print(action_result.get_message())
-            self.set_status(phantom.APP_ERROR, action_result.get_message())
-            return phantom.APP_ERROR
-
-        tickets = response['result']
-
-        action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: len(tickets)})
+        if tickets is None:
+            return action_result.get_status()
 
         for ticket in tickets:
             action_result.add_data(ticket)
+
+        action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: action_result.get_data_size()})
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -1207,17 +1207,15 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
+        tickets = self._paginator(endpoint, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if tickets is None:
             return action_result.get_status()
-
-        tickets = response['result']
-
-        action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: len(tickets)})
 
         for ticket in tickets:
             action_result.add_data(ticket)
+
+        action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: action_result.get_data_size()})
 
         return action_result.set_status(phantom.APP_SUCCESS)
 

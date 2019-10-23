@@ -110,7 +110,8 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ]
                 },
                 {
@@ -1552,7 +1553,7 @@
             "identifier": "describe_service_catalog",
             "read_only": true,
             "parameters": {
-                "catalog_sys_id": {
+                "sys_id": {
                     "data_type": "string",
                     "order": 0,
                     "description": "SYS ID of a catalog",
@@ -2352,10 +2353,10 @@
             "identifier": "request_catalog_item",
             "read_only": false,
             "parameters": {
-                "item_sys_id": {
+                "sys_id": {
                     "data_type": "string",
                     "order": 0,
-                    "description": "SYS ID of a record",
+                    "description": "SYS ID of an item",
                     "required": true,
                     "contains": [
                         "servicenow item sys id"
@@ -2365,7 +2366,7 @@
                 "variables": {
                     "data_type": "string",
                     "order": 1,
-                    "description": "SYS ID of a record",
+                    "description": "Variables of the item",
                     "required": false
                 },
                 "quantity": {
@@ -2418,7 +2419,9 @@
                     "data_type": "string",
                     "example_values": [
                         "2019-10-18 13:49:24"
-                    ]
+                    ],
+                    "column_name": "Due Date",
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.data.*.made_sla",
@@ -2439,14 +2442,18 @@
                     "data_type": "string",
                     "example_values": [
                         ""
-                    ]
+                    ],
+                    "column_name": "Assigned To",
+                    "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.number",
                     "data_type": "string",
                     "example_values": [
                         "REQ0010008"
-                    ]
+                    ],
+                    "column_name": "Request Number",
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
@@ -2460,7 +2467,9 @@
                     "data_type": "string",
                     "example_values": [
                         "0"
-                    ]
+                    ],
+                    "column_name": "Price",
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
@@ -2579,7 +2588,9 @@
                     "data_type": "string",
                     "example_values": [
                         "4"
-                    ]
+                    ],
+                    "column_name": "Priority",
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.state",
@@ -2732,7 +2743,9 @@
                     "data_type": "string",
                     "example_values": [
                         ""
-                    ]
+                    ],
+                    "column_name": "Short Description",
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
@@ -2988,7 +3001,7 @@
                 "sys_id": {
                     "data_type": "string",
                     "order": 0,
-                    "description": "SYS ID of a record",
+                    "description": "SYS ID of an item",
                     "required": true,
                     "contains": [
                         "servicenow item sys id"
