@@ -4617,7 +4617,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 6,
+                    "column_order": 7,
                     "data_path": "action_result.data.*.closed_at",
                     "example_values": [
                         "2018-02-08 23:10:06"
@@ -4878,7 +4878,7 @@
                     "column_order": 0
                 },
                 {
-                    "column_order": 5,
+                    "column_order": 6,
                     "data_path": "action_result.data.*.opened_at",
                     "example_values": [
                         "2018-02-07 23:09:51"
@@ -4942,7 +4942,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 3,
+                    "column_order": 5,
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
                         "1"
@@ -5088,7 +5088,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 2,
+                    "column_order": 4,
                     "data_path": "action_result.data.*.severity",
                     "example_values": [
                         "1"
@@ -5097,7 +5097,7 @@
                     "column_name": "Severity"
                 },
                 {
-                    "column_order": 0,
+                    "column_order": 2,
                     "data_path": "action_result.data.*.short_description",
                     "example_values": [
                         "phapp_servicenow_update, Run file reputation actions only"
@@ -5184,7 +5184,7 @@
                     "example_values": [
                         "9c573169c611228700193229fff72400"
                     ],
-                    "column_order": 4,
+                    "column_order": 3,
                     "column_name": "ID"
                 },
                 {
@@ -5650,7 +5650,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 6,
+                    "column_order": 7,
                     "data_path": "action_result.data.*.closed_at",
                     "example_values": [
                         ""
@@ -5831,7 +5831,7 @@
                     "column_order": 0
                 },
                 {
-                    "column_order": 5,
+                    "column_order": 6,
                     "data_path": "action_result.data.*.opened_at",
                     "example_values": [
                         "2018-11-22 09:57:05"
@@ -5881,7 +5881,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 2,
+                    "column_order": 5,
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
                         "5"
@@ -5946,7 +5946,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 2,
+                    "column_order": 4,
                     "data_path": "action_result.data.*.severity",
                     "example_values": [
                         "3"
@@ -5955,7 +5955,7 @@
                     "column_name": "Severity"
                 },
                 {
-                    "column_order": 0,
+                    "column_order": 2,
                     "data_path": "action_result.data.*.short_description",
                     "example_values": [
                         "phapp_servicenow, Multiple action need to be taken"
@@ -6042,7 +6042,7 @@
                     "example_values": [
                         "e19eff67db716300134cd100cf961915"
                     ],
-                    "column_order": 4,
+                    "column_order": 3,
                     "column_name": "ID"
                 },
                 {
@@ -6544,7 +6544,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 6,
+                    "column_order": 7,
                     "data_path": "action_result.data.*.closed_at",
                     "example_values": [
                         "2018-02-08 23:10:06"
@@ -6793,7 +6793,7 @@
                     "column_order": 0
                 },
                 {
-                    "column_order": 5,
+                    "column_order": 6,
                     "data_path": "action_result.data.*.opened_at",
                     "example_values": [
                         "2018-02-07 23:09:51"
@@ -6843,7 +6843,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 3,
+                    "column_order": 5,
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
                         "1"
@@ -6942,7 +6942,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 2,
+                    "column_order": 4,
                     "data_path": "action_result.data.*.severity",
                     "example_values": [
                         "1"
@@ -6951,7 +6951,7 @@
                     "column_name": "Severity"
                 },
                 {
-                    "column_order": 0,
+                    "column_order": 2,
                     "data_path": "action_result.data.*.short_description",
                     "example_values": [
                         "phapp_servicenow_update, Run file reputation actions only"
@@ -7038,7 +7038,7 @@
                     "example_values": [
                         "9c573169c611228700193229fff72400"
                     ],
-                    "column_order": 4,
+                    "column_order": 3,
                     "column_name": "ID"
                 },
                 {
@@ -7255,7 +7255,7 @@
                     "example_values": [
                         "9c573169c611228700193229fff72400"
                     ],
-                    "column_order": 4,
+                    "column_order": 3,
                     "column_name": "ID"
                 },
                 {
@@ -7560,7 +7560,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 6,
+                    "column_order": 7,
                     "data_path": "action_result.data.*.closed_at",
                     "example_values": [
                         "2018-02-08 23:10:06"
@@ -7809,7 +7809,7 @@
                     "column_order": 0
                 },
                 {
-                    "column_order": 5,
+                    "column_order": 6,
                     "data_path": "action_result.data.*.opened_at",
                     "example_values": [
                         "2018-02-07 23:09:51"
@@ -7859,7 +7859,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 3,
+                    "column_order": 5,
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
                         "1"
@@ -7958,7 +7958,7 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 2,
+                    "column_order": 4,
                     "data_path": "action_result.data.*.severity",
                     "example_values": [
                         "1"
@@ -7967,7 +7967,7 @@
                     "column_name": "Severity"
                 },
                 {
-                    "column_order": 0,
+                    "column_order": 2,
                     "data_path": "action_result.data.*.short_description",
                     "example_values": [
                         "phapp_servicenow_update, Run file reputation actions only"
@@ -8772,7 +8772,7 @@
                         "I can access my folder but can't access my team's folder on our file share"
                     ],
                     "data_type": "string",
-                    "column_order": 2,
+                    "column_order": 1,
                     "column_name": "Description"
                 },
                 {
@@ -8995,7 +8995,7 @@
                     ],
                     "data_type": "string",
                     "column_name": "Priority",
-                    "column_order": 4
+                    "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
@@ -9133,7 +9133,7 @@
                     ],
                     "data_type": "string",
                     "column_name": "Severity",
-                    "column_order": 3
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.data.*.short_description",
@@ -9143,7 +9143,7 @@
                     ],
                     "data_type": "string",
                     "column_name": "Short Description",
-                    "column_order": 1
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
@@ -9236,7 +9236,7 @@
                     ],
                     "data_type": "string",
                     "column_name": "ID",
-                    "column_order": 5
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.sys_mod_count",
