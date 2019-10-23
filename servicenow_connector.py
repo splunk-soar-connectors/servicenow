@@ -995,13 +995,14 @@ class ServicenowConnector(BaseConnector):
 
         invalid_variables = list()
 
-        if response.get("variables"):
-            for variable in response.get("variables"):
+        if response.get("result", {}).get("variables"):
+            for variable in response.get("result", {}).get("variables"):
                 if variable.get("mandatory") and variable.get("name") not in variables_param.keys():
                     invalid_variables.append(variable.get("name"))
 
         if invalid_variables:
-            return action_result.set_status(phantom.APP_ERROR, "Please provide the mandatory variables, {}, to order this item".format(', '.join(invalid_variables)))
+            return action_result.set_status(phantom.APP_ERROR, "Please provide the mandatory variables to order this item.\
+                Mandatory variables: {}".format(', '.join(invalid_variables)))
 
         endpoint = '/servicecatalog/items/{}/order_now'.format(sys_id)
 
