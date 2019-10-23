@@ -94,7 +94,8 @@
                     "description": "SYS ID of a record",
                     "required": true,
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ],
                     "primary": true
                 },
@@ -358,7 +359,8 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ],
                     "column_name": "SYS ID",
                     "column_order": 0
@@ -765,7 +767,8 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ]
                 },
                 {
@@ -832,7 +835,8 @@
                     "description": "SYS ID of a record",
                     "required": true,
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ],
                     "primary": true
                 },
@@ -1098,7 +1102,8 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ],
                     "column_name": "SYS ID",
                     "column_order": 0
@@ -1510,7 +1515,8 @@
                         "1c832706732023002728660c4cf6a7b9"
                     ],
                     "contains": [
-                        "servicenow ticket id"
+                        "servicenow ticket id",
+                        "md5"
                     ]
                 },
                 {
@@ -1559,7 +1565,8 @@
                     "description": "SYS ID of a catalog",
                     "required": true,
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ],
                     "primary": true
                 },
@@ -1649,7 +1656,8 @@
                         "e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -1822,7 +1830,8 @@
                         "00728916937002002dcef157b67ffb6d"
                     ],
                     "contains": [
-                        "servicenow category sys id"
+                        "servicenow category sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -2065,7 +2074,8 @@
                         "00728916937002002dcef157b67ffb6d"
                     ],
                     "contains": [
-                        "servicenow category sys id"
+                        "servicenow category sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -2105,7 +2115,8 @@
                         "e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -2136,7 +2147,8 @@
                         "011f117a9f3002002920bde8132e7020"
                     ],
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow item sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -2359,7 +2371,8 @@
                     "description": "SYS ID of an item",
                     "required": true,
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow item sys id",
+                        "md5"
                     ],
                     "primary": true
                 },
@@ -2958,6 +2971,7 @@
                         "10d156ecc6112276003e090fdc945083"
                     ],
                     "contains": [
+                        "servicenow item sys id",
                         "md5"
                     ]
                 },
@@ -3004,7 +3018,8 @@
                     "description": "SYS ID of an item",
                     "required": true,
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow item sys id",
+                        "md5"
                     ],
                     "primary": true
                 }
@@ -3153,7 +3168,8 @@
                         "e15706fc0a0a0aa7007fc21e1ab70c2f"
                     ],
                     "contains": [
-                        "servicenow category sys id"
+                        "servicenow category sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -3193,7 +3209,8 @@
                         "81c887819f203100d8f8700c267fcfb5"
                     ],
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow item sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -3254,7 +3271,8 @@
                         "e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -3345,7 +3363,8 @@
                         "81c887819f203100d8f8700c267fcfb5"
                     ],
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow item sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -3383,7 +3402,8 @@
                     "order": 0,
                     "description": "SYS ID of the catalog",
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ],
                     "primary": true
                 },
@@ -3392,7 +3412,8 @@
                     "order": 1,
                     "description": "SYS ID of a catergory",
                     "contains": [
-                        "servicenow category sys id"
+                        "servicenow category sys id",
+                        "md5"
                     ],
                     "primary": true
                 },
@@ -3668,14 +3689,16 @@
                         "742ce428d7211100f2d224837e61036d"
                     ],
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.category_sys_id",
                     "data_type": "string",
                     "contains": [
-                        "servicenow category sys id"
+                        "servicenow category sys id",
+                        "md5"
                     ]
                 },
                 {
@@ -3817,7 +3840,8 @@
                         "00728916937002002dcef157b67ffb6d"
                     ],
                     "contains": [
-                        "servicenow category sys id"
+                        "servicenow category sys id",
+                        "md5"
                     ],
                     "column_name": "Category SYS ID",
                     "column_order": 1
@@ -3987,7 +4011,8 @@
                         "e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ],
                     "column_name": "Catalog SYS ID",
                     "column_order": 2
@@ -4179,7 +4204,8 @@
                         "6ca4222f1b1c00106cc640c6cc4bcbd1"
                     ],
                     "contains": [
-                        "servicenow catalog sys id"
+                        "servicenow catalog sys id",
+                        "md5"
                     ],
                     "column_name": "SYS ID",
                     "column_order": 1
@@ -8216,7 +8242,8 @@
                     "required": true,
                     "order": 0,
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow item sys id",
+                        "md5"
                     ],
                     "primary": true
                 }
@@ -8239,7 +8266,8 @@
                     ],
                     "data_type": "string",
                     "contains": [
-                        "servicenow item sys id"
+                        "servicenow item sys id",
+                        "md5"
                     ],
                     "column_name": "ID",
                     "column_order": 0
