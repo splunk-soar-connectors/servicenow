@@ -10,7 +10,7 @@
     "type": "ticketing",
     "main_module": "servicenow_connector.pyc",
     "app_version": "1.2.50",
-    "min_phantom_version": "4.2.7532",
+    "min_phantom_version": "4.5.15922",
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",
@@ -38,7 +38,7 @@
             "required": false,
             "order": 6,
             "data_type": "string",
-            "description": "Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=john.smith)"
+            "description": "Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name)"
         },
         "client_id": {
             "required": false,
@@ -2348,7 +2348,7 @@
         },
         {
             "action": "request catalog item",
-            "description": "Requests an item",
+            "description": "Requests a catalog item",
             "type": "generic",
             "identifier": "request_catalog_item",
             "read_only": false,
@@ -3381,7 +3381,7 @@
                 "catalog_sys_id": {
                     "data_type": "string",
                     "order": 0,
-                    "description": "Items of the catalog to be fetched",
+                    "description": "SYS ID of the catalog",
                     "contains": [
                         "servicenow catalog sys id"
                     ],
@@ -3390,7 +3390,7 @@
                 "category_sys_id": {
                     "data_type": "string",
                     "order": 1,
-                    "description": "Items of a catergory to be fetched",
+                    "description": "SYS ID of a catergory",
                     "contains": [
                         "servicenow category sys id"
                     ],
@@ -3403,7 +3403,7 @@
                 },
                 "max_results": {
                     "default": 100,
-                    "description": "Max number of service catalogs to return",
+                    "description": "Max number of items to return",
                     "data_type": "numeric",
                     "order": 3
                 }
@@ -5327,7 +5327,7 @@
             "description": "Create a new ticket/record",
             "type": "generic",
             "identifier": "create_ticket",
-            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes.",
             "read_only": false,
             "parameters": {
                 "short_description": {
@@ -7188,7 +7188,7 @@
             "description": "Update ticket/record information",
             "type": "generic",
             "identifier": "update_ticket",
-            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your own dictionary). For best results, please check the results of the action in JSON view to verify the changes.",
+            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes.",
             "read_only": false,
             "parameters": {
                 "table": {
@@ -8205,7 +8205,7 @@
         {
             "action": "get variables",
             "description": "Get variables for a ticket/record",
-            "verbose": "The System ID for this action can be obtained by following below steps. Navigate to ServiceNow platform and enter sc_item_option_mtom.LIST in the search panel in the left navigation pane. This opens the list of variables in a new tab. Click on the Parent Item and it will open the Requested Item page. Click on the Options menu available in the top-left corner of the page and select 'Copy sys_id' option to copy the required System ID.",
+            "verbose": "The System ID for this action can be obtained by the below steps. Navigate to ServiceNow platform and enter sc_item_option_mtom.LIST in the search panel in the left navigation pane. This opens the list of variables in a new tab. Click on the Parent Item and it will open the Requested Item page. Click on the Options menu available in the top-left corner of the page and select the 'Copy sys_id' option to copy the required System ID.",
             "type": "investigate",
             "identifier": "get_variables",
             "read_only": true,
@@ -8769,7 +8769,7 @@
                 {
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "I can access my personal folder but can't access my team's folder on our file share"
+                        "I can access my folder but can't access my team's folder on our file share"
                     ],
                     "data_type": "string",
                     "column_order": 2,
