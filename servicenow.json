@@ -8286,9 +8286,9 @@
         {
             "action": "run query",
             "description": "Gets object data according to the specified query",
-            "type": "generic",
+            "type": "investigate",
             "identifier": "run_query",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "query": {
                     "required": true,
