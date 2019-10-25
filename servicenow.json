@@ -89,7 +89,7 @@
                     "primary": true,
                     "order": 0
                 },
-                "sys_id": {
+                "id": {
                     "data_type": "string",
                     "order": 1,
                     "description": "SYS ID of a record",
@@ -122,7 +122,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.parameter.sys_id",
+                    "data_path": "action_result.parameter.id",
                     "data_type": "string",
                     "example_values": [
                         "1c832706732023002728660c4cf6a7b9"
@@ -845,7 +845,7 @@
                     "primary": true,
                     "order": 0
                 },
-                "sys_id": {
+                "id": {
                     "data_type": "string",
                     "order": 1,
                     "description": "SYS ID of a record",
@@ -885,7 +885,7 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.parameter.sys_id",
+                    "data_path": "action_result.parameter.id",
                     "data_type": "string",
                     "example_values": [
                         "1c832706732023002728660c4cf6a7b9"

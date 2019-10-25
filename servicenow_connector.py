@@ -972,7 +972,7 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
         try:
-            sys_id = param.get("sys_id")
+            sys_id = param.get("id")
             table_name = param.get("table_name", "incident")
             is_sys_id = param.get("is_sys_id", False)
         except:
@@ -1098,7 +1098,7 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
         try:
-            sys_id = param.get("sys_id")
+            sys_id = param.get("id")
             table_name = param.get("table_name", "incident")
             is_sys_id = param.get("is_sys_id", False)
         except:
