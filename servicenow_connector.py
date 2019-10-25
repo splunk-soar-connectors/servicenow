@@ -111,11 +111,15 @@ class ServicenowConnector(BaseConnector):
         if (not error_info):
             return error_details
 
-        if ('message' in error_info):
-            error_details['message'] = error_info['message']
+        try:
+            if ('message' in error_info) and error_info.get('message'):
+                error_details['message'] = UnicodeDammit(error_info['message']).unicode_markup.encode('utf-8')
 
-        if ('detail' in error_info):
-            error_details['detail'] = error_info['detail']
+            if ('detail' in error_info) and error_info.get('detail'):
+                error_details['detail'] = UnicodeDammit(error_info['detail']).unicode_markup.encode('utf-8')
+        except:
+            # Do nothing as error occurred due to Unicode characters in the error messages
+            pass
 
         return error_details
 
@@ -183,7 +187,7 @@ class ServicenowConnector(BaseConnector):
         if (r.status_code != requests.codes.ok):  # pylint: disable=E1101
             action_result.add_data(resp_json)
             error_details = self._get_error_details(resp_json)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FROM_SERVER, status=r.status_code, **error_details), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FROM_SERVER.format(status=r.status_code, **error_details)), resp_json)
 
         return RetVal(phantom.APP_SUCCESS, resp_json)
 
@@ -790,7 +794,7 @@ class ServicenowConnector(BaseConnector):
             return action_result.get_status()
 
         if not response.get("result"):
-            return action_result.set_status(phantom.APP_SUCCESS, "Please enter a valid value for 'catalog_sys_id' parameter")
+            return action_result.set_status(phantom.APP_ERROR, "Please enter a valid value for 'catalog_sys_id' parameter")
 
         final_data = dict()
         final_data.update(response.get("result")[0])
