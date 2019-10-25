@@ -20,6 +20,7 @@ import magic
 import requests
 import time
 from bs4 import BeautifulSoup
+from bs4 import UnicodeDammit
 from datetime import datetime
 import re
 
@@ -222,7 +223,7 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
-            r = requests.post(self._base_url + self._api_uri + endpoint,
+            r = requests.post('{}{}{}'.format(self._base_url, self._api_uri, UnicodeDammit(endpoint).unicode_markup.encode('utf-8')),
                     auth=auth,
                     data=data,
                     headers=headers,
@@ -263,7 +264,7 @@ class ServicenowConnector(BaseConnector):
             action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_API_UNSUPPORTED_METHOD, method=method)
 
         try:
-            r = request_func(self._base_url + self._api_uri + endpoint,
+            r = request_func('{}{}{}'.format(self._base_url, self._api_uri, UnicodeDammit(endpoint).unicode_markup.encode('utf-8')),
                     auth=auth,
                     json=data,
                     headers=headers,
@@ -574,12 +575,28 @@ class ServicenowConnector(BaseConnector):
 
         table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
         ticket_id = param[SERVICENOW_JSON_TICKET_ID]
-
-        endpoint = '/table/{0}/{1}'.format(table, ticket_id)
+        is_sys_id = param.get("is_sys_id", False)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
             return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        if not is_sys_id:
+            params = {'sysparm_query': 'number={0}'.format(ticket_id)}
+            endpoint = '/table/{0}'.format(table)
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+            if response.get("result"):
+                ticket_id = response.get("result")[0].get("sys_id")
+
+                if not ticket_id:
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(ticket_id))
+
+            else:
+                return action_result.set_status(phantom.APP_ERROR,
+                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+
+        endpoint = '/table/{0}/{1}'.format(table, ticket_id)
 
         ret_val, fields = self._get_fields(param, action_result)
 
@@ -626,11 +643,26 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _get_ticket_details(self, action_result, table, sys_id):
+    def _get_ticket_details(self, action_result, table, sys_id, is_sys_id=True):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
             return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+
+        if not is_sys_id:
+            params = {'sysparm_query': 'number={0}'.format(sys_id)}
+            endpoint = '/table/{0}'.format(table)
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+            if response.get("result"):
+                sys_id = response.get("result")[0].get("sys_id")
+
+                if not sys_id:
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(sys_id))
+
+            else:
+                return action_result.set_status(phantom.APP_ERROR,
+                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
 
         endpoint = '/table/{0}/{1}'.format(table, sys_id)
 
@@ -673,8 +705,11 @@ class ServicenowConnector(BaseConnector):
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
-        ret_val = self._get_ticket_details(action_result,
-                param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE), param[SERVICENOW_JSON_TICKET_ID])
+        table_name = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
+        ticket_id = param[SERVICENOW_JSON_TICKET_ID]
+        is_sys_id = param.get("is_sys_id", False)
+
+        ret_val = self._get_ticket_details(action_result, table_name, ticket_id, is_sys_id=is_sys_id)
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
@@ -795,7 +830,7 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
         try:
-            sys_id = param.get("sys_id").encode('utf-8')
+            sys_id = param.get("sys_id")
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
 
@@ -933,10 +968,26 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
         try:
-            sys_id = param.get("sys_id").encode('utf-8')
-            table_name = param.get("table_name").encode('utf-8')
+            sys_id = param.get("sys_id")
+            table_name = param.get("table_name", "incident")
+            is_sys_id = param.get("is_sys_id", False)
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+
+        if not is_sys_id:
+            params = {'sysparm_query': 'number={0}'.format(sys_id)}
+            endpoint = '/table/{0}'.format(table_name)
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+            if response.get("result"):
+                sys_id = response.get("result")[0].get("sys_id")
+
+                if not sys_id:
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(sys_id))
+
+            else:
+                return action_result.set_status(phantom.APP_ERROR,
+                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
 
         work_note = param.get("work_note")
 
@@ -976,7 +1027,7 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="quantity")), None
 
         try:
-            sys_id = param.get("sys_id").encode('utf-8')
+            sys_id = param.get("sys_id")
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
 
@@ -1043,12 +1094,28 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
         try:
-            sys_id = param.get("sys_id").encode('utf-8')
-            table_name = param.get("table_name").encode('utf-8')
+            sys_id = param.get("sys_id")
+            table_name = param.get("table_name", "incident")
+            is_sys_id = param.get("is_sys_id", False)
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
-        comment = param.get("comment")
 
+        if not is_sys_id:
+            params = {'sysparm_query': 'number={0}'.format(sys_id)}
+            endpoint = '/table/{0}'.format(table_name)
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+            if response.get("result"):
+                sys_id = response.get("result")[0].get("sys_id")
+
+                if not sys_id:
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(sys_id))
+
+            else:
+                return action_result.set_status(phantom.APP_ERROR,
+                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+
+        comment = param.get("comment")
         endpoint = "/table/{}/{}".format(table_name, sys_id)
         data = {"comments": comment}
 
