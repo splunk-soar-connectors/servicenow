@@ -92,7 +92,7 @@
                 "id": {
                     "data_type": "string",
                     "order": 1,
-                    "description": "SYS ID of a record",
+                    "description": "SYS ID or ticket number of a record",
                     "required": true,
                     "contains": [
                         "servicenow ticket sysid",
@@ -148,6 +148,10 @@
                     "example_values": [
                         "check work note"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.active",
@@ -848,7 +852,7 @@
                 "id": {
                     "data_type": "string",
                     "order": 1,
-                    "description": "SYS ID of a record",
+                    "description": "SYS ID or ticket number of a record",
                     "required": true,
                     "contains": [
                         "servicenow ticket sysid",
@@ -904,6 +908,10 @@
                     "contains": [
                         "servicenow table"
                     ]
+                },
+                {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.active",
@@ -6307,9 +6315,10 @@
                 },
                 "id": {
                     "contains": [
-                        "servicenow ticket sysid"
+                        "servicenow ticket sysid",
+                        "servicenow ticket number"
                     ],
-                    "description": "Ticket ID",
+                    "description": "SYS ID or ticket number of a record",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -6332,7 +6341,8 @@
                 },
                 {
                     "contains": [
-                        "servicenow ticket sysid"
+                        "servicenow ticket sysid",
+                        "servicenow ticket number"
                     ],
                     "data_path": "action_result.parameter.id",
                     "example_values": [
@@ -6350,6 +6360,10 @@
                         "incident"
                     ],
                     "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.active",
@@ -7308,9 +7322,10 @@
                 },
                 "id": {
                     "contains": [
-                        "servicenow ticket sysid"
+                        "servicenow ticket sysid",
+                        "servicenow ticket number"
                     ],
-                    "description": "Ticket ID",
+                    "description": "SYS ID or ticket number of a record",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -7348,7 +7363,8 @@
                     "data_path": "action_result.parameter.id",
                     "data_type": "string",
                     "contains": [
-                        "servicenow ticket sysid"
+                        "servicenow ticket sysid",
+                        "servicenow ticket number"
                     ],
                     "example_values": [
                         "9c573169c611228700193229fff72400"
@@ -7372,6 +7388,10 @@
                     ],
                     "data_path": "action_result.parameter.vault_id",
                     "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.active",

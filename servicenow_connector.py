@@ -590,6 +590,9 @@ class ServicenowConnector(BaseConnector):
             endpoint = '/table/{0}'.format(table)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
 
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
+
             if response.get("result"):
                 ticket_id = response.get("result")[0].get("sys_id")
 
@@ -657,6 +660,9 @@ class ServicenowConnector(BaseConnector):
             params = {'sysparm_query': 'number={0}'.format(sys_id)}
             endpoint = '/table/{0}'.format(table)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
 
             if response.get("result"):
                 sys_id = response.get("result")[0].get("sys_id")
@@ -983,6 +989,9 @@ class ServicenowConnector(BaseConnector):
             endpoint = '/table/{0}'.format(table_name)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
 
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
+
             if response.get("result"):
                 sys_id = response.get("result")[0].get("sys_id")
 
@@ -1108,6 +1117,9 @@ class ServicenowConnector(BaseConnector):
             params = {'sysparm_query': 'number={0}'.format(sys_id)}
             endpoint = '/table/{0}'.format(table_name)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
 
             if response.get("result"):
                 sys_id = response.get("result")[0].get("sys_id")
