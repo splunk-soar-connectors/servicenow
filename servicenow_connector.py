@@ -18,7 +18,6 @@ from servicenow_consts import *
 import json
 import magic
 import requests
-import time
 from bs4 import BeautifulSoup
 from bs4 import UnicodeDammit
 from datetime import datetime
@@ -74,12 +73,18 @@ class ServicenowConnector(BaseConnector):
 
         self._state = self.load_state()
         config = self.get_config()
-        sn_sc_actions = ["list_services", "describe_catalog_item", "request_catalog_item"]
+        sn_sc_actions = ["describe_catalog_item", "request_catalog_item"]
 
         # Base URL
         self._base_url = config[SERVICENOW_JSON_DEVICE_URL]
         if (self._base_url.endswith('/')):
             self._base_url = self._base_url[:-1]
+
+        try:
+            self._first_run_container = int(config.get('first_run_container', 10000))
+            self._max_container = int(config.get('max_container', 100))
+        except Exception as e:
+            return self.set_status(phantom.APP_ERROR, "Error: {}".format(str(e)))
 
         self._host = self._base_url[self._base_url.find('//') + 2:]
         self._headers = {'Accept': 'application/json'}
@@ -185,7 +190,6 @@ class ServicenowConnector(BaseConnector):
                 raise UnauthorizedOAuthTokenException
 
         if (r.status_code != requests.codes.ok):  # pylint: disable=E1101
-            action_result.add_data(resp_json)
             error_details = self._get_error_details(resp_json)
             return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FROM_SERVER.format(status=r.status_code, **error_details)), resp_json)
 
@@ -624,7 +628,6 @@ class ServicenowConnector(BaseConnector):
 
             action_result.update_summary({'fields_updated': True})
 
-        vault_process_success = True
         if (vault_id):
             self.save_progress("Attaching file to the ticket")
 
@@ -638,15 +641,11 @@ class ServicenowConnector(BaseConnector):
                 action_result.update_summary({'attachment_id': response['result']['sys_id']})
             else:
                 action_result.update_summary({'vault_failure_reason': action_result.get_message()})
-                vault_process_success = False
 
         ret_val = self._get_ticket_details(action_result, table, ticket_id)
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
-
-        if (not vault_process_success):
-            return action_result.set_status(phantom.APP_ERROR)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -751,20 +750,7 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return None
 
-            processed_services = list()
-
-            for result in items.get("result"):
-                if payload.get("sysparm_catalog"):
-                    sys_id_list = list()
-                    for catalog in result.get("catalogs", []):
-                        sys_id_list.append(catalog.get("sys_id"))
-
-                    if payload.get("sysparm_catalog") in sys_id_list:
-                        processed_services.append(result)
-                else:
-                    processed_services.append(result)
-
-            items_list.extend(processed_services)
+            items_list.extend(items.get("result"))
 
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
@@ -816,15 +802,11 @@ class ServicenowConnector(BaseConnector):
             return action_result.get_status()
 
         final_data["categories"] = response.get("result")
-        self._api_uri = '/api/sn_sc'
 
         ret_val, processed_services = self._list_services_helper(param, action_result)
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
-
-        if not processed_services:
-            return action_result.set_status(phantom.APP_ERROR, 'No data found')
 
         final_data["items"] = processed_services
 
@@ -870,17 +852,29 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results")), None
 
         payload = dict()
+        query = list()
+        catalog_sys_id = param.get("catalog_sys_id")
+        sys_id = param.get("sys_id")
+        category_sys_id = param.get("category_sys_id")
+        search_text = param.get("search_text")
 
-        if param.get("catalog_sys_id"):
-            payload["sysparm_catalog"] = param.get("catalog_sys_id")
+        if catalog_sys_id:
+            query.append("sc_catalogsLIKE{}".format(catalog_sys_id))
 
-        if param.get("category_sys_id"):
-            payload["sysparm_category"] = param.get("category_sys_id")
+        if sys_id:
+            query.append("sc_catalogsLIKE{}".format(sys_id))
 
-        if param.get("search_text"):
-            payload["sysparm_text"] = param.get("search_text")
+        if category_sys_id:
+            query.append("category={}".format(category_sys_id))
 
-        endpoint = '/servicecatalog/items'
+        if search_text:
+            query.append("nameLIKE{search_text}^ORdescriptionLIKE{search_text}^ORsys_nameLIKE{search_text}^ORshort_descriptionLIKE{search_text}".format(search_text=search_text))
+
+        endpoint = '/table/sc_cat_item'
+
+        if query:
+            search_query = '^'.join(query)
+            payload["sysparm_query"] = search_query
 
         services = self._paginator(endpoint, action_result, payload=payload, limit=limit)
 
@@ -905,6 +899,8 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, 'No data found')
 
         for service in processed_services:
+            catalogs = service.get("sc_catalogs").split(',')
+            service["catalogs"] = catalogs
             action_result.add_data(service)
 
         summary = action_result.update_summary({})
@@ -1058,11 +1054,20 @@ class ServicenowConnector(BaseConnector):
             return action_result.get_status()
 
         invalid_variables = list()
+        mandatory_variables = list()
 
         if response.get("result", {}).get("variables"):
             for variable in response.get("result", {}).get("variables"):
-                if variable.get("mandatory") and variable.get("name") not in variables_param.keys():
-                    invalid_variables.append(variable.get("name"))
+                if variable.get("mandatory"):
+                    mandatory_variables.append(variable.get("name"))
+
+        if mandatory_variables and not variables_param:
+            invalid_variables = mandatory_variables
+        else:
+            for var in mandatory_variables:
+                if var not in variables_param.keys():
+                    invalid_variables = mandatory_variables
+                    break
 
         if invalid_variables:
             return action_result.set_status(phantom.APP_ERROR, "Please provide the mandatory variables to order this item.\
@@ -1166,6 +1171,9 @@ class ServicenowConnector(BaseConnector):
         }
 
         limit = param.get(SERVICENOW_JSON_MAX_RESULTS)
+
+        if limit == 0 or (limit and (not str(limit).isdigit() or limit <= 0)):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results"))
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
@@ -1286,12 +1294,17 @@ class ServicenowConnector(BaseConnector):
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
         endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
+        limit = param.get("max_results")
+
+        if limit == 0 or (limit and (not str(limit).isdigit() or limit <= 0)):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="max_results"))
+
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
 
         if (phantom.is_fail(ret_val)):
             return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
 
-        tickets = self._paginator(endpoint, action_result)
+        tickets = self._paginator(endpoint, action_result, limit=limit)
 
         if tickets is None:
             return action_result.get_status()
@@ -1338,10 +1351,9 @@ class ServicenowConnector(BaseConnector):
 
         # Get time from last poll, save now as time for this poll
         last_time = self._state.get('last_time', 0)
-        self._state['last_time'] = time.time()
 
         # Build the query for the issue search (sysparm_query)
-        query = "ORDERBYsys_created_on"
+        query = "ORDERBYsys_updated_on"
 
         action_query = config.get(SERVICENOW_JSON_ON_POLL_FILTER, "")
 
@@ -1354,35 +1366,26 @@ class ServicenowConnector(BaseConnector):
         # If it's the first poll, don't filter based on update time
         elif (self._state.get('first_run', True)):
             self._state['first_run'] = False
-            max_tickets = ON_POLL_MAX_RESULTS
+            max_tickets = self._first_run_container
         # If it's scheduled polling add a filter for update time being greater than the last poll time
         else:
-            last_time_dt = datetime.fromtimestamp(last_time)
-            d = last_time_dt.strftime("%Y-%m-%d")
-            t = last_time_dt.strftime("%H:%M:%S")
-            query += "^sys_created_on>{} {}".format(d, t)
-            max_tickets = DEFAULT_MAX_RESULTS
-
-        # Query for issues
-        ret_val, auth, headers = self._get_authorization_credentials(action_result)
-        if (phantom.is_fail(ret_val)):
-            return self.set_status_save_progress(phantom.APP_ERROR, "Unable to get authorization credentials")
+            query += "^sys_updated_on>=javascript:gs.dateGenerate('{}','{}')".format(last_time.split(" ")[0], last_time.split(" ")[1])
+            max_tickets = self._max_container
 
         endpoint = '/table/' + config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
         params = {
             'sysparm_query': query,
             'sysparm_display_value': 'true',
-            'sysparm_exclude_reference_link': 'true',
-            'sysparm_limit': max_tickets}
+            'sysparm_exclude_reference_link': 'true'}
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+        limit = max_tickets
 
-        if (phantom.is_fail(ret_val)):
+        issues = self._paginator(endpoint, action_result, payload=params, limit=limit)
+
+        if issues is None:
             self.debug_print(action_result.get_message())
             self.set_status(phantom.APP_ERROR, action_result.get_message())
             return phantom.APP_ERROR
-
-        issues = response.get('result')
 
         if not issues:
             return action_result.set_status(phantom.APP_ERROR, 'No issues found')
@@ -1393,13 +1396,15 @@ class ServicenowConnector(BaseConnector):
         failed = 0
         label = self.get_config().get('ingest', {}).get('container_label')
         for issue in issues:
-            d = issue.get('description')
+            d = issue.get('description', '')
             sd = issue.get('short_description')
+            if not sd:
+                sd = 'Phantom added container name (short description of the ticke/record found empty)'
             container = dict(
                 data=issue,
-                description=d.encode('utf-8'),
+                description=UnicodeDammit(d).unicode_markup.encode('utf-8'),
                 label=label,
-                name='{}'.format(sd.encode('utf-8')),
+                name='{}'.format(UnicodeDammit(sd).unicode_markup.encode('utf-8')),
                 source_data_identifier=issue['sys_id']
             )
 
@@ -1412,10 +1417,10 @@ class ServicenowConnector(BaseConnector):
             artifact_dict = dict(
                 container_id=container_id,
                 data=issue,
-                description=sd.encode('utf-8'),
+                description=UnicodeDammit(sd).unicode_markup.encode('utf-8'),
                 cef=issue,
                 label='issue',
-                name=issue['number'],
+                name=issue.get('number', 'Phantom added artifact name (number of the ticke/record found empty)'),
                 source_data_identifier=issue['sys_id']
             )
             artifacts.append(artifact_dict)
@@ -1459,6 +1464,10 @@ class ServicenowConnector(BaseConnector):
             self.save_artifacts(artifacts)
 
         action_result.set_status(phantom.APP_SUCCESS, 'Containers created')
+
+        if not self.is_poll_now():
+            updated_time = issues[-1]
+            self._state['last_time'] = updated_time.get("sys_updated_on")
 
         if (failed):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FAILURES)

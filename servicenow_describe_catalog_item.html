@@ -162,7 +162,11 @@
                                             <tr>
                                                 <td>{{ variable.name }}</td>
                                                 <td>{{ variable.id }}</td>
-                                                <td>{{ variable.value }}</td>
+                                                {% if variable.value %}
+                                                    <td>{{ variable.value }}</td>
+                                                {% else %}
+                                                    <td> None </td>
+                                                {% endif %}
                                                 <td>{{ variable.mandatory }}</td>
                                             </tr>
                                         {% endfor %}

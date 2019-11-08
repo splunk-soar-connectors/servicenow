@@ -1,7 +1,7 @@
 {
     "appid": "a590c3bc-ca41-4a0e-b063-8066ca868794",
     "name": "ServiceNow",
-    "description": "This app integrates with ServiceNow to perform several ticketing actions",
+    "description": "This app integrates with ServiceNow to perform investigative and generic actions",
     "product_vendor": "ServiceNow",
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
@@ -57,6 +57,20 @@
             "order": 2,
             "data_type": "password",
             "description": "Password"
+        },
+        "first_run_container": {
+            "required": false,
+            "order": 7,
+            "data_type": "numeric",
+            "description": "Max container (For first run of schedule polling)",
+            "default": 10000
+        },
+        "max_container": {
+            "required": false,
+            "order": 8,
+            "data_type": "numeric",
+            "description": "Max container (For other runs of schedule polling)",
+            "default": 100
         }
     },
     "actions": [
@@ -133,6 +147,10 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
+                },
+                {
                     "data_path": "action_result.parameter.table_name",
                     "data_type": "string",
                     "example_values": [
@@ -150,10 +168,6 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.parameter.is_sys_id",
-                    "data_type": "boolean"
-                },
-                {
                     "data_path": "action_result.data.*.active",
                     "data_type": "string",
                     "example_values": [
@@ -169,10 +183,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval",
@@ -183,31 +194,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assigned_to",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assignment_group",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_duration",
@@ -218,10 +217,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_stc",
@@ -248,7 +244,7 @@
                     "data_path": "action_result.data.*.caller_id.display_value",
                     "data_type": "string",
                     "example_values": [
-                        "David Miller"
+                        "Test Name"
                     ]
                 },
                 {
@@ -270,17 +266,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.caused_by",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.child_incidents",
-                    "data_type": "string",
-                    "example_values": [
-                        "1"
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.close_code",
@@ -322,10 +312,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.cmdb_ci",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments",
@@ -343,10 +330,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.company",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.contact_type",
@@ -354,31 +338,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.description",
@@ -389,10 +361,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.escalation",
@@ -403,31 +372,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.hold_reason",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.impact",
@@ -452,10 +409,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.location",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.made_sla",
@@ -509,24 +463,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.priority",
@@ -537,10 +482,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reassignment_count",
@@ -558,17 +500,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopened_by",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_time",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.resolved_at",
@@ -596,10 +532,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.rfc",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.severity",
@@ -705,10 +638,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_updated_by",
@@ -726,10 +656,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_approval",
@@ -754,24 +681,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
@@ -784,17 +702,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -900,6 +812,10 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
+                },
+                {
                     "data_path": "action_result.parameter.table_name",
                     "data_type": "string",
                     "example_values": [
@@ -908,10 +824,6 @@
                     "contains": [
                         "servicenow table"
                     ]
-                },
-                {
-                    "data_path": "action_result.parameter.is_sys_id",
-                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.active",
@@ -929,10 +841,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval",
@@ -943,31 +852,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assigned_to",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assignment_group",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_duration",
@@ -978,10 +875,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_stc",
@@ -1008,7 +902,7 @@
                     "data_path": "action_result.data.*.caller_id.display_value",
                     "data_type": "string",
                     "example_values": [
-                        "David Miller"
+                        "Test Name"
                     ]
                 },
                 {
@@ -1030,10 +924,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.caused_by",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.child_incidents",
@@ -1082,10 +973,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.cmdb_ci",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments",
@@ -1105,10 +993,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.company",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.contact_type",
@@ -1116,31 +1001,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.description",
@@ -1151,10 +1024,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.escalation",
@@ -1165,31 +1035,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.hold_reason",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.impact",
@@ -1214,10 +1072,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.location",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.made_sla",
@@ -1271,24 +1126,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.priority",
@@ -1299,10 +1145,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reassignment_count",
@@ -1320,17 +1163,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopened_by",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_time",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.resolved_at",
@@ -1358,10 +1195,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.rfc",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.severity",
@@ -1467,10 +1301,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_updated_by",
@@ -1488,10 +1319,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_approval",
@@ -1516,24 +1344,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
@@ -1544,17 +1363,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -1666,31 +1479,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.entitlement_script",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.header_icon",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.homepage_image",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.homepage_renderer",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.homepage_renderer.link",
@@ -1714,24 +1515,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.icon",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.image",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.location",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.mobile_hide_description",
@@ -1742,10 +1534,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.mobile_picture",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.mobile_subcategory_render_type",
@@ -1756,10 +1545,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.module",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.order",
@@ -1770,10 +1556,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.parent",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.parent.link",
@@ -1797,10 +1580,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.roles",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.sc_catalog.link",
@@ -1897,10 +1677,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.sys_policy",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.sys_scope.link",
@@ -1924,10 +1701,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.categories.*.sys_update_name",
@@ -1966,31 +1740,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.desktop_continue_shopping",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.desktop_home_page",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.desktop_image",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.editors",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.enable_wish_list",
@@ -2045,10 +1807,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.items.*.content_type",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.items.*.description",
@@ -2066,10 +1825,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.items.*.kb_article",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.items.*.local_currency",
@@ -2116,10 +1872,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.items.*.picture",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.items.*.price",
@@ -2155,10 +1908,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.items.*.request_method",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.items.*.short_description",
@@ -2223,10 +1973,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.items.*.url",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.items.*.visible_standalone",
@@ -2238,10 +1985,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.manager",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_class_name",
@@ -2311,10 +2055,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_policy",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_scope.link",
@@ -2335,10 +2076,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_update_name",
@@ -2471,17 +2209,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.activity_due",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval",
@@ -2492,159 +2224,93 @@
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assigned_to",
                     "data_type": "string",
-                    "example_values": [
-                        ""
-                    ],
                     "column_name": "Assigned To",
                     "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.assignment_group",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_duration",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.calendar_duration",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.calendar_stc",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.close_notes",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.closed_at",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.closed_by",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.cmdb_ci",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments_and_work_notes",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.company",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.contact_type",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_address",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.description",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
@@ -2664,24 +2330,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.impact",
@@ -2699,10 +2356,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.location",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.made_sla",
@@ -2752,24 +2406,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_interaction",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.price",
@@ -2805,10 +2450,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.requested_date",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.requested_for.link",
@@ -2833,25 +2475,16 @@
                 {
                     "data_path": "action_result.data.*.short_description",
                     "data_type": "string",
-                    "example_values": [
-                        ""
-                    ],
                     "column_name": "Short Description",
                     "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.special_instructions",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.stage",
@@ -2934,10 +2567,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_updated_by",
@@ -2955,10 +2585,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_approval",
@@ -2983,45 +2610,27 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -3167,10 +2776,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.content_type",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.description",
@@ -3188,10 +2794,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.kb_article",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.mandatory_attachment",
@@ -3217,17 +2820,11 @@
                 },
                 {
                     "data_path": "action_result.data.*.picture",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.request_method",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.short_description",
@@ -3295,10 +2892,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.url",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.variables.*.attributes",
@@ -3316,10 +2910,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.variables.*.displayvalue",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.variables.*.friendly_type",
@@ -3330,10 +2921,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.variables.*.help_text",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.variables.*.id",
@@ -3399,10 +2987,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.variables.*.value",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.visible_standalone",
@@ -3451,12 +3036,13 @@
             "description": "Get a list of items",
             "type": "investigate",
             "identifier": "list_services",
+            "verbose": "The 'search text' parameter will search the text in 'Name', 'Display Name', 'Short Description', and 'Description' fields of an item.",
             "read_only": true,
             "parameters": {
                 "catalog_sys_id": {
                     "data_type": "string",
                     "order": 0,
-                    "description": "SYS ID of the catalog",
+                    "description": "SYS ID of a catalog",
                     "contains": [
                         "servicenow catalog sys id",
                         "md5"
@@ -3498,39 +3084,59 @@
                     "data_path": "action_result.parameter.catalog_sys_id",
                     "data_type": "string",
                     "example_values": [
-                        "742ce428d7211100f2d224837e61036d"
+                        "e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
-                        "servicenow catalog sys id",
                         "md5"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.category_sys_id",
                     "data_type": "string",
+                    "example_values": [
+                        "00728916937002002dcef157b67ffb6d"
+                    ],
                     "contains": [
-                        "servicenow category sys id",
                         "md5"
                     ]
                 },
                 {
                     "data_path": "action_result.parameter.max_results",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "action_result.parameter.search_text",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.catalogs.*.active",
-                    "data_type": "boolean",
+                    "data_type": "numeric",
                     "example_values": [
-                        true,
-                        false
+                        100
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.catalogs.*.sys_id",
+                    "data_path": "action_result.parameter.search_text",
+                    "data_type": "string",
+                    "example_values": [
+                        "change"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.availability",
+                    "data_type": "string",
+                    "example_values": [
+                        "on_desktop"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.billable",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.catalogs",
                     "data_type": "string",
                     "example_values": [
                         "e0d08b13c3330100c8b837659bba8fb4"
@@ -3540,119 +3146,266 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.catalogs.*.title",
+                    "data_path": "action_result.data.*.category.link",
                     "data_type": "string",
                     "example_values": [
-                        "Service Catalog"
+                        "https://dev87901.service-now.com/api/now/table/sc_category/00728916937002002dcef157b67ffb6d"
+                    ],
+                    "contains": [
+                        "url"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.category.sys_id",
+                    "data_path": "action_result.data.*.category.value",
                     "data_type": "string",
                     "example_values": [
-                        "e15706fc0a0a0aa7007fc21e1ab70c2f"
+                        "00728916937002002dcef157b67ffb6d"
                     ],
                     "contains": [
                         "md5"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.category.title",
+                    "data_path": "action_result.data.*.cost",
                     "data_type": "string",
                     "example_values": [
-                        "Can We Help You?"
+                        "0"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.content_type",
+                    "data_path": "action_result.data.*.custom_cart",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan.link",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "https://dev87901.service-now.com/api/now/table/sc_cat_item_delivery_plan/523da512c611228900811a37c97c2014"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "523da512c611228900811a37c97c2014"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_plan_script",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.delivery_time",
+                    "data_type": "string",
+                    "example_values": [
+                        "1970-01-03 00:00:00"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.description",
                     "data_type": "string",
                     "example_values": [
-                        "<p>Here you can request a new Knowledge Base to be used. A Knowledge Base can be used to store Knowledge in an organization and anyone can request for a new one to be created.</p>"
+                        "<p class=\"p1\"><font size=\"2\"><span class=\"s1\">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. \u00a0This will be confirmed by your Change Management team.</span></font></p>"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.entitlement_script",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.group",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.hide_sp",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.icon",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.ignore_price",
                     "data_type": "string",
                     "example_values": [
-                        "images/icons/catalog_item.gifx"
+                        "true"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.kb_article",
+                    "data_path": "action_result.data.*.image",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.list_price",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "0"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.local_currency",
-                    "data_type": "string",
-                    "example_values": [
-                        "USD"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.localized_price",
-                    "data_type": "string",
-                    "example_values": [
-                        "$5,600.00"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.localized_recurring_price",
-                    "data_type": "string",
-                    "example_values": [
-                        "$0.00"
-                    ]
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.mandatory_attachment",
-                    "data_type": "boolean",
+                    "data_type": "string",
                     "example_values": [
-                        true,
-                        false
+                        "false"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.meta",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.mobile_hide_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.mobile_picture",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.mobile_picture_type",
+                    "data_type": "string",
+                    "example_values": [
+                        "use_desktop_picture"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.model",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.name",
                     "data_type": "string",
                     "example_values": [
-                        "Request Knowledge Base"
+                        "Retire a Standard Change Template"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_attachment_v2",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_cart",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_cart_v2",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_delivery_time_v2",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_order",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_order_now",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_proceed_checkout",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_quantity",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_quantity_v2",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_search",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.no_wishlist_v2",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.omit_price",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "data_type": "numeric",
+                    "data_type": "string",
                     "example_values": [
-                        0
+                        "30"
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.ordered_item_link",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.picture",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.preview",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "JavaScript: popupOpenStandard(\"com.glideapp.servicecatalog_cat_item_view.do?v=1&sysparm_id=011f117a9f3002002920bde8132e7020&sysparm_preview=true\", \"summary\");"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.price",
                     "data_type": "string",
                     "example_values": [
-                        "$5,600.00"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.price_currency",
-                    "data_type": "string",
-                    "example_values": [
-                        "USD"
+                        "0"
                     ]
                 },
                 {
@@ -3663,60 +3416,51 @@
                     "data_path": "action_result.data.*.recurring_price",
                     "data_type": "string",
                     "example_values": [
-                        "$0.00"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.recurring_price_currency",
-                    "data_type": "string",
-                    "example_values": [
-                        "USD"
+                        "0"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.request_method",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.roles",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sc_catalogs",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "e0d08b13c3330100c8b837659bba8fb4"
+                    ],
+                    "contains": [
+                        "md5"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.sc_ic_item_staging",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sc_ic_version",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.short_description",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.show_variable_help_on_load",
                     "data_type": "string",
                     "example_values": [
-                        "Request for a Knowledge Base"
+                        "false"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.show_delivery_time",
-                    "data_type": "boolean",
+                    "data_path": "action_result.data.*.start_closed",
+                    "data_type": "string",
                     "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.show_price",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.show_quantity",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.show_wishlist",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
+                        "false"
                     ]
                 },
                 {
@@ -3727,49 +3471,168 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2015-06-25 20:19:46"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.sys_id",
                     "data_type": "string",
                     "example_values": [
-                        "81c887819f203100d8f8700c267fcfb5"
+                        "011f117a9f3002002920bde8132e7020"
                     ],
                     "contains": [
                         "md5"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.type",
+                    "data_path": "action_result.data.*.sys_mod_count",
                     "data_type": "string",
                     "example_values": [
-                        "record_producer"
+                        "21"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.url",
+                    "data_path": "action_result.data.*.sys_name",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "Retire a Standard Change Template"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_package.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_package.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "fe3f01141b1400106cc640c6cc4bcbc1"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_policy",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_scope.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_scope.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sys_update_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sc_cat_item_producer_011f117a9f3002002920bde8132e7020"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string",
+                    "example_values": [
+                        "2017-11-02 22:38:21"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.template",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "item"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.use_sc_layout",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.vendor",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.visible_bundle",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.visible_guide",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.visible_standalone",
-                    "data_type": "boolean",
+                    "data_type": "string",
                     "example_values": [
-                        true,
-                        false
+                        "true"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.workflow",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary.services_returned",
                     "data_type": "numeric",
                     "example_values": [
-                        5
+                        3
                     ]
                 },
                 {
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Services returned: 5"
+                        "Services returned: 3"
                     ]
                 },
                 {
@@ -3841,31 +3704,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.entitlement_script",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.header_icon",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.homepage_image",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.homepage_renderer",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.homepage_renderer.link",
@@ -3889,24 +3740,15 @@
                 },
                 {
                     "data_path": "action_result.data.*.icon",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.image",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.location",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.mobile_hide_description",
@@ -3917,10 +3759,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.mobile_picture",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.mobile_subcategory_render_type",
@@ -3931,10 +3770,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.module",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.order",
@@ -3945,10 +3781,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent.link",
@@ -3972,10 +3805,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.roles",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sc_catalog.link",
@@ -4077,10 +3907,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_policy",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_scope.link",
@@ -4101,10 +3928,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_update_name",
@@ -4221,38 +4045,23 @@
                 },
                 {
                     "data_path": "action_result.data.*.description",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.desktop_continue_shopping",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.desktop_home_page",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.desktop_image",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.editors",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.enable_wish_list",
@@ -4263,10 +4072,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.manager",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_class_name",
@@ -4344,10 +4150,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_policy",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_scope.link",
@@ -4368,10 +4171,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_update_name",
@@ -4502,37 +4302,22 @@
                 },
                 {
                     "data_path": "action_result.data.*.activity_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6352,6 +6137,10 @@
                     "data_type": "string"
                 },
                 {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
+                },
+                {
                     "contains": [
                         "servicenow table"
                     ],
@@ -6360,10 +6149,6 @@
                         "incident"
                     ],
                     "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.parameter.is_sys_id",
-                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.active",
@@ -7373,6 +7158,10 @@
                     "column_name": "ID"
                 },
                 {
+                    "data_path": "action_result.parameter.is_sys_id",
+                    "data_type": "boolean"
+                },
+                {
                     "contains": [
                         "servicenow table"
                     ],
@@ -7388,10 +7177,6 @@
                     ],
                     "data_path": "action_result.parameter.vault_id",
                     "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.parameter.is_sys_id",
-                    "data_type": "boolean"
                 },
                 {
                     "data_path": "action_result.data.*.active",
@@ -8421,6 +8206,12 @@
                     "description": "Name of the table to be searched task",
                     "data_type": "string",
                     "order": 0
+                },
+                "max_results": {
+                    "default": 100,
+                    "description": "Max number of records to return",
+                    "data_type": "numeric",
+                    "order": 2
                 }
             },
             "output": [
@@ -8431,6 +8222,10 @@
                         "failed"
                     ],
                     "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.parameter.max_results",
+                    "data_type": "numeric"
                 },
                 {
                     "data_path": "action_result.parameter.query",

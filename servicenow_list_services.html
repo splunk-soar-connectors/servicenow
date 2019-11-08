@@ -144,9 +144,8 @@
                         <th>Name</th>
                         <th>Short Description</th>
                         <th>Item SYS ID</th>
-                        <th>Category Name</th>
                         <th>Category SYS ID</th>
-                        <th>Catalog Name : Catalog SYS ID</th>
+                        <th>Catalog SYS ID</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -161,11 +160,10 @@
                                     <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                                 </a>
                             </td>
-                            <td>{{ data.category.title }}</td>
-                            {% if data.category.sys_id %}
+                            {% if data.category.value %}
                                 <td>
-                                    <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.sys_id }}' }], 0, {{ container.id }}, null, false);">
-                                        {{ data.category.sys_id }}
+                                    <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.value }}' }], 0, {{ container.id }}, null, false);">
+                                        {{ data.category.value }}
                                         &nbsp;
                                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                                     </a>
@@ -176,8 +174,8 @@
                             <td>
                                 {% for catalog in data.catalogs %}
                                     <ul>
-                                        <li> {{ catalog.title }} : <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog.sys_id }}' }], 0, {{ container.id }}, null, false);">
-                                                {{ catalog.sys_id }}
+                                        <li> <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog }}' }], 0, {{ container.id }}, null, false);">
+                                                {{ catalog }}
                                                 &nbsp;
                                                 <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                                             </a> </li>
