@@ -251,7 +251,7 @@
                     "data_path": "action_result.data.*.caller_id.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/77ad8176731313005754660c4cf6a7de"
+                        "https://devtest.service-now.com/api/now/table/sys_user/77ad8176731313005754660c4cf6a7de"
                     ],
                     "contains": [
                         "url"
@@ -304,7 +304,7 @@
                     "data_path": "action_result.data.*.closed_by.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -455,7 +455,7 @@
                     "data_path": "action_result.data.*.opened_by.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -524,7 +524,7 @@
                     "data_path": "action_result.data.*.resolved_by.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -600,7 +600,7 @@
                     "data_path": "action_result.data.*.sys_domain.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "contains": [
                         "url"
@@ -909,7 +909,7 @@
                     "data_path": "action_result.data.*.caller_id.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/77ad8176731313005754660c4cf6a7de"
+                        "https://devtest.service-now.com/api/now/table/sys_user/77ad8176731313005754660c4cf6a7de"
                     ],
                     "contains": [
                         "url"
@@ -965,7 +965,7 @@
                     "data_path": "action_result.data.*.closed_by.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -1118,7 +1118,7 @@
                     "data_path": "action_result.data.*.opened_by.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -1187,7 +1187,7 @@
                     "data_path": "action_result.data.*.resolved_by.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -1263,7 +1263,7 @@
                     "data_path": "action_result.data.*.sys_domain.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "contains": [
                         "url"
@@ -1497,7 +1497,7 @@
                     "data_path": "action_result.data.*.categories.*.homepage_renderer.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_homepage_renderer/Default"
+                        "https://devtest.service-now.com/api/now/table/sc_homepage_renderer/Default"
                     ],
                     "contains": [
                         "url"
@@ -1562,7 +1562,7 @@
                     "data_path": "action_result.data.*.categories.*.parent.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_category/b0fdfb01932002009ca87a75e57ffbe9"
+                        "https://devtest.service-now.com/api/now/table/sc_category/b0fdfb01932002009ca87a75e57ffbe9"
                     ],
                     "contains": [
                         "url"
@@ -1586,7 +1586,7 @@
                     "data_path": "action_result.data.*.categories.*.sc_catalog.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_catalog/e0d08b13c3330100c8b837659bba8fb4"
+                        "https://devtest.service-now.com/api/now/table/sc_catalog/e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
                         "url"
@@ -1659,7 +1659,7 @@
                     "data_path": "action_result.data.*.categories.*.sys_package.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
+                        "https://devtest.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
                     ],
                     "contains": [
                         "url"
@@ -1683,7 +1683,7 @@
                     "data_path": "action_result.data.*.categories.*.sys_scope.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                        "https://devtest.service-now.com/api/now/table/sys_scope/global"
                     ],
                     "contains": [
                         "url"
@@ -2037,7 +2037,7 @@
                     "data_path": "action_result.data.*.sys_package.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_package/15dd41d41bd000106cc640c6cc4bcb17"
+                        "https://devtest.service-now.com/api/now/table/sys_package/15dd41d41bd000106cc640c6cc4bcb17"
                     ],
                     "contains": [
                         "url"
@@ -2061,7 +2061,7 @@
                     "data_path": "action_result.data.*.sys_scope.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                        "https://devtest.service-now.com/api/now/table/sys_scope/global"
                     ],
                     "contains": [
                         "url"
@@ -2388,7 +2388,7 @@
                     "data_path": "action_result.data.*.opened_by.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -2456,7 +2456,7 @@
                     "data_path": "action_result.data.*.requested_for.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "contains": [
                         "url"
@@ -2525,7 +2525,7 @@
                     "data_path": "action_result.data.*.sys_domain.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "contains": [
                         "url"
@@ -3149,7 +3149,7 @@
                     "data_path": "action_result.data.*.category.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_category/00728916937002002dcef157b67ffb6d"
+                        "https://devtest.service-now.com/api/now/table/sc_category/00728916937002002dcef157b67ffb6d"
                     ],
                     "contains": [
                         "url"
@@ -3180,7 +3180,7 @@
                     "data_path": "action_result.data.*.delivery_plan.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_cat_item_delivery_plan/523da512c611228900811a37c97c2014"
+                        "https://devtest.service-now.com/api/now/table/sc_cat_item_delivery_plan/523da512c611228900811a37c97c2014"
                     ],
                     "contains": [
                         "url"
@@ -3512,7 +3512,7 @@
                     "data_path": "action_result.data.*.sys_package.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
+                        "https://devtest.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
                     ],
                     "contains": [
                         "url"
@@ -3536,7 +3536,7 @@
                     "data_path": "action_result.data.*.sys_scope.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                        "https://devtest.service-now.com/api/now/table/sys_scope/global"
                     ],
                     "contains": [
                         "url"
@@ -3722,7 +3722,7 @@
                     "data_path": "action_result.data.*.homepage_renderer.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_homepage_renderer/Default"
+                        "https://devtest.service-now.com/api/now/table/sc_homepage_renderer/Default"
                     ],
                     "contains": [
                         "url"
@@ -3787,7 +3787,7 @@
                     "data_path": "action_result.data.*.parent.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_category/b0fdfb01932002009ca87a75e57ffbe9"
+                        "https://devtest.service-now.com/api/now/table/sc_category/b0fdfb01932002009ca87a75e57ffbe9"
                     ],
                     "contains": [
                         "url"
@@ -3811,7 +3811,7 @@
                     "data_path": "action_result.data.*.sc_catalog.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sc_catalog/e0d08b13c3330100c8b837659bba8fb4"
+                        "https://devtest.service-now.com/api/now/table/sc_catalog/e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
                         "url"
@@ -3889,7 +3889,7 @@
                     "data_path": "action_result.data.*.sys_package.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
+                        "https://devtest.service-now.com/api/now/table/sys_package/fe3f01141b1400106cc640c6cc4bcbc1"
                     ],
                     "contains": [
                         "url"
@@ -3913,7 +3913,7 @@
                     "data_path": "action_result.data.*.sys_scope.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                        "https://devtest.service-now.com/api/now/table/sys_scope/global"
                     ],
                     "contains": [
                         "url"
@@ -4132,7 +4132,7 @@
                     "data_path": "action_result.data.*.sys_package.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_package/global"
+                        "https://devtest.service-now.com/api/now/table/sys_package/global"
                     ],
                     "contains": [
                         "url"
@@ -4156,7 +4156,7 @@
                     "data_path": "action_result.data.*.sys_scope.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev87901.service-now.com/api/now/table/sys_scope/global"
+                        "https://devtest.service-now.com/api/now/table/sys_scope/global"
                     ],
                     "contains": [
                         "url"
@@ -4322,9 +4322,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.assigned_to",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4333,7 +4330,7 @@
                     ],
                     "data_path": "action_result.data.*.assigned_to.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
+                        "https://devtest.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
                     ],
                     "data_type": "string"
                 },
@@ -4349,9 +4346,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.assignment_group",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4360,7 +4354,7 @@
                     ],
                     "data_path": "action_result.data.*.assignment_group.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
                     ],
                     "data_type": "string"
                 },
@@ -4383,9 +4377,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4394,7 +4385,7 @@
                     ],
                     "data_path": "action_result.data.*.business_service.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
                     ],
                     "data_type": "string"
                 },
@@ -4431,9 +4422,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.caller_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4442,7 +4430,7 @@
                     ],
                     "data_path": "action_result.data.*.caller_id.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
                     ],
                     "data_type": "string"
                 },
@@ -4465,16 +4453,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.caused_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.child_incidents",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4502,9 +4484,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.closed_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4513,7 +4492,7 @@
                     ],
                     "data_path": "action_result.data.*.closed_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
+                        "https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
                     ],
                     "data_type": "string"
                 },
@@ -4529,9 +4508,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.cmdb_ci",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4540,7 +4516,7 @@
                     ],
                     "data_path": "action_result.data.*.cmdb_ci.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
                     ],
                     "data_type": "string"
                 },
@@ -4556,23 +4532,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.comments",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments_and_work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.company",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4581,7 +4548,7 @@
                     ],
                     "data_path": "action_result.data.*.company.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
+                        "https://devtest.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
                     ],
                     "data_type": "string"
                 },
@@ -4597,37 +4564,22 @@
                 },
                 {
                     "data_path": "action_result.data.*.contact_type",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4641,9 +4593,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4655,30 +4604,18 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.hold_reason",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4704,9 +4641,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.location",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4715,7 +4649,7 @@
                     ],
                     "data_path": "action_result.data.*.location.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
+                        "https://devtest.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
                     ],
                     "data_type": "string"
                 },
@@ -4770,7 +4704,7 @@
                     ],
                     "data_path": "action_result.data.*.opened_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
+                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
                     ],
                     "data_type": "string"
                 },
@@ -4786,29 +4720,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident.link",
                     "example_values": [
-                        "https://dev86320.service-now.com/api/now/table/incident/f12ca184735123002728660c4cf6a7ef"
+                        "https://devtest.service-now.com/api/now/table/incident/f12ca184735123002728660c4cf6a7ef"
                     ],
                     "data_type": "string"
                 },
@@ -4830,9 +4755,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4841,7 +4763,7 @@
                     ],
                     "data_path": "action_result.data.*.problem_id.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
+                        "https://devtest.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
                     ],
                     "data_type": "string"
                 },
@@ -4864,29 +4786,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopen_count",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_time",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.request_item.link",
                     "example_values": [
-                        "https://dev42704.service-now.com/api/now/table/sc_req_item/aeed229047801200e0ef563dbb9a71c2"
+                        "https://devtest2704.service-now.com/api/now/table/sc_req_item/aeed229047801200e0ef563dbb9a71c2"
                     ],
                     "data_type": "string"
                 },
@@ -4906,9 +4819,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.resolved_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4917,7 +4827,7 @@
                     ],
                     "data_path": "action_result.data.*.resolved_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "data_type": "string"
                 },
@@ -4933,9 +4843,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.rfc",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4944,7 +4851,7 @@
                     ],
                     "data_path": "action_result.data.*.rfc.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/change_request/15e9cf93db792300134cd100cf96192d"
+                        "https://devtest.service-now.com/api/now/table/change_request/15e9cf93db792300134cd100cf96192d"
                     ],
                     "data_type": "string"
                 },
@@ -4960,9 +4867,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sc_item_option",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4985,9 +4889,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -4999,9 +4900,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.subcategory",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5031,7 +4929,7 @@
                     ],
                     "data_path": "action_result.data.*.sys_domain.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "data_type": "string"
                 },
@@ -5074,9 +4972,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5095,23 +4990,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_approval",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_reject",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5123,44 +5009,26 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5297,16 +5165,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.activity_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5318,29 +5180,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assigned_to",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assigned_to.link",
                     "example_values": [
-                        "https://dev42704.service-now.com/api/now/table/sys_user/d8f57f140b20220050192f15d6673a98"
+                        "https://devtest2704.service-now.com/api/now/table/sys_user/d8f57f140b20220050192f15d6673a98"
                     ],
                     "data_type": "string"
                 },
@@ -5353,9 +5206,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.assignment_group",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5452,44 +5302,26 @@
                 },
                 {
                     "data_path": "action_result.data.*.business_duration",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_stc",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.calendar_duration",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.calendar_stc",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.caller_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5501,9 +5333,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.caused_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5515,95 +5344,56 @@
                 },
                 {
                     "data_path": "action_result.data.*.close_code",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.close_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "column_order": 7,
                     "data_path": "action_result.data.*.closed_at",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string",
                     "column_name": "Closed On"
                 },
                 {
                     "data_path": "action_result.data.*.closed_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.cmdb_ci",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments_and_work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.company",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.contact_type",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5617,9 +5407,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5631,30 +5418,18 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.hold_reason",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5680,9 +5455,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.location",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5726,7 +5498,7 @@
                     ],
                     "data_path": "action_result.data.*.opened_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "data_type": "string"
                 },
@@ -5742,23 +5514,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5772,9 +5535,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5793,37 +5553,22 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopened_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_time",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.resolved_at",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.resolved_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.rfc",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5846,9 +5591,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5860,9 +5602,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.subcategory",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5892,7 +5631,7 @@
                     ],
                     "data_path": "action_result.data.*.sys_domain.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "data_type": "string"
                 },
@@ -5935,9 +5674,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5956,9 +5692,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -5984,44 +5717,26 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6159,37 +5874,22 @@
                 },
                 {
                     "data_path": "action_result.data.*.activity_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6202,7 +5902,7 @@
                     ],
                     "data_path": "action_result.data.*.assigned_to.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
+                        "https://devtest.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
                     ],
                     "data_type": "string"
                 },
@@ -6226,7 +5926,7 @@
                     ],
                     "data_path": "action_result.data.*.assignment_group.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
                     ],
                     "data_type": "string"
                 },
@@ -6335,15 +6035,12 @@
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_service.link",
                     "example_values": [
-                        "https://dev86320.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
                     ],
                     "data_type": "string"
                 },
@@ -6385,7 +6082,7 @@
                     ],
                     "data_path": "action_result.data.*.caller_id.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
                     ],
                     "data_type": "string"
                 },
@@ -6408,16 +6105,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.caused_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.child_incidents",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6453,7 +6144,7 @@
                     ],
                     "data_path": "action_result.data.*.closed_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
+                        "https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
                     ],
                     "data_type": "string"
                 },
@@ -6477,7 +6168,7 @@
                     ],
                     "data_path": "action_result.data.*.cmdb_ci.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
                     ],
                     "data_type": "string"
                 },
@@ -6493,16 +6184,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.comments",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments_and_work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6515,7 +6200,7 @@
                     ],
                     "data_path": "action_result.data.*.company.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
+                        "https://devtest.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
                     ],
                     "data_type": "string"
                 },
@@ -6531,37 +6216,22 @@
                 },
                 {
                     "data_path": "action_result.data.*.contact_type",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6575,9 +6245,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6589,30 +6256,18 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.hold_reason",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6646,7 +6301,7 @@
                     ],
                     "data_path": "action_result.data.*.location.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
+                        "https://devtest.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
                     ],
                     "data_type": "string"
                 },
@@ -6701,7 +6356,7 @@
                     ],
                     "data_path": "action_result.data.*.opened_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
+                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
                     ],
                     "data_type": "string"
                 },
@@ -6717,23 +6372,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6755,7 +6401,7 @@
                     ],
                     "data_path": "action_result.data.*.problem_id.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
+                        "https://devtest.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
                     ],
                     "data_type": "string"
                 },
@@ -6778,23 +6424,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopen_count",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_time",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6814,7 +6451,7 @@
                     ],
                     "data_path": "action_result.data.*.resolved_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "data_type": "string"
                 },
@@ -6830,9 +6467,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.rfc",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6855,9 +6489,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6869,9 +6500,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.subcategory",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6901,7 +6529,7 @@
                     ],
                     "data_path": "action_result.data.*.sys_domain.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "data_type": "string"
                 },
@@ -6944,9 +6572,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6965,23 +6590,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_approval",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_reject",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -6993,44 +6609,26 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7187,37 +6785,22 @@
                 },
                 {
                     "data_path": "action_result.data.*.activity_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7230,7 +6813,7 @@
                     ],
                     "data_path": "action_result.data.*.assigned_to.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
+                        "https://devtest.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
                     ],
                     "data_type": "string"
                 },
@@ -7254,7 +6837,7 @@
                     ],
                     "data_path": "action_result.data.*.assignment_group.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
                     ],
                     "data_type": "string"
                 },
@@ -7363,15 +6946,12 @@
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_service.link",
                     "example_values": [
-                        "https://dev86320.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
                     ],
                     "data_type": "string"
                 },
@@ -7413,7 +6993,7 @@
                     ],
                     "data_path": "action_result.data.*.caller_id.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
                     ],
                     "data_type": "string"
                 },
@@ -7436,16 +7016,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.caused_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.child_incidents",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7481,7 +7055,7 @@
                     ],
                     "data_path": "action_result.data.*.closed_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
+                        "https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
                     ],
                     "data_type": "string"
                 },
@@ -7505,7 +7079,7 @@
                     ],
                     "data_path": "action_result.data.*.cmdb_ci.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
                     ],
                     "data_type": "string"
                 },
@@ -7521,16 +7095,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.comments",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments_and_work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7543,7 +7111,7 @@
                     ],
                     "data_path": "action_result.data.*.company.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
+                        "https://devtest.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
                     ],
                     "data_type": "string"
                 },
@@ -7559,37 +7127,22 @@
                 },
                 {
                     "data_path": "action_result.data.*.contact_type",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7603,9 +7156,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7617,30 +7167,18 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.hold_reason",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7674,7 +7212,7 @@
                     ],
                     "data_path": "action_result.data.*.location.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
+                        "https://devtest.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
                     ],
                     "data_type": "string"
                 },
@@ -7729,7 +7267,7 @@
                     ],
                     "data_path": "action_result.data.*.opened_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
+                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
                     ],
                     "data_type": "string"
                 },
@@ -7745,23 +7283,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7783,7 +7312,7 @@
                     ],
                     "data_path": "action_result.data.*.problem_id.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
+                        "https://devtest.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
                     ],
                     "data_type": "string"
                 },
@@ -7806,23 +7335,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.reopen_count",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_time",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7842,7 +7362,7 @@
                     ],
                     "data_path": "action_result.data.*.resolved_by.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "data_type": "string"
                 },
@@ -7858,9 +7378,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.rfc",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7883,9 +7400,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7897,9 +7411,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.subcategory",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7929,7 +7440,7 @@
                     ],
                     "data_path": "action_result.data.*.sys_domain.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "data_type": "string"
                 },
@@ -7969,9 +7480,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -7990,23 +7498,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_approval",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_reject",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8018,44 +7517,26 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8159,9 +7640,6 @@
                 },
                 {
                     "data_path": "action_result.message",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8252,59 +7730,37 @@
                 },
                 {
                     "data_path": "action_result.data.*.activity_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.additional_assignee_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.admin_password",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.admin_user",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval",
                     "example_values": [
-                        "not requested",
-                        ""
+                        "not requested"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_history",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.approval_set",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.assigned_to",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8313,8 +7769,8 @@
                     ],
                     "data_path": "action_result.data.*.assigned_to.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
-                        "https://dev27698.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+                        "https://devtest.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
                     ],
                     "data_type": "string"
                 },
@@ -8331,9 +7787,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.assignment_group",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8342,8 +7795,8 @@
                     ],
                     "data_path": "action_result.data.*.assignment_group.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e",
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e",
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
                     ],
                     "data_type": "string"
                 },
@@ -8361,16 +7814,12 @@
                 {
                     "data_path": "action_result.data.*.business_duration",
                     "example_values": [
-                        "",
                         "1970-01-22 21:46:21"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.business_service",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8379,8 +7828,8 @@
                     ],
                     "data_path": "action_result.data.*.business_service.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16",
-                        "https://dev27698.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16",
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
                     ],
                     "data_type": "string"
                 },
@@ -8397,7 +7846,6 @@
                 {
                     "data_path": "action_result.data.*.business_stc",
                     "example_values": [
-                        "",
                         "1892781"
                     ],
                     "data_type": "string"
@@ -8405,7 +7853,6 @@
                 {
                     "data_path": "action_result.data.*.calendar_duration",
                     "example_values": [
-                        "",
                         "1970-04-02 20:46:21"
                     ],
                     "data_type": "string"
@@ -8413,16 +7860,12 @@
                 {
                     "data_path": "action_result.data.*.calendar_stc",
                     "example_values": [
-                        "",
                         "7937181"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.caller_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8431,8 +7874,8 @@
                     ],
                     "data_path": "action_result.data.*.caller_id.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2006",
-                        "https://dev27698.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2006",
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
                     ],
                     "data_type": "string"
                 },
@@ -8457,23 +7900,18 @@
                 },
                 {
                     "data_path": "action_result.data.*.caused_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.child_incidents",
                     "example_values": [
-                        "0",
-                        ""
+                        "0"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.close_code",
                     "example_values": [
-                        "",
                         "Closed/Resolved by Caller"
                     ],
                     "data_type": "string"
@@ -8481,7 +7919,6 @@
                 {
                     "data_path": "action_result.data.*.close_notes",
                     "example_values": [
-                        "",
                         "Closed before close notes were made mandatory\n\t\t"
                     ],
                     "data_type": "string"
@@ -8489,7 +7926,6 @@
                 {
                     "data_path": "action_result.data.*.closed_at",
                     "example_values": [
-                        "",
                         "2018-02-08 23:10:06"
                     ],
                     "data_type": "string",
@@ -8498,9 +7934,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.closed_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8509,8 +7942,8 @@
                     ],
                     "data_path": "action_result.data.*.closed_by.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
-                        "https://dev27698.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
+                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
+                        "https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
                     ],
                     "data_type": "string"
                 },
@@ -8527,16 +7960,10 @@
                 },
                 {
                     "data_path": "action_result.data.*.cluster_node",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.cmdb_ci",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8545,8 +7972,8 @@
                     ],
                     "data_path": "action_result.data.*.cmdb_ci.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7",
-                        "https://dev27698.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7",
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
                     ],
                     "data_type": "string"
                 },
@@ -8563,23 +7990,14 @@
                 },
                 {
                     "data_path": "action_result.data.*.comments",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.comments_and_work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.company",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8588,8 +8006,8 @@
                     ],
                     "data_path": "action_result.data.*.company.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec",
-                        "https://dev27698.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
+                        "https://devtest.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec",
+                        "https://devtest.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
                     ],
                     "data_type": "string"
                 },
@@ -8606,79 +8024,48 @@
                 {
                     "data_path": "action_result.data.*.contact_type",
                     "example_values": [
-                        "self-service",
-                        ""
+                        "self-service"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_display",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.correlation_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.database_name",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.database_password",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.database_tablespace",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.database_type",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.database_url",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.database_user",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_plan",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.delivery_task",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8692,9 +8079,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.due_date",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8706,30 +8090,18 @@
                 },
                 {
                     "data_path": "action_result.data.*.expected_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.follow_up",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.group_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.hold_reason",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8750,9 +8122,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.instance_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8764,9 +8133,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.instance_url",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8778,9 +8144,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.location",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8789,7 +8152,7 @@
                     ],
                     "data_path": "action_result.data.*.location.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
+                        "https://devtest.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646"
                     ],
                     "data_type": "string"
                 },
@@ -8847,8 +8210,8 @@
                     ],
                     "data_path": "action_result.data.*.opened_by.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441",
-                        "https://dev27698.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441",
+                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
                     ],
                     "data_type": "string"
                 },
@@ -8865,29 +8228,20 @@
                 },
                 {
                     "data_path": "action_result.data.*.order",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.parent_incident.link",
                     "example_values": [
-                        "https://dev86300.service-now.com/api/now/table/incident/f12ca184735123002720060c4cf6a7ef"
+                        "https://devtest00.service-now.com/api/now/table/incident/f12ca184735123002720060c4cf6a7ef"
                     ],
                     "data_type": "string"
                 },
@@ -8900,9 +8254,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.primary",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8917,9 +8268,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -8928,7 +8276,7 @@
                     ],
                     "data_path": "action_result.data.*.problem_id.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
+                        "https://devtest.service-now.com/api/now/table/problem/9d3a266ac6112287004e37fb2ceb0133"
                     ],
                     "data_type": "string"
                 },
@@ -8960,38 +8308,27 @@
                 {
                     "data_path": "action_result.data.*.reopen_count",
                     "example_values": [
-                        "0",
-                        ""
+                        "0"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.reopened_time",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.resolved_at",
                     "example_values": [
-                        "",
                         "2018-05-10 19:56:12"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.resolved_by",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -9000,8 +8337,8 @@
                     ],
                     "data_path": "action_result.data.*.resolved_by.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
-                        "https://dev27698.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "data_type": "string"
                 },
@@ -9018,9 +8355,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.rfc",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -9029,7 +8363,7 @@
                     ],
                     "data_path": "action_result.data.*.rfc.link",
                     "example_values": [
-                        "https://dev27698.service-now.com/api/now/table/change_request/15e9cf93db792300134cd100cf96192d"
+                        "https://devtest.service-now.com/api/now/table/change_request/15e9cf93db792300134cd100cf96192d"
                     ],
                     "data_type": "string"
                 },
@@ -9065,9 +8399,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sla_due",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -9087,9 +8418,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.subcategory",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -9121,8 +8449,8 @@
                     ],
                     "data_path": "action_result.data.*.sys_domain.link",
                     "example_values": [
-                        "https://dev51696.service-now.com/api/now/table/sys_user_group/global",
-                        "https://dev27698.service-now.com/api/now/table/sys_user_group/global"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global",
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "data_type": "string"
                 },
@@ -9166,9 +8494,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.sys_tags",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -9188,24 +8513,19 @@
                 },
                 {
                     "data_path": "action_result.data.*.time_worked",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_approval",
                     "example_values": [
-                        "proceed",
-                        ""
+                        "proceed"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.upon_reject",
                     "example_values": [
-                        "cancel",
-                        ""
+                        "cancel"
                     ],
                     "data_type": "string"
                 },
@@ -9219,58 +8539,34 @@
                 },
                 {
                     "data_path": "action_result.data.*.user_input",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.validation_error",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.war_version",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.watch_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_end",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_notes_list",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.work_start",
-                    "example_values": [
-                        ""
-                    ],
                     "data_type": "string"
                 },
                 {
@@ -9284,8 +8580,7 @@
                 {
                     "data_path": "action_result.message",
                     "example_values": [
-                        "Important data: value",
-                        ""
+                        "Important data: value"
                     ],
                     "data_type": "string"
                 },
