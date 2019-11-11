@@ -81,8 +81,8 @@ class ServicenowConnector(BaseConnector):
             self._base_url = self._base_url[:-1]
 
         try:
-            self._first_run_container = int(config.get('first_run_container', 10000))
-            self._max_container = int(config.get('max_container', 100))
+            self._first_run_container = int(config.get('first_run_container', SERVICENOW_DEFAULT_LIMIT))
+            self._max_container = int(config.get('max_container', DEFAULT_MAX_RESULTS))
         except Exception as e:
             return self.set_status(phantom.APP_ERROR, "Error: {}".format(str(e)))
 
