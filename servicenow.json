@@ -3087,6 +3087,7 @@
                         "e0d08b13c3330100c8b837659bba8fb4"
                     ],
                     "contains": [
+                        "servicenow catalog sys id",
                         "md5"
                     ]
                 },
@@ -3097,6 +3098,7 @@
                         "00728916937002002dcef157b67ffb6d"
                     ],
                     "contains": [
+                        "servicenow category sys id",
                         "md5"
                     ]
                 },
