@@ -5139,6 +5139,12 @@
                 "end_time": {
                     "description": "Parameter ignored in this app",
                     "data_type": "numeric"
+                },
+                "severity": {
+                    "required": false,
+                    "description": "Severity for the newly created artifacts",
+                    "data_type": "string",
+                    "default": "medium"
                 }
             },
             "output": [],
