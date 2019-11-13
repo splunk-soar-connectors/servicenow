@@ -921,6 +921,14 @@ class ServicenowConnector(BaseConnector):
         # Ingest the issues
         failed = 0
         label = self.get_config().get('ingest', {}).get('container_label')
+        if config.get('severity'):
+            severity = config.get('severity', 'medium').lower()
+            ret_val, message = self._validate_custom_severity(action_result, severity)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+        else:
+            severity = config.get('severity', 'medium').lower()
+
         for issue in issues:
             d = issue.get('description')
             sd = issue.get('short_description')
@@ -928,6 +936,7 @@ class ServicenowConnector(BaseConnector):
                 data=issue,
                 description=d.encode('utf-8'),
                 label=label,
+                severity=severity,
                 name='{}'.format(sd.encode('utf-8')),
                 source_data_identifier=issue['sys_id']
             )
@@ -944,6 +953,7 @@ class ServicenowConnector(BaseConnector):
                 description=sd.encode('utf-8'),
                 cef=issue,
                 label='issue',
+                severity=severity,
                 name=issue['number'],
                 source_data_identifier=issue['sys_id']
             )
@@ -995,6 +1005,28 @@ class ServicenowConnector(BaseConnector):
         self.save_state(self._state)
 
         return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _validate_custom_severity(self, action_result, severity):
+
+        try:
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)
+            resp_json = r.json()
+        except Exception as e:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities from platform: {0}".format(e)), None)
+
+        if r.status_code == 401:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities from platform: {0}".format(e)), None)
+
+        if r.status_code != 200:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities from platform: {0}".format(resp_json.get('message', 'Unknown Error'))), None)
+
+        severities = [s['name'] for s in resp_json['data']]
+
+        if severity not in severities:
+            return RetVal(action_result.set_status(phantom.APP_ERROR,
+                            "Supplied severity, {0}, not found in configured severities: {1}".format(severity, ', '.join(severities))), None)
+        else:
+            return RetVal(phantom.APP_SUCCESS, {})
 
     def handle_action(self, param):
         """Function that handles all the actions
