@@ -57,6 +57,13 @@
             "order": 2,
             "data_type": "password",
             "description": "Password"
+        },
+        "severity": {
+            "required": false,
+            "order": 7,
+            "description": "Severity to apply to Containers and Artifacts ingested via On Poll (Automation user must have System Settings permissions)",
+            "data_type": "string",
+            "default": "medium"
         }
     },
     "actions": [
@@ -5139,6 +5146,10 @@
                 "end_time": {
                     "description": "Parameter ignored in this app",
                     "data_type": "numeric"
+                },
+                "severity": {
+                    "description": "Parameter ignored in this app",
+                    "data_type": "string"
                 }
             },
             "output": [],

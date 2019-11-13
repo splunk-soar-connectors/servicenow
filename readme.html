@@ -1,0 +1,20 @@
+<!-- File: readme.html
+  Copyright (c) 2016-2019 Splunk Inc.
+
+  SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+  without a valid written license from Splunk Inc. is PROHIBITED.
+-->
+
+<p>
+<h2>Using Custom Severities on Ingested Data</h2>
+<br>
+If you decide to use custom severities to apply to Containers and Artifacts ingested via On Poll, then you must make sure that the automation user you use has the correct permissions.
+<br><br>
+By default, the automation user is selected to run the ServiceNow ingestion action. (See <b>Asset Configuration</b>><b>Asset Settings</b>><b>Advanced</b>)
+The automation user does <b>NOT</b> have access to view or edit <b>System Settings</b>, which includes the permission to view the custom severities on your instance.
+This will cause your On Poll action to fail since your user cannot pull the custom severities on your instance.
+<br><br>
+In order to solve this problem, you must create a user of type <b>Automation</b> and assign this user a Role that has permissions to view or edit <b>System Settings</b>
+(<b>Administration</b>><b>User Management</b>><b>Users</b><b>>+ User</b> button on the top right corner). Then, choose this user in your ServiceNow <b>Asset Settings</b>
+under <b>Advanced</b> and you will be able to successfully apply custom severities to your ingested data.
+<br><br>
