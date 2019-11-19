@@ -769,7 +769,7 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        catalog_sys_id = param.get("sys_id")
+        catalog_sys_id = param["sys_id"]
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
@@ -822,7 +822,7 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
         try:
-            sys_id = param.get("sys_id")
+            sys_id = param["sys_id"]
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
 
@@ -854,7 +854,7 @@ class ServicenowConnector(BaseConnector):
         payload = dict()
         query = list()
         catalog_sys_id = param.get("catalog_sys_id")
-        sys_id = param.get("sys_id")
+        sys_id = param["sys_id"]
         category_sys_id = param.get("category_sys_id")
         search_text = param.get("search_text")
 
@@ -1036,7 +1036,7 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_INVALID_PARAM.format(param="quantity")), None
 
         try:
-            sys_id = param.get("sys_id")
+            sys_id = param["sys_id"]
         except:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
 
