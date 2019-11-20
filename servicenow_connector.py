@@ -854,7 +854,7 @@ class ServicenowConnector(BaseConnector):
         payload = dict()
         query = list()
         catalog_sys_id = param.get("catalog_sys_id")
-        sys_id = param["sys_id"]
+        sys_id = param.get("sys_id")
         category_sys_id = param.get("category_sys_id")
         search_text = param.get("search_text")
 
