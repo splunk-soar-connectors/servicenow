@@ -1,0 +1,51 @@
+<!-- File: readme.html
+ Copyright (c) 2016-2019 Splunk Inc.
+
+ SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
+ without a valid written license from Splunk Inc. is PROHIBITED.
+-->
+
+<p>This App is an Ingestion source. In the Phantom documentation, in the <a href="../admin/">Administration Manual</a> under the <a href="../admin/sources">Data Sources</a> section, you will find an explanation of how ingestion apps work and how information is extracted from data sources. There is a general explanation in the overview section, and some individual apps have their own sections.</p>
+
+<p><b>Notes</b>
+   <ul>
+		<li><b>Asset Configuration Parameter</b></li>
+           <ul>
+			   <li>
+					on_poll_table: Table to ingest issues from.
+			   </li>
+			   <li>
+					on_poll_filter: Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name).
+			   </li>
+			   <li>
+					first_run_container: Maximum containers to ingest for the first run of scheduled polling.
+			   </li>
+			   <li>
+					max_container: Maximum containers to ingest for subsequent runs of scheduled polling.
+			   </li>
+           </ul>
+       <br>
+
+       <li><b>The functioning of On Poll</b></li>
+			
+			<ul>
+				<li> On Poll ingests the details of the tickets/records of a table provided by the user. An ingested container's name will be set to the 'short_description' of the ticket/record. If the ticket/record does not have any short_description then a default name will be given to the container.</li>
+				<br>
+				<li><b>Two ways of polling</b></li>
+					<ul>
+						<li>Manual polling</li>
+						<ul>
+							<li>The application will fetch the number of tickets/records controlled by the container_count parameter set in the Poll Now window.</li>
+							<li>Tickets/records can be restricted by providing a filter in the configuration parameter.</li>
+						</ul>
+						<br>
+						<li>Scheduled Polling</li>
+						<ul>
+							<li>The application will fetch the number of tickets/records, controlled by the 'first_run_container' configuration parameter for the first run of Scheduled Polling and by the 'max_container' configuration parameter for the other runs of Scheduled Polling. Each poll will ingest tickets/records which have been created or updated since the previous run of Scheduled Polling.</li>
+						</ul>
+					</ul>
+				</ul>
+			</ul>	
+       <br>
+   </ul>
+</p>

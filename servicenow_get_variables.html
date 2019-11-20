@@ -98,9 +98,13 @@
                         <td>
                         {{ question }}
                     </td>
-                    <td>
-                        {{ answer }}
-                    </td>
+                    {% if answer %}
+                        <td>
+                            {{ answer }}
+                        </td>
+                    {% else %}
+                        <td> None </td>
+                    {% endif %}
                     </tr>
                     {% endfor %}
                 {% else %}

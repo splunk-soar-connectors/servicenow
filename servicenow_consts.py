@@ -53,7 +53,8 @@ SERVICENOW_ERR_API_UNSUPPORTED_METHOD = "Unsupported method"
 SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = 'Provide username and password to generate OAuth token for running Test Connectivity for the first time'
 SERVICENOW_ERR_EMPTY_FIELDS = "The fields dictionary was detected to be empty"
 SERVICENOW_ERR_ONE_PARAM_REQ = "Please specify at least one of the parameters short_description, description, or fields to create the ticket with"
-SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details."
+SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details"
+SERVICENOW_ERR_INVALID_PARAM = "Please provide non-zero positive integer in '{param}'"
 
 SERVICENOW_CREATED_TICKET = "Created ticket"
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"
@@ -63,7 +64,6 @@ SERVICENOW_BASE_QUERY_URI = "/table/"
 DEFAULT_MAX_RESULTS = 100
 SERVICENOW_TICKET_FOOTNOTE = "Added by Phantom for container id: "
 SERVICENOW_DEFAULT_TABLE = "incident"
-ON_POLL_MAX_RESULTS = 10000
 
 SERVICENOW_MAX_COUNT_VALUE = 4294967295
 SERVICENOW_INGEST_LATEST_ITEMS = "latest first"
@@ -72,3 +72,6 @@ SERVICENOW_INGEST_OLDEST_ITEMS = "oldest first"
 SERVICENOW_ITEM_OPT_MTOM_TABLE = "sc_item_option_mtom"
 SERVICENOW_ITEM_OPT_TABLE = "sc_item_option"
 SERVICENOW_ITEM_OPT_NEW_TABLE = "item_option_new"
+
+SERVICENOW_DEFAULT_OFFSET = 0
+SERVICENOW_DEFAULT_LIMIT = 10000
