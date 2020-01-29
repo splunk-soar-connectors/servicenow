@@ -1,5 +1,5 @@
 # File: servicenow_connector.py
-# Copyright (c) 2016-2019 Splunk Inc.
+# Copyright (c) 2016-2020 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -19,7 +19,6 @@ import json
 import magic
 import requests
 from bs4 import BeautifulSoup
-from bs4 import UnicodeDammit
 from datetime import datetime
 import re
 
@@ -115,16 +114,6 @@ class ServicenowConnector(BaseConnector):
 
         if (not error_info):
             return error_details
-
-        try:
-            if ('message' in error_info) and error_info.get('message'):
-                error_details['message'] = UnicodeDammit(error_info['message']).unicode_markup.encode('utf-8')
-
-            if ('detail' in error_info) and error_info.get('detail'):
-                error_details['detail'] = UnicodeDammit(error_info['detail']).unicode_markup.encode('utf-8')
-        except:
-            # Do nothing as error occurred due to Unicode characters in the error messages
-            pass
 
         return error_details
 
@@ -231,7 +220,7 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
-            r = requests.post('{}{}{}'.format(self._base_url, self._api_uri, UnicodeDammit(endpoint).unicode_markup.encode('utf-8')),
+            r = requests.post('{}{}{}'.format(self._base_url, self._api_uri, endpoint),
                     auth=auth,
                     data=data,
                     headers=headers,
@@ -272,7 +261,7 @@ class ServicenowConnector(BaseConnector):
             action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_API_UNSUPPORTED_METHOD, method=method)
 
         try:
-            r = request_func('{}{}{}'.format(self._base_url, self._api_uri, UnicodeDammit(endpoint).unicode_markup.encode('utf-8')),
+            r = request_func('{}{}{}'.format(self._base_url, self._api_uri, endpoint),
                     auth=auth,
                     json=data,
                     headers=headers,
@@ -1402,9 +1391,9 @@ class ServicenowConnector(BaseConnector):
                 sd = 'Phantom added container name (short description of the ticke/record found empty)'
             container = dict(
                 data=issue,
-                description=UnicodeDammit(d).unicode_markup.encode('utf-8'),
+                description=d,
                 label=label,
-                name='{}'.format(UnicodeDammit(sd).unicode_markup.encode('utf-8')),
+                name='{}'.format(sd),
                 source_data_identifier=issue['sys_id']
             )
 
@@ -1417,7 +1406,7 @@ class ServicenowConnector(BaseConnector):
             artifact_dict = dict(
                 container_id=container_id,
                 data=issue,
-                description=UnicodeDammit(sd).unicode_markup.encode('utf-8'),
+                description=sd,
                 cef=issue,
                 label='issue',
                 name=issue.get('number', 'Phantom added artifact name (number of the ticke/record found empty)'),
