@@ -12,6 +12,9 @@
     "app_version": "2.0.0",
     "min_phantom_version": "4.5.15922",
     "python_version": "3",
+    "latest_tested_versions": [
+        "Cloud, Build tag: glide-madrid-12-18-2018__patch7a-10-01-2019, January 29 2020"
+    ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",
