@@ -1,5 +1,5 @@
 # File: servicenow_consts.py
-# Copyright (c) 2016-2019 Splunk Inc.
+# Copyright (c) 2016-2020 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -37,8 +37,8 @@ SERVICENOW_JSON_EXTRACT_HASHES = "extract_hashes"
 SERVICENOW_JSON_EXTRACT_URLS = "extract_urls"
 
 SERVICENOW_ERR_API_INITIALIZATION = "API Initialization failed"
-SERVICENOW_ERR_CONNECTIVITY_TEST = "Connectivity test failed"
-SERVICENOW_SUCC_CONNECTIVITY_TEST = "Connectivity test passed"
+SERVICENOW_ERR_CONNECTIVITY_TEST = "Test Connectivity Failed"
+SERVICENOW_SUCC_CONNECTIVITY_TEST = "Test Connectivity Passed"
 SERVICENOW_ERR_CREATE_TICKET_FAILED = "Ticket creation failed"
 SERVICENOW_SUCC_TICKET_CREATED = "Created ticket with key: {key}"
 SERVICENOW_ERR_LIST_TICKETS_FAILED = "Failed to get ticket listing"

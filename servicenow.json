@@ -6,11 +6,15 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2019 Splunk Inc.",
+    "license": "Copyright (c) 2016-2020 Splunk Inc.",
     "type": "ticketing",
-    "main_module": "servicenow_connector.pyc",
-    "app_version": "1.2.58",
+    "main_module": "servicenow_connector.py",
+    "app_version": "2.0.0",
     "min_phantom_version": "4.5.15922",
+    "python_version": "3",
+    "latest_tested_versions": [
+        "Cloud, Build tag: glide-madrid-12-18-2018__patch7a-10-01-2019, January 29 2020"
+    ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",

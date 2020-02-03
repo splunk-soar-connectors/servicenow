@@ -1,5 +1,5 @@
 # File: servicenow_connector.py
-# Copyright (c) 2016-2019 Splunk Inc.
+# Copyright (c) 2016-2020 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -19,7 +19,6 @@ import json
 import magic
 import requests
 from bs4 import BeautifulSoup
-from bs4 import UnicodeDammit
 from datetime import datetime
 import re
 
@@ -115,16 +114,6 @@ class ServicenowConnector(BaseConnector):
 
         if (not error_info):
             return error_details
-
-        try:
-            if ('message' in error_info) and error_info.get('message'):
-                error_details['message'] = UnicodeDammit(error_info['message']).unicode_markup.encode('utf-8')
-
-            if ('detail' in error_info) and error_info.get('detail'):
-                error_details['detail'] = UnicodeDammit(error_info['detail']).unicode_markup.encode('utf-8')
-        except:
-            # Do nothing as error occurred due to Unicode characters in the error messages
-            pass
 
         return error_details
 
@@ -231,7 +220,7 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
-            r = requests.post('{}{}{}'.format(self._base_url, self._api_uri, UnicodeDammit(endpoint).unicode_markup.encode('utf-8')),
+            r = requests.post('{}{}{}'.format(self._base_url, self._api_uri, endpoint),
                     auth=auth,
                     data=data,
                     headers=headers,
@@ -272,7 +261,7 @@ class ServicenowConnector(BaseConnector):
             action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_API_UNSUPPORTED_METHOD, method=method)
 
         try:
-            r = request_func('{}{}{}'.format(self._base_url, self._api_uri, UnicodeDammit(endpoint).unicode_markup.encode('utf-8')),
+            r = request_func('{}{}{}'.format(self._base_url, self._api_uri, endpoint),
                     auth=auth,
                     json=data,
                     headers=headers,
@@ -1065,7 +1054,7 @@ class ServicenowConnector(BaseConnector):
             invalid_variables = mandatory_variables
         else:
             for var in mandatory_variables:
-                if var not in variables_param.keys():
+                if var not in list(variables_param.keys()):
                     invalid_variables = mandatory_variables
                     break
 
@@ -1402,9 +1391,9 @@ class ServicenowConnector(BaseConnector):
                 sd = 'Phantom added container name (short description of the ticke/record found empty)'
             container = dict(
                 data=issue,
-                description=UnicodeDammit(d).unicode_markup.encode('utf-8'),
+                description=d,
                 label=label,
-                name='{}'.format(UnicodeDammit(sd).unicode_markup.encode('utf-8')),
+                name='{}'.format(sd),
                 source_data_identifier=issue['sys_id']
             )
 
@@ -1417,7 +1406,7 @@ class ServicenowConnector(BaseConnector):
             artifact_dict = dict(
                 container_id=container_id,
                 data=issue,
-                description=UnicodeDammit(sd).unicode_markup.encode('utf-8'),
+                description=sd,
                 cef=issue,
                 label='issue',
                 name=issue.get('number', 'Phantom added artifact name (number of the ticke/record found empty)'),
@@ -1527,20 +1516,65 @@ class ServicenowConnector(BaseConnector):
 
 if __name__ == '__main__':
 
-    import sys
-    # import simplejson as json
     import pudb
+    import argparse
 
     pudb.set_trace()
 
-    with open(sys.argv[1]) as f:
+    argparser = argparse.ArgumentParser()
+
+    argparser.add_argument('input_test_json', help='Input Test JSON file')
+    argparser.add_argument('-u', '--username', help='username', required=False)
+    argparser.add_argument('-p', '--password', help='password', required=False)
+
+    args = argparser.parse_args()
+    session_id = None
+
+    username = args.username
+    password = args.password
+
+    if (username is not None and password is None):
+
+        # User specified a username but not a password, so ask
+        import getpass
+        password = getpass.getpass("Password: ")
+
+    if (username and password):
+        try:
+            print ("Accessing the Login page")
+            login_url = BaseConnector._get_phantom_base_url() + "login"
+            r = requests.get(login_url, verify=False)
+            csrftoken = r.cookies['csrftoken']
+
+            data = dict()
+            data['username'] = username
+            data['password'] = password
+            data['csrfmiddlewaretoken'] = csrftoken
+
+            headers = dict()
+            headers['Cookie'] = 'csrftoken=' + csrftoken
+            headers['Referer'] = BaseConnector._get_phantom_base_url() + 'login'
+
+            print ("Logging into Platform to get the session id")
+            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            session_id = r2.cookies['sessionid']
+        except Exception as e:
+            print ("Unable to get session id from the platfrom. Error: " + str(e))
+            exit(1)
+
+    with open(args.input_test_json) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
         print(json.dumps(in_json, indent=4))
 
         connector = ServicenowConnector()
         connector.print_progress_message = True
+
+        if (session_id is not None):
+            in_json['user_session_token'] = session_id
+            connector._set_csrf_info(csrftoken, headers['Referer'])
+
         ret_val = connector._handle_action(json.dumps(in_json), None)
-        print ret_val
+        print (json.dumps(json.loads(ret_val), indent=4))
 
     exit(0)
