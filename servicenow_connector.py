@@ -127,8 +127,11 @@ class ServicenowConnector(BaseConnector):
         :return: input_str (Processed input string based on following logic 'input_str - Python 3; encoded input_str - Python 2')
         """
 
-        if self._python_version == 2:
-            input_str = UnicodeDammit(input_str).unicode_markup.encode('utf-8')
+        try:
+            if input_str and self._python_version == 2:
+                input_str = UnicodeDammit(input_str).unicode_markup.encode('utf-8')
+        except:
+            self.debug_print("Error occurred while handling python 2to3 compatibility for the input string")
 
         return input_str
 
@@ -795,7 +798,7 @@ class ServicenowConnector(BaseConnector):
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
 
-            if len(items.get("result")) == 0:
+            if len(items.get("result")) == SERVICENOW_DEFAULT_LIMIT:
                 break
 
             payload['sysparm_offset'] = payload['sysparm_offset'] + SERVICENOW_DEFAULT_LIMIT
@@ -1301,6 +1304,7 @@ class ServicenowConnector(BaseConnector):
                 item_option_value = self._handle_py_ver_compat_for_input_str(item_option_value)
             except:
                 self.debug_print("Error while handling Unicode characters (if any or if applicable) in the 'sc_item_option' value")
+                item_option_value = item['sc_item_option']['value']
 
             endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_TABLE, item_option_value)
             ret_val, auth, headers = self._get_authorization_credentials(action_result)
@@ -1334,6 +1338,7 @@ class ServicenowConnector(BaseConnector):
                 question_id = self._handle_py_ver_compat_for_input_str(question_id)
             except:
                 self.debug_print("Error while handling Unicode characters (if any or if applicable) in the 'question_id' value")
+                question_id = response['result']['item_option_new']['value']
 
             endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
             ret_val, auth, headers = self._get_authorization_credentials(action_result)
