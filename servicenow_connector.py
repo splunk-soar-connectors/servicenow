@@ -89,15 +89,15 @@ class ServicenowConnector(BaseConnector):
 
         try:
             self._first_run_container = int(config.get('first_run_container', SERVICENOW_DEFAULT_LIMIT))
-            if self._first_run_container < 0:
-                SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="first_run_container")
+            if self._first_run_container <= 0:
+                return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="first_run_container"))
         except:
             return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="first_run_container"))
 
         try:
             self._max_container = int(config.get('max_container', DEFAULT_MAX_RESULTS))
-            if self._max_container < 0:
-                SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_container")
+            if self._max_container <= 0:
+                return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_container"))
         except:
             return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_container"))
 
@@ -893,7 +893,7 @@ class ServicenowConnector(BaseConnector):
                 limit = int(limit)
 
                 if (limit <= 0):
-                    action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results")), None
+                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results")), None
             except:
                 return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results")), None
 
@@ -969,7 +969,7 @@ class ServicenowConnector(BaseConnector):
                 limit = int(limit)
 
                 if (limit <= 0):
-                    action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
             except:
                 return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
 
@@ -1002,7 +1002,7 @@ class ServicenowConnector(BaseConnector):
                 limit = int(limit)
 
                 if (limit <= 0):
-                    action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
             except:
                 return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
 
@@ -1096,7 +1096,7 @@ class ServicenowConnector(BaseConnector):
             quantity = int(quantity)
 
             if (quantity <= 0):
-                action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="quantity"))
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="quantity"))
         except:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="quantity"))
 
@@ -1243,7 +1243,7 @@ class ServicenowConnector(BaseConnector):
                 limit = int(limit)
 
                 if (limit <= 0):
-                    action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
             except:
                 return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
 
@@ -1372,7 +1372,6 @@ class ServicenowConnector(BaseConnector):
 
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
-        # action_result = self.add_action_result(ActionResult(dict(param)))
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
         endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
@@ -1383,7 +1382,7 @@ class ServicenowConnector(BaseConnector):
                 limit = int(limit)
 
                 if (limit <= 0):
-                    action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
             except:
                 return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
 
