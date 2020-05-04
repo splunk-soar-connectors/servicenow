@@ -479,6 +479,7 @@ class ServicenowConnector(BaseConnector):
             self.save_progress(SERVICENOW_ERR_CONNECTIVITY_TEST)
             return action_result.set_status(phantom.APP_ERROR)
 
+        self.save_progress(SERVICENOW_SUCC_CONNECTIVITY_TEST)
         return action_result.set_status(phantom.APP_SUCCESS, SERVICENOW_SUCC_CONNECTIVITY_TEST)
 
     def _get_fields(self, param, action_result):
@@ -798,7 +799,7 @@ class ServicenowConnector(BaseConnector):
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
 
-            if len(items.get("result")) == SERVICENOW_DEFAULT_LIMIT:
+            if len(items.get("result")) < SERVICENOW_DEFAULT_LIMIT:
                 break
 
             payload['sysparm_offset'] = payload['sysparm_offset'] + SERVICENOW_DEFAULT_LIMIT
