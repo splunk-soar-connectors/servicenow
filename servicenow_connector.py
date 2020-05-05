@@ -153,6 +153,9 @@ class ServicenowConnector(BaseConnector):
             if (isinstance(error_info, dict)):
                 error_details = error_info
             else:
+                if (isinstance(resp_json, dict)):
+                    error_details["message"] = self._handle_py_ver_compat_for_input_str(error_info) if error_info else "Not Found"
+                    error_details["detail"] = self._handle_py_ver_compat_for_input_str(resp_json.get("error_description", "Not supplied"))
                 return error_details
 
         # Handle the scenario of "message" and "detail" keys not in the required format
@@ -392,7 +395,8 @@ class ServicenowConnector(BaseConnector):
             return self._get_new_oauth_token(action_result)
 
         if (phantom.is_fail(ret_val)):
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error in token request"), None)
+            error_message = self._handle_py_ver_compat_for_input_str(action_result.get_message())
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error in token request. Error: {}".format(error_message)), None)
 
         self._state['oauth_token'] = response_json
         self._state['retrieval_time'] = datetime.now().strftime(DT_STR_FORMAT)
@@ -457,7 +461,7 @@ class ServicenowConnector(BaseConnector):
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
-        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 

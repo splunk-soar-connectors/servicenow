@@ -77,6 +77,10 @@
         content: "\25cf"; font-size: 10px;
     }
 
+    .servicenow .no-word-wrap {
+        white-space: nowrap;
+    }
+
     .servicenow a.nowrap {
         white-space:nowrap;
     }
@@ -96,7 +100,7 @@
             <tr>
                 <td>Catalog SYS ID</td>
                 <td>
-                    <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                    <a class="no-word-wrap" href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.sys_id }}' }], 0, {{ container.id }}, null, false);">
                         {{ result.param.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -147,7 +151,7 @@
                             {% for category in data.categories %}
                                 <tr>
                                     <td>
-                                        <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ category.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                                        <a class="no-word-wrap" href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ category.sys_id }}' }], 0, {{ container.id }}, null, false);">
                                             {{ category.sys_id }}
                                             &nbsp;
                                             <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -180,7 +184,7 @@
                             {% for item in data.items %}
                                 <tr>
                                     <td>
-                                        <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ item.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                                        <a class="no-word-wrap" href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ item.sys_id }}' }], 0, {{ container.id }}, null, false);">
                                             {{ item.sys_id }}
                                             &nbsp;
                                             <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -189,7 +193,7 @@
                                     <td>{{ item.name }}</td>
                                     <td>{{ item.short_description }}</td>
                                     <td>
-                                        <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ item.category.value }}' }], 0, {{ container.id }}, null, false);">
+                                        <a class="no-word-wrap" href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ item.category.value }}' }], 0, {{ container.id }}, null, false);">
                                             {{ item.category.value }}
                                             &nbsp;
                                             <span class="fa fa-caret-down" style="font-size: smaller;"></span>
