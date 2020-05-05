@@ -531,6 +531,7 @@ class ServicenowConnector(BaseConnector):
             data.update(fields)
 
         short_desc = param.get(SERVICENOW_JSON_SHORT_DESCRIPTION)
+        desc = param.get(SERVICENOW_JSON_DESCRIPTION)
 
         if ((not fields) and (not short_desc) and (SERVICENOW_JSON_DESCRIPTION not in param)):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_ONE_PARAM_REQ)
@@ -538,8 +539,15 @@ class ServicenowConnector(BaseConnector):
         if (short_desc):
             data.update({'short_description': short_desc})
 
-        data.update({'description': '{0}\n\n{1}{2}'.format(self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, '')), SERVICENOW_TICKET_FOOTNOTE,
-                self.get_container_id())})
+        if (desc):
+            data.update({'description': '{0}\n\n{1}{2}'.format(self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, '')), SERVICENOW_TICKET_FOOTNOTE,
+                    self.get_container_id())})
+        elif fields and 'description' in fields:
+            data.update({'description': '{0}\n\n{1}{2}'.format(self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, '')), SERVICENOW_TICKET_FOOTNOTE,
+                    self.get_container_id())})
+        else:
+            data.update({'description': '{0}\n\n{1}{2}'.format("", SERVICENOW_TICKET_FOOTNOTE,
+                    self.get_container_id())})
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=data, auth=auth, headers=headers, method="post")
 
