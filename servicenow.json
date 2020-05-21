@@ -10,10 +10,10 @@
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
     "app_version": "2.0.1",
-    "min_phantom_version": "4.5.15922",
+    "min_phantom_version": "4.6.19142",
     "python_version": "3",
     "latest_tested_versions": [
-        "Cloud, Build tag: glide-madrid-12-18-2018__patch7a-10-01-2019, January 29 2020"
+        "Cloud, Build tag: glide-madrid-12-18-2018__patch7a-10-01-2019, May 07 2020"
     ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
@@ -21,10 +21,13 @@
     "utctime_updated": "2020-02-03T23:34:57.000000Z",
     "configuration": {
         "username": {
-            "required": false,
-            "order": 1,
+            "order": 2,
             "data_type": "string",
             "description": "Username"
+        },
+        "ph": {
+            "data_type": "ph",
+            "order": 1
         },
         "url": {
             "required": true,
@@ -33,45 +36,38 @@
             "description": "Device URL including the port, e.g. https://myservicenow.enterprise.com:8080"
         },
         "on_poll_table": {
-            "required": false,
-            "order": 5,
+            "order": 6,
             "data_type": "string",
             "description": "Table to ingest issues from"
         },
         "on_poll_filter": {
-            "required": false,
-            "order": 6,
+            "order": 7,
             "data_type": "string",
             "description": "Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name)"
         },
         "client_id": {
-            "required": false,
-            "order": 3,
+            "order": 4,
             "data_type": "string",
             "description": "Client ID. OAuth will be preferred if provided"
         },
         "client_secret": {
-            "required": false,
-            "order": 4,
+            "order": 5,
             "data_type": "password",
             "description": "Client Secret. Required with Client ID"
         },
         "password": {
-            "required": false,
-            "order": 2,
+            "order": 3,
             "data_type": "password",
             "description": "Password"
         },
         "first_run_container": {
-            "required": false,
-            "order": 7,
+            "order": 8,
             "data_type": "numeric",
             "description": "Max container (For first run of schedule polling)",
             "default": 10000
         },
         "max_container": {
-            "required": false,
-            "order": 8,
+            "order": 9,
             "data_type": "numeric",
             "description": "Max container (For other runs of schedule polling)",
             "default": 100
@@ -91,7 +87,7 @@
         {
             "action": "add work note",
             "description": "Add a work note to a record",
-            "verbose": "User can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. User can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
+            "verbose": "Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
             "type": "generic",
             "identifier": "add_work_note",
             "read_only": false,
@@ -436,7 +432,7 @@
                         "servicenow ticket number"
                     ],
                     "example_values": [
-                        "INC0009002"
+                        "INC0000001"
                     ],
                     "column_name": "Ticket Number",
                     "column_order": 0
@@ -749,7 +745,7 @@
         {
             "action": "add comment",
             "description": "Add a comment to a record",
-            "verbose": "User can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. User can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
+            "verbose": "Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
             "type": "generic",
             "identifier": "add_comment",
             "read_only": false,
@@ -808,7 +804,8 @@
                     "data_path": "action_result.parameter.id",
                     "data_type": "string",
                     "example_values": [
-                        "1c832706732023002728660c4cf6a7b9"
+                        "1c832706732023002728660c4cf6a7b9",
+                        "INC0000001"
                     ],
                     "contains": [
                         "servicenow ticket sysid",
@@ -1099,7 +1096,7 @@
                         "servicenow ticket number"
                     ],
                     "example_values": [
-                        "INC0009002"
+                        "INC0000001"
                     ],
                     "column_name": "Ticket Number",
                     "column_order": 0
@@ -2165,8 +2162,7 @@
                 "variables": {
                     "data_type": "string",
                     "order": 1,
-                    "description": "Variables of the item",
-                    "required": false
+                    "description": "Variables of the item"
                 },
                 "quantity": {
                     "data_type": "numeric",
@@ -2750,6 +2746,7 @@
                         "e15706fc0a0a0aa7007fc21e1ab70c2f"
                     ],
                     "contains": [
+                        "servicenow category sys id",
                         "md5"
                     ]
                 },
@@ -4249,11 +4246,10 @@
             "description": "Get a list of tickets/records",
             "type": "investigate",
             "identifier": "list_tickets",
-            "verbose": "Steps for getting the required filter query are as follows: In the ServiceNow instance, navigate to the required table's page. Create the query in the ServiceNow UI. On the top-left corner of the page, right-click on the query string and select the 'Copy query' option to copy the required query string. This query string can be further used or modified as per the user's need to provide in the filter parameter of the action. If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>. If the <b>max_results</b> value is not specified, the action defaults to <b>100</b>. For specifying and getting the filter to work correctly, below is the criteria for the date-time fields: <ul><li>If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:mm:SS'). </li> <li>If the user provides date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:mm:SS</li></ul>",
+            "verbose": "Steps for getting the required filter query are as follows: In the ServiceNow instance, navigate to the required table's page. Create the query in the ServiceNow UI. On the top-left corner of the page, right-click on the query string and select the 'Copy query' option to copy the required query string. This query string can be further used or modified as per the user's need to provide in the filter parameter of the action. If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>. If the <b>max_results</b> value is not specified, the action defaults to <b>100</b>. For specifying and getting the filter to work correctly, below is the criteria for the date-time fields: <ul><li>If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:mm:SS'). </li> <li>If the user provides date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:mm:SS.</li></ul>",
             "read_only": true,
             "parameters": {
                 "filter": {
-                    "required": false,
                     "description": "Filter to use with action separated by '^' (e.g. description=This is a test^assigned_to=john.smith)",
                     "data_type": "string",
                     "order": 2
@@ -4286,10 +4282,16 @@
                 },
                 {
                     "data_path": "action_result.parameter.filter",
+                    "example_values": [
+                        "short_descriptionLIKEunder^priority=1"
+                    ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.parameter.max_results",
+                    "example_values": [
+                        100
+                    ],
                     "data_type": "numeric"
                 },
                 {
@@ -4297,6 +4299,9 @@
                         "servicenow table"
                     ],
                     "data_path": "action_result.parameter.table",
+                    "example_values": [
+                        "incident"
+                    ],
                     "data_type": "string"
                 },
                 {
@@ -5079,7 +5084,7 @@
             "description": "Create a new ticket/record",
             "type": "generic",
             "identifier": "create_ticket",
-            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b>. Additional values can be specified in the <b>fields</b> parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes.",
+            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b> (the values provided in the <b>short_description</b> and <b>description</b> action parameters will override the values provided for these keys in the <b>fields</b> action parameter). Additional values can be specified in the <b>fields</b> parameter. By default, the action appends the 'Added by Phantom for container id: <container_id_of_action_run>' footnote after the value of description provided either in the <b>description</b> or <b>fields</b> action parameters. If the value for <b>description</b> is not provided in any of the above-mentioned two action parameters, then, the default footnote will be added in the description of the created ticket. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either <i>true</i> or <i>false</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with a <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes.",
             "read_only": false,
             "parameters": {
                 "short_description": {
@@ -5104,8 +5109,7 @@
                         "vault id"
                     ],
                     "description": "Vault ID of file to attach to ticket",
-                    "data_type": "string",
-                    "required": false
+                    "data_type": "string"
                 },
                 "description": {
                     "description": "Ticket description",
@@ -5137,7 +5141,7 @@
                 {
                     "data_path": "action_result.parameter.fields",
                     "example_values": [
-                        "{\"made_sla\": true}"
+                        "{\"made_sla\":true,\"severity\":3,\"description\":\"This is testing description\"}"
                     ],
                     "data_type": "string"
                 },
@@ -5153,6 +5157,9 @@
                         "servicenow table"
                     ],
                     "data_path": "action_result.parameter.table",
+                    "example_values": [
+                        "incident"
+                    ],
                     "data_type": "string"
                 },
                 {
@@ -5481,7 +5488,7 @@
                     "column_name": "Ticket Number",
                     "data_path": "action_result.data.*.number",
                     "example_values": [
-                        "INC0010017"
+                        "INC0000001"
                     ],
                     "contains": [
                         "servicenow ticket number"
@@ -5806,7 +5813,7 @@
             "description": "Get ticket/record information",
             "type": "investigate",
             "identifier": "get_ticket",
-            "verbose": "If <b>table</b> value is not specified, the action defaults to the <b>incident</b>. User can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. User can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
+            "verbose": "If <b>table</b> value is not specified, the action defaults to the <b>incident</b>. Users can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
             "read_only": true,
             "parameters": {
                 "table": {
@@ -6686,7 +6693,7 @@
             "description": "Update ticket/record information",
             "type": "generic",
             "identifier": "update_ticket",
-            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes. User can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. User can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
+            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either 'true' or 'false' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": false}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes. Users can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
             "read_only": false,
             "parameters": {
                 "table": {
@@ -6706,8 +6713,7 @@
                         "vault id"
                     ],
                     "description": "Vault ID of file to attach to ticket",
-                    "data_type": "string",
-                    "required": false
+                    "data_type": "string"
                 },
                 "id": {
                     "contains": [
@@ -6721,7 +6727,6 @@
                     "order": 0
                 },
                 "fields": {
-                    "required": false,
                     "description": "JSON containing field values",
                     "data_type": "string",
                     "order": 2
@@ -6756,7 +6761,8 @@
                         "servicenow ticket number"
                     ],
                     "example_values": [
-                        "9c573169c611228700193229fff72400"
+                        "9c573169c611228700193229fff72400",
+                        "INC0000001"
                     ],
                     "column_order": 3,
                     "column_name": "ID"
@@ -7469,6 +7475,7 @@
                 },
                 {
                     "contains": [
+                        "servicenow ticket sysid",
                         "md5"
                     ],
                     "data_path": "action_result.data.*.sys_id",
@@ -7689,6 +7696,10 @@
                     "required": true,
                     "description": "Name of the table to be searched task",
                     "data_type": "string",
+                    "contains": [
+                        "servicenow table"
+                    ],
+                    "primary": true,
                     "order": 0
                 },
                 "max_results": {
@@ -7723,6 +7734,9 @@
                     "data_path": "action_result.parameter.query_table",
                     "example_values": [
                         "incident"
+                    ],
+                    "contains": [
+                        "servicenow table"
                     ],
                     "data_type": "string"
                 },
@@ -7775,8 +7789,7 @@
                     ],
                     "data_path": "action_result.data.*.assigned_to.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
-                        "https://devtest.service-now.com/api/now/table/sys_user/46b87022a9fe198101a78787e40d7547"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007"
                     ],
                     "data_type": "string"
                 },
@@ -7786,8 +7799,7 @@
                     ],
                     "data_path": "action_result.data.*.assigned_to.value",
                     "example_values": [
-                        "5137153cc611227c000bbd1bd8cd2007",
-                        "46b87022a9fe198101a78787e40d7547"
+                        "5137153cc611227c000bbd1bd8cd2007"
                     ],
                     "data_type": "string"
                 },
@@ -7801,8 +7813,7 @@
                     ],
                     "data_path": "action_result.data.*.assignment_group.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e",
-                        "https://devtest.service-now.com/api/now/table/sys_user_group/d625dccec0a8016700a222a0f7900d06"
+                        "https://devtest.service-now.com/api/now/table/sys_user_group/287ebd7da9fe198100f92cc8d1d2154e"
                     ],
                     "data_type": "string"
                 },
@@ -7812,8 +7823,7 @@
                     ],
                     "data_path": "action_result.data.*.assignment_group.value",
                     "example_values": [
-                        "287ebd7da9fe198100f92cc8d1d2154e",
-                        "d625dccec0a8016700a222a0f7900d06"
+                        "287ebd7da9fe198100f92cc8d1d2154e"
                     ],
                     "data_type": "string"
                 },
@@ -7834,7 +7844,6 @@
                     ],
                     "data_path": "action_result.data.*.business_service.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16",
                         "https://devtest.service-now.com/api/now/table/cmdb_ci_service/27d32778c0a8000b00db970eeaa60f16"
                     ],
                     "data_type": "string"
@@ -7880,8 +7889,7 @@
                     ],
                     "data_path": "action_result.data.*.caller_id.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2006",
-                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2005"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2006"
                     ],
                     "data_type": "string"
                 },
@@ -7891,16 +7899,14 @@
                     ],
                     "data_path": "action_result.data.*.caller_id.value",
                     "example_values": [
-                        "5137153cc611227c000bbd1bd8cd2006",
-                        "5137153cc611227c000bbd1bd8cd2005"
+                        "5137153cc611227c000bbd1bd8cd2006"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.category",
                     "example_values": [
-                        "inquiry",
-                        "network"
+                        "inquiry"
                     ],
                     "data_type": "string"
                 },
@@ -7948,8 +7954,7 @@
                     ],
                     "data_path": "action_result.data.*.closed_by.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
-                        "https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0"
+                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
                     ],
                     "data_type": "string"
                 },
@@ -7959,8 +7964,7 @@
                     ],
                     "data_path": "action_result.data.*.closed_by.value",
                     "example_values": [
-                        "681ccaf9c0a8016400b98a06818d57c7",
-                        "9ee1b13dc6112271007f9d0efdb69cd0"
+                        "681ccaf9c0a8016400b98a06818d57c7"
                     ],
                     "data_type": "string"
                 },
@@ -7978,8 +7982,7 @@
                     ],
                     "data_path": "action_result.data.*.cmdb_ci.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7",
-                        "https://devtest.service-now.com/api/now/table/cmdb_ci/b0c4030ac0a800090152e7a4564ca36c"
+                        "https://devtest.service-now.com/api/now/table/cmdb_ci/109562a3c611227500a7b7ff98cc0dc7"
                     ],
                     "data_type": "string"
                 },
@@ -7989,8 +7992,7 @@
                     ],
                     "data_path": "action_result.data.*.cmdb_ci.value",
                     "example_values": [
-                        "109562a3c611227500a7b7ff98cc0dc7",
-                        "b0c4030ac0a800090152e7a4564ca36c"
+                        "109562a3c611227500a7b7ff98cc0dc7"
                     ],
                     "data_type": "string"
                 },
@@ -8012,7 +8014,6 @@
                     ],
                     "data_path": "action_result.data.*.company.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec",
                         "https://devtest.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec"
                     ],
                     "data_type": "string"
@@ -8113,16 +8114,14 @@
                 {
                     "data_path": "action_result.data.*.impact",
                     "example_values": [
-                        "2",
-                        "1"
+                        "2"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.incident_state",
                     "example_values": [
-                        "1",
-                        "7"
+                        "1"
                     ],
                     "data_type": "string"
                 },
@@ -8190,7 +8189,6 @@
                 {
                     "data_path": "action_result.data.*.number",
                     "example_values": [
-                        "INC0000059",
                         "INC0000001"
                     ],
                     "contains": [
@@ -8203,8 +8201,7 @@
                 {
                     "data_path": "action_result.data.*.opened_at",
                     "example_values": [
-                        "2016-08-10 16:14:29",
-                        "2018-02-07 23:09:51"
+                        "2016-08-10 16:14:29"
                     ],
                     "data_type": "string",
                     "column_name": "Opened On",
@@ -8216,8 +8213,7 @@
                     ],
                     "data_path": "action_result.data.*.opened_by.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441",
-                        "https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7"
+                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
                     ],
                     "data_type": "string"
                 },
@@ -8227,8 +8223,7 @@
                     ],
                     "data_path": "action_result.data.*.opened_by.value",
                     "example_values": [
-                        "6816f79cc0a8016401c5a33be04be441",
-                        "681ccaf9c0a8016400b98a06818d57c7"
+                        "6816f79cc0a8016401c5a33be04be441"
                     ],
                     "data_type": "string"
                 },
@@ -8265,8 +8260,7 @@
                 {
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
-                        "3",
-                        "1"
+                        "3"
                     ],
                     "data_type": "string",
                     "column_name": "Priority",
@@ -8306,8 +8300,7 @@
                 {
                     "data_path": "action_result.data.*.reassignment_count",
                     "example_values": [
-                        "0",
-                        "1"
+                        "0"
                     ],
                     "data_type": "string"
                 },
@@ -8343,8 +8336,7 @@
                     ],
                     "data_path": "action_result.data.*.resolved_by.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007",
-                        "https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441"
+                        "https://devtest.service-now.com/api/now/table/sys_user/5137153cc611227c000bbd1bd8cd2007"
                     ],
                     "data_type": "string"
                 },
@@ -8354,8 +8346,7 @@
                     ],
                     "data_path": "action_result.data.*.resolved_by.value",
                     "example_values": [
-                        "5137153cc611227c000bbd1bd8cd2007",
-                        "6816f79cc0a8016401c5a33be04be441"
+                        "5137153cc611227c000bbd1bd8cd2007"
                     ],
                     "data_type": "string"
                 },
@@ -8386,8 +8377,7 @@
                 {
                     "data_path": "action_result.data.*.severity",
                     "example_values": [
-                        "3",
-                        "1"
+                        "3"
                     ],
                     "data_type": "string",
                     "column_name": "Severity",
@@ -8396,8 +8386,7 @@
                 {
                     "data_path": "action_result.data.*.short_description",
                     "example_values": [
-                        "Unable to access team file share",
-                        "phapp_servicenow_update, Run file reputation actions only"
+                        "Unable to access team file share"
                     ],
                     "data_type": "string",
                     "column_name": "Short Description",
@@ -8417,8 +8406,7 @@
                 {
                     "data_path": "action_result.data.*.state",
                     "example_values": [
-                        "1",
-                        "7"
+                        "1"
                     ],
                     "data_type": "string"
                 },
@@ -8436,16 +8424,14 @@
                 {
                     "data_path": "action_result.data.*.sys_created_by",
                     "example_values": [
-                        "admin",
-                        "pat"
+                        "admin"
                     ],
                     "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_created_on",
                     "example_values": [
-                        "2016-08-10 16:14:29",
-                        "2016-09-08 18:24:13"
+                        "2016-08-10 16:14:29"
                     ],
                     "data_type": "string"
                 },
@@ -8455,7 +8441,6 @@
                     ],
                     "data_path": "action_result.data.*.sys_domain.link",
                     "example_values": [
-                        "https://devtest.service-now.com/api/now/table/sys_user_group/global",
                         "https://devtest.service-now.com/api/now/table/sys_user_group/global"
                     ],
                     "data_type": "string"
@@ -8479,12 +8464,12 @@
                 },
                 {
                     "contains": [
+                        "servicenow ticket sysid",
                         "md5"
                     ],
                     "data_path": "action_result.data.*.sys_id",
                     "example_values": [
-                        "85071a1347c12200e0ef563dbb9a71c1",
-                        "9c573169c611228700193229fff72400"
+                        "85071a1347c12200e0ef563dbb9a71c1"
                     ],
                     "data_type": "string",
                     "column_name": "ID",
@@ -8493,8 +8478,7 @@
                 {
                     "data_path": "action_result.data.*.sys_mod_count",
                     "example_values": [
-                        "0",
-                        "22"
+                        "0"
                     ],
                     "data_type": "string"
                 },
@@ -8512,8 +8496,7 @@
                 {
                     "data_path": "action_result.data.*.sys_updated_on",
                     "example_values": [
-                        "2016-08-10 16:14:29",
-                        "2018-11-21 05:51:32"
+                        "2016-08-10 16:14:29"
                     ],
                     "data_type": "string"
                 },
@@ -8538,8 +8521,7 @@
                 {
                     "data_path": "action_result.data.*.urgency",
                     "example_values": [
-                        "2",
-                        "1"
+                        "2"
                     ],
                     "data_type": "string"
                 },
@@ -8617,14 +8599,13 @@
         {
             "action": "on poll",
             "description": "Ingest tickets from SNOW",
-            "verbose": "For specifying and getting the On Poll filter (available in config parameters) work correctly for the date-time fields, follow the next steps. If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:MM:SS'). If the user provides date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:MM:SS",
+            "verbose": "For specifying and getting the On Poll filter (available in config parameters) work correctly for the date-time fields, follow the next steps. If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:MM:SS'). If the user provides date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:MM:SS.",
             "type": "ingest",
             "identifier": "on_poll",
             "read_only": true,
             "parameters": {
                 "container_count": {
                     "default": 1,
-                    "required": false,
                     "description": "Maximum numer of tickets ingest during poll now",
                     "data_type": "numeric"
                 },

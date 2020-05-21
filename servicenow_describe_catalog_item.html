@@ -77,6 +77,10 @@
         content: "\25cf"; font-size: 10px;
     }
 
+    .servicenow .no-word-wrap {
+        white-space: nowrap;
+    }
+
     .servicenow a.nowrap {
         white-space:nowrap;
     }
@@ -96,7 +100,7 @@
             <tr>
                 <td>SYS ID</td>
                 <td>
-                    <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ result.param.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                    <a class="no-word-wrap" href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ result.param.sys_id }}' }], 0, {{ container.id }}, null, false);">
                         {{ result.param.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -127,7 +131,7 @@
                             <td>{{ data.category.title }}</td>
                             {% if data.category.sys_id %}
                                 <td>
-                                    <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                                    <a class="no-word-wrap" href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.sys_id }}' }], 0, {{ container.id }}, null, false);">
                                         {{ data.category.sys_id }}
                                         &nbsp;
                                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -138,13 +142,11 @@
                             {% endif %}
                             <td>
                                 {% for catalog in data.catalogs %}
-                                    <ul>
-                                        <li> {{ catalog.title }} : <a href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog.sys_id }}' }], 0, {{ container.id }}, null, false);">
-                                                {{ catalog.sys_id }}
-                                                &nbsp;
-                                                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                                            </a> </li>
-                                    </ul>
+                                    {{ catalog.title }} : <a class="no-word-wrap" href="javascript:;" onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                                                            {{ catalog.sys_id }}
+                                                            &nbsp;
+                                                            <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                                                        </a>
                                 {% endfor %}
                             </td>
                             <td>
