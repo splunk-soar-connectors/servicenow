@@ -25,9 +25,11 @@
             "data_type": "string",
             "description": "Username"
         },
-        "ph": {
-            "data_type": "ph",
-            "order": 1
+        "timezone": {
+            "data_type": "timezone",
+            "order": 1,
+            "required": false,
+            "description": "Timezone configured on ServiceNow"
         },
         "url": {
             "required": true,
