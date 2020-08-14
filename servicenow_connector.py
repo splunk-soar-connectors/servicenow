@@ -16,6 +16,7 @@ from phantom.vault import Vault
 from servicenow_consts import *
 
 import sys
+import pytz
 import json
 import magic
 import requests
@@ -313,7 +314,6 @@ class ServicenowConnector(BaseConnector):
             headers.update({'Content-Type': 'application/json'})
 
         resp_json = None
-
         request_func = getattr(requests, method)
 
         if (not request_func):
@@ -923,7 +923,6 @@ class ServicenowConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results")), None
 
         payload = dict()
-        query = list()
         catalog_sys_id = param.get("catalog_sys_id")
         sys_id = param.get("sys_id")
         category_sys_id = param.get("category_sys_id")
@@ -1467,7 +1466,7 @@ class ServicenowConnector(BaseConnector):
         last_time = self._state.get('last_time')
 
         if last_time and isinstance(last_time, float):
-            last_time = datetime.strftime(datetime.fromtimestamp(last_time), '%Y-%m-%d %H:%M:%S')
+            last_time = datetime.strftime(datetime.fromtimestamp(last_time), SERVICENOW_DATETIME_FORMAT)
 
         # Build the query for the issue search (sysparm_query)
         query = "ORDERBYsys_updated_on"
@@ -1498,10 +1497,11 @@ class ServicenowConnector(BaseConnector):
 
                 self.debug_print("Setting the 'max_tickets' to the value of 'first_run_container'. max_tickets: {}".format(max_tickets))
 
+        self.debug_print("Polling with this query: {0}".format(query))
+
         endpoint = '/table/' + config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
         params = {
             'sysparm_query': query,
-            'sysparm_display_value': 'true',
             'sysparm_exclude_reference_link': 'true'}
 
         limit = max_tickets
@@ -1514,7 +1514,7 @@ class ServicenowConnector(BaseConnector):
             return phantom.APP_ERROR
 
         if not issues:
-            return action_result.set_status(phantom.APP_ERROR, 'No issues found')
+            return action_result.set_status(phantom.APP_SUCCESS, 'No issues found. Nothing to ingest.')
 
         # TODO: handle cases where we go over the ingestions limit
 
@@ -1593,8 +1593,22 @@ class ServicenowConnector(BaseConnector):
         action_result.set_status(phantom.APP_SUCCESS, 'Containers created')
 
         if not self.is_poll_now():
-            updated_time = issues[-1]
-            self._state['last_time'] = updated_time.get("sys_updated_on")
+
+            if 'sys_updated_on' not in issues[-1]:
+                return action_result.set_status(phantom.APP_ERROR, "No updated time in last ingested incident.")
+
+            updated_time = issues[-1]["sys_updated_on"]
+
+            if 'timezone' in config:
+                dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT)
+                tz = pytz.timezone(config['timezone'])
+                new_dt = dt + tz.utcoffset(dt)
+                updated_time = new_dt.strftime(SERVICENOW_DATETIME_FORMAT)
+
+            self._state['last_time'] = updated_time
+
+            if self._state.get('first_run', True):
+                self._state['first_run'] = False
 
         if (failed):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FAILURES)
