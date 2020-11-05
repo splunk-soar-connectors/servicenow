@@ -454,6 +454,37 @@ class ServicenowConnector(BaseConnector):
 
         return ret_val, auth, headers
 
+    def _check_for_existing_container(self, sdi):
+
+        request_str = '{0}rest/container?page_size=0&_filter_source_data_identifier="{1}"&sort=create_time&order=asc'.format(self.get_phantom_base_url(), sdi)
+
+        try:
+            r = requests.get(request_str, verify=False)
+        except Exception as e:
+            self.debug_print("Error making local rest call: {0}".format(str(e)))
+            return 0
+
+        try:
+            resp_json = r.json()
+        except Exception as e:
+            self.debug_print('Exception caught parsing JSON: {0}'.format(str(e)))
+            return 0
+
+        if resp_json.get('failed'):
+            return 0
+
+        count = resp_json.get('count', -1)
+        self.debug_print('{0} existing container(s) with SDI {1}'.format(count, sdi))
+
+        if count > 0:
+            if count > 1:
+                self.debug_print('More than one container exists with SDI {0}. Going with oldest.'.format(sdi))
+            return resp_json['data'][0]['id']
+        elif count < 0:
+            self.debug_print('Something went wrong getting container count')
+            self.debug_print(resp_json)
+        return
+
     def _test_connectivity(self, param):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -1522,24 +1553,32 @@ class ServicenowConnector(BaseConnector):
         failed = 0
         label = self.get_config().get('ingest', {}).get('container_label')
         for issue in issues:
-            d = issue.get('description', '')
+
+            sdi = issue['sys_id']
             sd = issue.get('short_description')
-            if not sd:
-                sd = 'Phantom added container name (short description of the ticke/record found empty)'
-            sd = self._handle_py_ver_compat_for_input_str(sd)
-            container = dict(
-                data=issue,
-                description=d,
-                label=label,
-                name='{}'.format(sd),
-                source_data_identifier=issue['sys_id']
-            )
 
-            ret_val, _, container_id = self.save_container(container)
+            container_id = self._check_for_existing_container(sdi)
 
-            if phantom.is_fail(ret_val):
-                failed += 1
-                continue
+            if not container_id:
+
+                d = issue.get('description', '')
+                if not sd:
+                    sd = 'Phantom added container name (short description of the ticket/record found empty)'
+                sd = self._handle_py_ver_compat_for_input_str(sd)
+                container = dict(
+                    data=issue,
+                    description=d,
+                    label=label,
+                    name='{}'.format(sd),
+                    source_data_identifier=issue['sys_id']
+                )
+
+                ret_val, _, container_id = self.save_container(container)
+
+                if phantom.is_fail(ret_val):
+                    failed += 1
+                    continue
+
             artifacts = []
             artifact_dict = dict(
                 container_id=container_id,
