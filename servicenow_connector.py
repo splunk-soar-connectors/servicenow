@@ -744,6 +744,7 @@ class ServicenowConnector(BaseConnector):
 
     def _get_ticket_details(self, action_result, table, sys_id, is_sys_id=True):
 
+        ticket_sys_id = sys_id
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
@@ -792,6 +793,28 @@ class ServicenowConnector(BaseConnector):
                 ticket['attachment_details'] = attach_details
             except:
                 pass
+
+        endpoint = "/table/sys_journal_field"
+
+        params = {}
+        params["element_id"] = sys_id
+        params["sysparm_query"] = "element=comments^ORelement=work_notes"
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+
+        if (phantom.is_fail(ret_val)):
+            self.debug_print("Unable to fetch comments and work_notes for the ticket: {0}. Details: {1}".format(ticket_sys_id, action_result.get_message()))
+
+        comment_section = []
+        worknotes_section = []
+        if response.get("result", []):
+            for item in response.get("result", []):
+                if item['element'] == "comments":
+                    comment_section.append(item.get("value", ""))
+                elif item['element'] == "work_notes":
+                    worknotes_section.append(item.get("value", ""))
+
+        ticket['comments_section'] = comment_section
+        ticket['worknotes_section'] = worknotes_section
 
         action_result.add_data(ticket)
 
