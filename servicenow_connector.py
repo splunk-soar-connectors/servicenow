@@ -136,6 +136,47 @@ class ServicenowConnector(BaseConnector):
 
         return input_str
 
+    def _get_error_message_from_exception(self, e):
+        """ This method is used to get appropriate error message from the exception.
+        :param e: Exception object
+        :return: error message
+        """
+
+        error_msg = SERVICENOW_ERROR_MESSAGE
+        error_code = SERVICENOW_ERROR_CODE_MESSAGE
+        try:
+            if hasattr(e, "args"):
+                if len(e.args) > 1:
+                    error_code = e.args[0]
+                    error_msg = e.args[1]
+                elif len(e.args) == 1:
+                    error_code = SERVICENOW_ERROR_CODE_MESSAGE
+                    error_msg = e.args[0]
+            else:
+                error_code = SERVICENOW_ERROR_CODE_MESSAGE
+                error_msg = SERVICENOW_ERROR_MESSAGE
+        except:
+            error_code = SERVICENOW_ERROR_CODE_MESSAGE
+            error_msg = SERVICENOW_ERROR_MESSAGE
+
+        try:
+            error_msg = self._handle_py_ver_compat_for_input_str(error_msg)
+        except TypeError:
+            error_msg = TYPE_ERROR_MSG
+        except:
+            error_msg = SERVICENOW_ERROR_MESSAGE
+
+        try:
+            if error_code in SERVICENOW_ERROR_CODE_MESSAGE:
+                error_text = "Error Message: {0}".format(error_msg)
+            else:
+                error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
+        except:
+            self.debug_print("Error occurred while parsing error message")
+            error_text = PARSE_ERROR_MSG
+
+        return error_text
+
     def _get_error_details(self, resp_json):
 
         # Initialize the default error_details
@@ -228,7 +269,7 @@ class ServicenowConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse response as JSON", e), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse response as JSON", self._get_error_message_from_exception(e)), None)
 
         # What's with the special case 201?
         if (200 <= r.status_code < 205):
@@ -286,7 +327,7 @@ class ServicenowConnector(BaseConnector):
                     headers=headers,
                     params=params)
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -301,7 +342,7 @@ class ServicenowConnector(BaseConnector):
                     data=data  # Mostly this line
             )
         except Exception as e:
-            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
+            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -326,7 +367,7 @@ class ServicenowConnector(BaseConnector):
                     headers=headers,
                     params=params)
         except Exception as e:
-            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, e), resp_json)
+            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -413,7 +454,7 @@ class ServicenowConnector(BaseConnector):
                     self._state = {'first_run': self._state.get('first_run')}
             else:
                 self._state = {}
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse access token", e), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse access token", self._get_error_message_from_exception(e)), None)
 
     def _get_oauth_token(self, action_result, force_new=False):
         if (self._state.get('oauth_token') and not force_new):
@@ -461,13 +502,13 @@ class ServicenowConnector(BaseConnector):
         try:
             r = requests.get(request_str, verify=False)
         except Exception as e:
-            self.debug_print("Error making local rest call: {0}".format(str(e)))
+            self.debug_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
             return 0
 
         try:
             resp_json = r.json()
         except Exception as e:
-            self.debug_print('Exception caught parsing JSON: {0}'.format(str(e)))
+            self.debug_print('Exception caught parsing JSON: {0}'.format(self._get_error_message_from_exception(e)))
             return 0
 
         if resp_json.get('failed'):
@@ -532,7 +573,7 @@ class ServicenowConnector(BaseConnector):
         try:
             fields = json.loads(fields)
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE, e), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE, self._get_error_message_from_exception(e)), None)
 
         return RetVal(phantom.APP_SUCCESS, fields)
 
@@ -602,7 +643,7 @@ class ServicenowConnector(BaseConnector):
             try:
                 vault_process, response = self._add_attachment(action_result, table, created_ticket_id, vault_id)
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", e)
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", self._get_error_message_from_exception(e))
             if (phantom.is_success(vault_process)):
                 action_result.update_summary({'attachment_added': True, 'attachment_id': response['result']['sys_id']})
             else:
@@ -728,7 +769,7 @@ class ServicenowConnector(BaseConnector):
                 ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
                 action_result.update_summary({'attachment_added': ret_val})
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", e)
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", self._get_error_message_from_exception(e))
 
             if (phantom.is_success(ret_val)):
                 action_result.update_summary({'attachment_id': response['result']['sys_id']})
@@ -982,6 +1023,7 @@ class ServicenowConnector(BaseConnector):
         category_sys_id = param.get("category_sys_id")
         search_text = param.get("search_text")
 
+        query = []
         if catalog_sys_id:
             query.append("sc_catalogsLIKE{}".format(self._handle_py_ver_compat_for_input_str(catalog_sys_id)))
 
@@ -1187,7 +1229,7 @@ class ServicenowConnector(BaseConnector):
             try:
                 variables_param = json.loads(self._handle_py_ver_compat_for_input_str(variables_param))
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON input", e)
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON input", self._get_error_message_from_exception(e))
 
         endpoint = '/servicecatalog/items/{}'.format(sys_id)
 

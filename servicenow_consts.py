@@ -45,6 +45,11 @@ SERVICENOW_ERR_API_UNSUPPORTED_METHOD = "Unsupported method"
 SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = 'Provide username and password to generate OAuth token for running Test Connectivity for the first time'
 SERVICENOW_ERR_ONE_PARAM_REQ = "Please specify at least one of the parameters short_description, description, or fields to create the ticket with"
 SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details"
+SERVICENOW_ERROR_CODE_MESSAGE = "Error code unavailable"
+SERVICENOW_ERROR_MESSAGE = "Unknown error occurred. Please check the asset configuration and|or action parameters"
+TYPE_ERROR_MSG = "Error occurred while connecting to the ServiceNow server. Please check the asset configuration and|or the action parameters"
+PARSE_ERROR_MSG = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
+
 
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"
 SERVICENOW_BASE_QUERY_URI = "/table/"
