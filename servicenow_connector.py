@@ -1023,7 +1023,7 @@ class ServicenowConnector(BaseConnector):
         category_sys_id = param.get("category_sys_id")
         search_text = param.get("search_text")
 
-        query = []
+        query = list()
         if catalog_sys_id:
             query.append("sc_catalogsLIKE{}".format(self._handle_py_ver_compat_for_input_str(catalog_sys_id)))
 
