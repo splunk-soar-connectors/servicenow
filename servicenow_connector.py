@@ -8,6 +8,10 @@
 
 # Phantom imports
 import phantom.app as phantom
+try:
+    import phantom.rules as ph
+except:
+    pass
 from phantom.base_connector import BaseConnector
 from phantom.action_result import ActionResult
 from phantom.vault import Vault
@@ -88,19 +92,13 @@ class ServicenowConnector(BaseConnector):
         if (self._base_url.endswith('/')):
             self._base_url = self._base_url[:-1]
 
-        try:
-            self._first_run_container = int(config.get('first_run_container', SERVICENOW_DEFAULT_LIMIT))
-            if self._first_run_container <= 0:
-                return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="first_run_container"))
-        except:
-            return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="first_run_container"))
+        self._first_run_container = self._validate_integers(self, config.get('first_run_container', SERVICENOW_DEFAULT_LIMIT), 'first_run_container')
+        if self._first_run_container is None:
+            return self.get_status()
 
-        try:
-            self._max_container = int(config.get('max_container', DEFAULT_MAX_RESULTS))
-            if self._max_container <= 0:
-                return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_container"))
-        except:
-            return self.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_container"))
+        self._max_container = self._validate_integers(self, config.get('max_container', DEFAULT_MAX_RESULTS), 'max_container')
+        if self._max_container is None:
+            return self.get_status()
 
         self._host = self._base_url[self._base_url.find('//') + 2:]
         self._headers = {'Accept': 'application/json'}
@@ -135,6 +133,34 @@ class ServicenowConnector(BaseConnector):
             self.debug_print("Error occurred while handling python 2to3 compatibility for the input string")
 
         return input_str
+
+    def _validate_integers(self, action_result, parameter, key, allow_zero=False):
+        """ This method is to check if the provided input parameter value
+        is a non-zero positive integer and returns the integer value of the parameter itself.
+        :param action_result: Action result or BaseConnector object
+        :param parameter: input parameter
+        :return: integer value of the parameter or None in case of failure
+        """
+
+        if parameter is not None:
+            try:
+                if not float(parameter).is_integer():
+                    action_result.set_status(phantom.APP_ERROR, SERVICENOW_VALIDATE_INTEGER_MESSAGE.format(key=key))
+                    return None
+                parameter = int(parameter)
+
+            except:
+                action_result.set_status(phantom.APP_ERROR, SERVICENOW_VALIDATE_INTEGER_MESSAGE.format(key=key))
+                return None
+
+            if parameter < 0:
+                action_result.set_status(phantom.APP_ERROR, "Please provide a valid non-negative integer value in the {} parameter".format(key))
+                return None
+            if not allow_zero and parameter == 0:
+                action_result.set_status(phantom.APP_ERROR, "Please provide non-zero positive integer in {}".format(key))
+                return None
+
+        return parameter
 
     def _get_error_message_from_exception(self, e):
         """ This method is used to get appropriate error message from the exception.
@@ -495,24 +521,25 @@ class ServicenowConnector(BaseConnector):
 
         return ret_val, auth, headers
 
-    def _check_for_existing_container(self, sdi):
+    def _check_for_existing_container(self, sdi, label):
 
-        request_str = '{0}rest/container?page_size=0&_filter_source_data_identifier="{1}"&sort=create_time&order=asc'.format(self.get_phantom_base_url(), sdi)
+        request_str = '{0}rest/container?page_size=0&_filter_source_data_identifier="{1}"&_filter_label="{2}"&sort=create_time&order=asc'\
+            .format(self.get_phantom_base_url(), sdi, label)
 
         try:
             r = requests.get(request_str, verify=False)
         except Exception as e:
             self.debug_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
-            return 0
+            return 0, None, None, None
 
         try:
             resp_json = r.json()
         except Exception as e:
             self.debug_print('Exception caught parsing JSON: {0}'.format(self._get_error_message_from_exception(e)))
-            return 0
+            return 0, None, None, None
 
         if resp_json.get('failed'):
-            return 0
+            return 0, None, None, None
 
         count = resp_json.get('count', -1)
         self.debug_print('{0} existing container(s) with SDI {1}'.format(count, sdi))
@@ -520,11 +547,11 @@ class ServicenowConnector(BaseConnector):
         if count > 0:
             if count > 1:
                 self.debug_print('More than one container exists with SDI {0}. Going with oldest.'.format(sdi))
-            return resp_json['data'][0]['id']
+            return resp_json['data'][0]['id'], resp_json['data'][0]['label'], resp_json['data'][0]['name'], resp_json['data'][0]['description']
         elif count < 0:
             self.debug_print('Something went wrong getting container count')
             self.debug_print(resp_json)
-        return
+        return 0, None, None, None
 
     def _test_connectivity(self, param):
 
@@ -785,7 +812,6 @@ class ServicenowConnector(BaseConnector):
 
     def _get_ticket_details(self, action_result, table, sys_id, is_sys_id=True):
 
-        ticket_sys_id = sys_id
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
@@ -843,7 +869,7 @@ class ServicenowConnector(BaseConnector):
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
 
         if (phantom.is_fail(ret_val)):
-            self.debug_print("Unable to fetch comments and work_notes for the ticket: {0}. Details: {1}".format(ticket_sys_id, action_result.get_message()))
+            self.debug_print("Unable to fetch comments and work_notes for the ticket with sys ID: {0}. Details: {1}".format(ticket_sys_id, action_result.get_message()))
 
         comment_section = []
         worknotes_section = []
@@ -1006,16 +1032,9 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = param.get("max_results")
-
-        if (limit is not None):
-            try:
-                limit = int(limit)
-
-                if (limit <= 0):
-                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results")), None
-            except:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results")), None
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        if limit is None:
+            return action_result.get_status()
 
         payload = dict()
         catalog_sys_id = param.get("catalog_sys_id")
@@ -1082,16 +1101,9 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = param.get("max_results")
-
-        if (limit is not None):
-            try:
-                limit = int(limit)
-
-                if (limit <= 0):
-                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
-            except:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        if limit is None:
+            return action_result.get_status()
 
         endpoint = '/table/sc_category'
 
@@ -1115,16 +1127,9 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = param.get("max_results")
-
-        if (limit is not None):
-            try:
-                limit = int(limit)
-
-                if (limit <= 0):
-                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
-            except:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        if limit is None:
+            return action_result.get_status()
 
         endpoint = '/table/sc_catalog'
 
@@ -1209,16 +1214,11 @@ class ServicenowConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
-        quantity = param["quantity"]
         variables_param = param.get("variables")
 
-        try:
-            quantity = int(quantity)
-
-            if (quantity <= 0):
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="quantity"))
-        except:
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="quantity"))
+        quantity = self._validate_integers(action_result, param['quantity'], "quantity")
+        if quantity is None:
+            return action_result.get_status()
 
         try:
             sys_id = self._handle_py_ver_compat_for_input_str(param["sys_id"])
@@ -1356,16 +1356,9 @@ class ServicenowConnector(BaseConnector):
             'sysparm_query': param.get(SERVICENOW_JSON_FILTER, "")
         }
 
-        limit = param.get(SERVICENOW_JSON_MAX_RESULTS)
-
-        if (limit is not None):
-            try:
-                limit = int(limit)
-
-                if (limit <= 0):
-                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
-            except:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        if limit is None:
+            return action_result.get_status()
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if (phantom.is_fail(ret_val)):
@@ -1497,16 +1490,9 @@ class ServicenowConnector(BaseConnector):
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
         endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
-        limit = param.get("max_results")
-
-        if (limit is not None):
-            try:
-                limit = int(limit)
-
-                if (limit <= 0):
-                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
-            except:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_LIMIT_VALIDATION_MSG.format(parameter="max_results"))
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        if limit is None:
+            return action_result.get_status()
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
 
@@ -1621,28 +1607,41 @@ class ServicenowConnector(BaseConnector):
 
             sdi = issue['sys_id']
             sd = issue.get('short_description')
+            desc = issue.get('description', '')
+            existing_label = None
+            existing_sd = None
+            existing_desc = None
 
-            container_id = self._check_for_existing_container(sdi)
+            container_id, existing_label, existing_sd, existing_desc = self._check_for_existing_container(sdi, label)
 
-            if not container_id:
+            if (not container_id) or (existing_label != label):
 
-                d = issue.get('description', '')
+                desc = issue.get('description', '')
                 if not sd:
                     sd = 'Phantom added container name (short description of the ticket/record found empty)'
                 sd = self._handle_py_ver_compat_for_input_str(sd)
                 container = dict(
                     data=issue,
-                    description=d,
+                    description=desc,
                     label=label,
                     name='{}'.format(sd),
                     source_data_identifier=issue['sys_id']
                 )
-
                 ret_val, _, container_id = self.save_container(container)
 
                 if phantom.is_fail(ret_val):
                     failed += 1
                     continue
+
+            # In case of Python version 2, if container already exists for the same label but
+            # the data fetched is updated, it would update the container accordingly
+            elif ((existing_sd != sd) or (existing_desc != desc)) and self._python_version == 2:
+                data = dict(
+                    data=issue,
+                    description=desc,
+                    name='{}'.format(sd)
+                )
+                status, message = ph.update({"id": container_id}, data)
 
             artifacts = []
             artifact_dict = dict(
