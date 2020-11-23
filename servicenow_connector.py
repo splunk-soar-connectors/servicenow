@@ -1644,13 +1644,16 @@ class ServicenowConnector(BaseConnector):
                 status, message = ph.update({"id": container_id}, data)
 
             artifacts = []
+            if not sd:
+                sd = 'Phantom added container name (short description of the ticket/record found empty)'
+            sd = self._handle_py_ver_compat_for_input_str(sd)
             artifact_dict = dict(
                 container_id=container_id,
                 data=issue,
                 description=sd,
                 cef=issue,
                 label='issue',
-                name=issue.get('number', 'Phantom added artifact name (number of the ticke/record found empty)'),
+                name=issue.get('number', 'Phantom added artifact name (number of the ticket/record found empty)'),
                 source_data_identifier=issue['sys_id']
             )
             artifacts.append(artifact_dict)
