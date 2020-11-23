@@ -1032,7 +1032,7 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1101,7 +1101,7 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1127,7 +1127,7 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1216,7 +1216,7 @@ class ServicenowConnector(BaseConnector):
 
         variables_param = param.get("variables")
 
-        quantity = self._validate_integers(action_result, param['quantity'], "quantity")
+        quantity = self._validate_integers(action_result, param.get('quantity', 1), "quantity")
         if quantity is None:
             return action_result.get_status()
 
@@ -1356,7 +1356,7 @@ class ServicenowConnector(BaseConnector):
             'sysparm_query': param.get(SERVICENOW_JSON_FILTER, "")
         }
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1490,7 +1490,7 @@ class ServicenowConnector(BaseConnector):
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
         endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1613,13 +1613,13 @@ class ServicenowConnector(BaseConnector):
             existing_desc = None
 
             container_id, existing_label, existing_sd, existing_desc = self._check_for_existing_container(sdi, label)
+            if not sd:
+                sd = 'Phantom added container name (short description of the ticket/record found empty)'
+            sd = self._handle_py_ver_compat_for_input_str(sd)
 
             if (not container_id) or (existing_label != label):
 
                 desc = issue.get('description', '')
-                if not sd:
-                    sd = 'Phantom added container name (short description of the ticket/record found empty)'
-                sd = self._handle_py_ver_compat_for_input_str(sd)
                 container = dict(
                     data=issue,
                     description=desc,
@@ -1644,9 +1644,6 @@ class ServicenowConnector(BaseConnector):
                 status, message = ph.update({"id": container_id}, data)
 
             artifacts = []
-            if not sd:
-                sd = 'Phantom added container name (short description of the ticket/record found empty)'
-            sd = self._handle_py_ver_compat_for_input_str(sd)
             artifact_dict = dict(
                 container_id=container_id,
                 data=issue,
