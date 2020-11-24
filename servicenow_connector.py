@@ -9,7 +9,7 @@
 # Phantom imports
 import phantom.app as phantom
 try:
-    import phantom.rules as ph
+    import phantom.rules as phrules
 except:
     pass
 from phantom.base_connector import BaseConnector
@@ -157,7 +157,7 @@ class ServicenowConnector(BaseConnector):
                 action_result.set_status(phantom.APP_ERROR, "Please provide a valid non-negative integer value in the {} parameter".format(key))
                 return None
             if not allow_zero and parameter == 0:
-                action_result.set_status(phantom.APP_ERROR, "Please provide non-zero positive integer in {}".format(key))
+                action_result.set_status(phantom.APP_ERROR, "Please provide a positive integer value in the {} parameter".format(key))
                 return None
 
         return parameter
@@ -188,7 +188,7 @@ class ServicenowConnector(BaseConnector):
         try:
             error_msg = self._handle_py_ver_compat_for_input_str(error_msg)
         except TypeError:
-            error_msg = TYPE_ERROR_MSG
+            error_msg = TYPE_ERROR_MESSAGE
         except:
             error_msg = SERVICENOW_ERROR_MESSAGE
 
@@ -199,7 +199,7 @@ class ServicenowConnector(BaseConnector):
                 error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
         except:
             self.debug_print("Error occurred while parsing error message")
-            error_text = PARSE_ERROR_MSG
+            error_text = PARSE_ERROR_MESSAGE
 
         return error_text
 
@@ -572,7 +572,7 @@ class ServicenowConnector(BaseConnector):
 
         action_result = self.add_action_result(ActionResult(param))
 
-        self.save_progress(SERVICENOW_MSG_GET_INCIDENT_TEST)
+        self.save_progress(SERVICENOW_MESSAGE_GET_INCIDENT_TEST)
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=request_params, headers=headers, auth=auth)
 
@@ -1617,7 +1617,7 @@ class ServicenowConnector(BaseConnector):
                 sd = 'Phantom added container name (short description of the ticket/record found empty)'
             sd = self._handle_py_ver_compat_for_input_str(sd)
 
-            if (not container_id) or (existing_label != label):
+            if not container_id or existing_label != label:
 
                 desc = issue.get('description', '')
                 container = dict(
@@ -1635,13 +1635,13 @@ class ServicenowConnector(BaseConnector):
 
             # In case of Python version 2, if container already exists for the same label but
             # the data fetched is updated, it would update the container accordingly
-            elif ((existing_sd != sd) or (existing_desc != desc)) and self._python_version == 2:
+            elif (existing_sd != sd or existing_desc != desc) and self._python_version == 2:
                 data = dict(
                     data=issue,
                     description=desc,
                     name='{}'.format(sd)
                 )
-                status, message = ph.update({"id": container_id}, data)
+                status, message = phrules.update({"id": container_id}, data)
 
             artifacts = []
             artifact_dict = dict(
