@@ -5,8 +5,6 @@
   without a valid written license from Splunk Inc. is PROHIBITED.
 -->
 
-<p>This App is an Ingestion source. In the Phantom documentation, in the <a href="../admin/">Administration Manual</a> under the <a href="../admin/sources">Data Sources</a> section, you will find an explanation of how ingestion apps work and how information is extracted from data sources. There is a general explanation in the overview section, and some individual apps have their own sections.</p>
-
 <p><b>Notes</b>
    <ul>
 		<li><b>Asset Configuration Parameter</b></li>
@@ -27,7 +25,7 @@
        <br>
 
        <li><b>The functioning of On Poll</b></li>
-			
+
 			<ul>
 				<li> On Poll ingests the details of the tickets/records of a table provided by the user. An ingested container's name will be set to the 'short_description' of the ticket/record. If the ticket/record does not have any short_description then a default name will be given to the container.</li>
 				<br>
@@ -45,7 +43,15 @@
 						</ul>
 					</ul>
 				</ul>
-			</ul>	
+			<br>
+
+			<li><b>Specific functionality of ServiceNow On Poll</b></li>
+
+			<ul>
+				<li> When the app is installed with Python version 2 and if the data is ingested using On Poll with query A and label B, it will list down the containers accordingly. If the ticket that is already ingested is updated, and then if the On Poll is executed again with the same label i.e. label B and with the same query A, it will add details of the updated ticket as an artifact in the already created container and update the container properties accordingly.</li>
+				<li> When the app is installed with Python version 3 and if the data is ingested using On Poll with query A and label B, it will list down the containers accordingly. If the ticket that is already ingested is updated, and then if the On Poll is executed again with the same label i.e. label B and with the same query A, it will not update the container properties but will add the updated ticket as an artifact in the already created container.</li>
+			</ul>
+		</ul>
        <br>
    </ul>
 </p>
