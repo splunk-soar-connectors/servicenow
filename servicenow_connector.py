@@ -1,5 +1,5 @@
 # File: servicenow_connector.py
-# Copyright (c) 2016-2020 Splunk Inc.
+# Copyright (c) 2016-2021 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -14,7 +14,6 @@ except:
     pass
 from phantom.base_connector import BaseConnector
 from phantom.action_result import ActionResult
-from phantom.vault import Vault
 
 # THIS Connector imports
 from servicenow_consts import *
@@ -694,14 +693,16 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
         # Check for file in vault
-        meta = Vault.get_file_info(vault_id)  # Vault IDs are unique
-        if (not meta):
-            self.debug_print("error while attaching")
-            return (action_result.set_status(phantom.APP_ERROR, "File not found in Vault"), None)
-        meta = meta[0]
+        try:
+            success, message, file_info = phrules.vault_info(vault_id=vault_id)
+            file_info = list(file_info)[0]
+        except IndexError:
+            return action_result.set_status(phantom.APP_ERROR, "Vault file could not be found with supplied Vault ID"), None
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Vault ID not valid"), None
 
-        filename = meta.get('name', vault_id)
-        filepath = Vault.get_file_path(vault_id)
+        filename = file_info.get('name', vault_id)
+        filepath = file_info.get('path')
 
         mime = magic.Magic(mime=True)
         magic_str = mime.from_file(filepath)
