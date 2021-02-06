@@ -6,11 +6,11 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2020 Splunk Inc.",
+    "license": "Copyright (c) 2016-2021 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.0.37",
-    "min_phantom_version": "4.8.24304",
+    "app_version": "2.0.39",
+    "min_phantom_version": "4.9.39220",
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, Build tag: glide-newyork-06-26-2019__patch10-07-30-2020"
@@ -18,7 +18,7 @@
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",
-    "utctime_updated": "2020-11-30T20:02:29.000000Z",
+    "utctime_updated": "2021-02-05T06:57:12.000000Z",
     "configuration": {
         "username": {
             "order": 2,
@@ -3241,7 +3241,7 @@
                     "data_path": "action_result.data.*.items.*.description",
                     "data_type": "string",
                     "example_values": [
-                        "<p class=\"p1\"><font size=\"2\"><span class=\"s1\">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. \u00a0This will be confirmed by your Change Management team.</span></font></p>"
+                        "<p class=\"p1\"><font size=\"2\"><span class=\"s1\">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. This will be confirmed by your Change Management team.</span></font></p>"
                     ]
                 },
                 {
@@ -4972,7 +4972,7 @@
                     "data_path": "action_result.data.*.description",
                     "data_type": "string",
                     "example_values": [
-                        "<p class=\"p1\"><font size=\"2\"><span class=\"s1\">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. \u00a0This will be confirmed by your Change Management team.</span></font></p>"
+                        "<p class=\"p1\"><font size=\"2\"><span class=\"s1\">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. This will be confirmed by your Change Management team.</span></font></p>"
                     ]
                 },
                 {
