@@ -1,0 +1,1117 @@
+{
+	"info": {
+		"_postman_id": "630803ee-8dbd-4a53-847f-3c199d027350",
+		"name": "ServiceNow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List services",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_cat_item?sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_cat_item"
+					],
+					"query": [
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List categories",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_category?sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_category"
+					],
+					"query": [
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List service catalogs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_catalog?sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_catalog"
+					],
+					"query": [
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List tickets",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"sysparm_query\", \"\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/incident?sysparm_query={{sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"incident"
+					],
+					"query": [
+						{
+							"key": "sysparm_query",
+							"value": "{{sysparm_query}}"
+						},
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add comment",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"comments\": \"Testing add comment for postman collection\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/incident/a8644d3e1b72301027f6ea03b24bcb29?sysparm_display_value={{sysparm_display_value}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"incident",
+						"a8644d3e1b72301027f6ea03b24bcb29"
+					],
+					"query": [
+						{
+							"key": "sysparm_display_value",
+							"value": "{{sysparm_display_value}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add work note",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"work_notes\": \"Testing action add work note for postman collection\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/incident/a8644d3e1b72301027f6ea03b24bcb29 ?sysparm_display_value={{sysparm_display_value}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"incident",
+						"a8644d3e1b72301027f6ea03b24bcb29 "
+					],
+					"query": [
+						{
+							"key": "sysparm_display_value",
+							"value": "{{sysparm_display_value}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Run query",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/incident?state={{state}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"incident"
+					],
+					"query": [
+						{
+							"key": "state",
+							"value": "{{state}}"
+						},
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Describe catalog item",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_url_sc}}/servicecatalog/items/011f117a9f3002002920bde8132e7020",
+					"host": [
+						"{{base_url}}{{api_url_sc}}"
+					],
+					"path": [
+						"servicecatalog",
+						"items",
+						"011f117a9f3002002920bde8132e7020"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "on poll",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sysparm_query\": \"ORDERBYsys_updated_on\",\n    \"sysparm_exclude_reference_link\": \"true\",\n    \"sysparm_offset\": 0,\n    \"sysparm_limit\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/incident ",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"incident "
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get ticket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var api_url = pm.variables.get(\"api_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var endpoint = \"/table/incident\"",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"get\",",
+							"    body: JSON.stringify({",
+							"        \"sysparm_query\": pm.variables.get(\"get_ticket_sysparm_query\")",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    var response = response.json()",
+							"    pm.variables.set(\"get_ticket_sys_id\", response['result'][0]['sys_id'])",
+							"});",
+							"",
+							"",
+							"setTimeout(function () { ",
+							"    pm.sendRequest({",
+							"    url: base_url + api_url + endpoint + \"/\" + pm.variables.get(\"get_ticket_sys_id\"),",
+							"    method: \"get\",",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}, function (err, response) {",
+							"    var response = response.json()",
+							"    var value = \"table_sys_id=\"+pm.variables.get(\"get_ticket_sys_id\")",
+							"    pm.variables.set(\"get_ticket_sysparm_query\", value)",
+							"});",
+							"}, 3000);",
+							"",
+							"setTimeout(function () {",
+							"    const req3 = {",
+							"        url: base_url + api_url + \"/attachment\",",
+							"        method: \"get\",",
+							"        body: JSON.stringify({",
+							"            \"sysparm_query\": pm.variables.get(\"get_ticket_sysparm_query\")",
+							"        }),",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req3, function (err, response) {",
+							"        var response = response.json()",
+							"        pm.variables.set(\"get_ticket_element_id\", pm.variables.get(\"get_ticket_sys_id\"))",
+							"        pm.variables.set(\"get_ticket_sysparm_query\", \"element=comments^ORelement=work_notes\")",
+							"    });",
+							"},6000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sys_journal_field?element_id={{get_ticket_element_id}}&sysparm_query={{get_ticket_sysparm_query}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sys_journal_field"
+					],
+					"query": [
+						{
+							"key": "element_id",
+							"value": "{{get_ticket_element_id}}"
+						},
+						{
+							"key": "sysparm_query",
+							"value": "{{get_ticket_sysparm_query}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create ticket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var api_url = pm.variables.get(\"api_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var endpoint = \"/table/incident\"",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"post\",",
+							"    body: JSON.stringify({",
+							"        'short_description': 'Simple testing ticket',",
+							"        'description': 'Simple testing ticket for postman collection'",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    var response = response.json()",
+							"    pm.variables.set(\"create_ticket_sys_id\", response['result']['sys_id'])",
+							"    endpoint = endpoint + \"/\" + pm.variables.get(\"create_ticket_sys_id\")",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        var response = response.json()",
+							"        endpoint = \"/attachment\"",
+							"        pm.variables.set(\"create_ticket_sys_id\", response['result']['sys_id'])",
+							"        pm.variables.set(\"createticket_sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"create_ticket_sys_id\"))",
+							"    });",
+							"}, 3000);",
+							"",
+							"",
+							"setTimeout(function () { ",
+							"    const req3 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req3, function (err, response) {",
+							"        var response = response.json()",
+							"        pm.variables.set(\"create_ticket_element_id\", pm.variables.get(\"create_ticket_sys_id\"))",
+							"        pm.variables.set(\"createticket_sysparm_query\", \"element=comments^ORelement=work_notes\")",
+							"    });",
+							"}, 4000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}{{api_url}}/table/sys_journal_field?element_id={{create_ticket_element_id}}&sysparm_query={{createticket_sysparm_query}}",
+					"host": [
+						"{{base_url}}{{api_url}}"
+					],
+					"path": [
+						"table",
+						"sys_journal_field"
+					],
+					"query": [
+						{
+							"key": "element_id",
+							"value": "{{create_ticket_element_id}}",
+							"description": "a414b9321b36301027f6ea03b24bcb81"
+						},
+						{
+							"key": "sysparm_query",
+							"value": "{{createticket_sysparm_query}}",
+							"description": "'element=comments^ORelement=work_notes'"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update ticket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var api_url = pm.variables.get(\"api_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var endpoint = \"/table/incident\"+pm.variables.get(\"sys_id\")",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"put\",",
+							"    body: JSON.stringify({",
+							"        'description': 'Test update ticket action for postman collection'",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    var response = response.json()",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        var response = response.json()",
+							"        endpoint = \"/attachment\"",
+							"        pm.variables.set(\"sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"update_ticket_sys_id\"))",
+							"    });",
+							"}, 3000);",
+							"",
+							"",
+							"setTimeout(function () { ",
+							"    const req3 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req3, function (err, response) {",
+							"        var response = response.json()",
+							"        pm.variables.set(\"update_ticket_element_id\", pm.variables.get(\"update_ticket_sys_id\"))",
+							"        pm.variables.set(\"basic_sysparm_query\", pm.variables.get(\"basic_sysparm_query\"))",
+							"    });",
+							"}, 4000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}{{api_url}}/table/sys_journal_field?element_id={{update_ticket_element_id}}&sysparm_query={{basic_sysparm_query}}",
+					"host": [
+						"{{base_url}}{{api_url}}"
+					],
+					"path": [
+						"table",
+						"sys_journal_field"
+					],
+					"query": [
+						{
+							"key": "element_id",
+							"value": "{{update_ticket_element_id}}"
+						},
+						{
+							"key": "sysparm_query",
+							"value": "{{basic_sysparm_query}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "request catalog item",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var api_url_sc = pm.variables.get(\"api_url_sc\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var endpoint = \"/servicecatalog/items/\"+ pm.variables.get(\"request_catalog_item_sys_id\")",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"",
+							"const req = {",
+							"    url: base_url + api_url_sc + endpoint,",
+							"    method: \"get\",",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    var response = response.json()",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url_sc + endpoint + \"/order_now\", ",
+							"        method: \"post\",",
+							"        body: JSON.stringify({",
+							"            \"sysparm_quantity\": 1",
+							"        }),",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        var response = response.json()",
+							"        pm.variables.set(\"request_catalog_item_sys_id\", response['result']['sys_id'])",
+							"    });",
+							"}, 3000);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}{{api_url}}/table/sc_request/{{request_catalog_item_sys_id}}",
+					"host": [
+						"{{base_url}}{{api_url}}"
+					],
+					"path": [
+						"table",
+						"sc_request",
+						"{{request_catalog_item_sys_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Describe service catalog",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"sysparm_query\", \"sys_id=e0d08b13c3330100c8b837659bba8fb4\")",
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var api_url = pm.variables.get(\"api_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var endpoint = \"/table/sc_catalog\"",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\");",
+							"",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"get\",",
+							"    body: JSON.stringify({",
+							"        \"sysparm_query\": pm.variables.get(\"describe_service_catalog_sysparm_query\")",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    var response = response.json()",
+							"    pm.variables.set(\"sys_id\", response['result'][0]['sys_id'])",
+							"    endpoint = \"/table/sc_category\"",
+							"    pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalog=\" + pm.variables.get(\"sys_id\"))",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        var response = response.json()",
+							"        pm.variables.set(\"describe_service_catalog\", response['result'][0]['sc_catalog']['value'])",
+							"        pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalogsLIKE\" + pm.variables.get(\"describe_service_catalog\"))",
+							"    });",
+							"}, 3000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}{{api_url}}/table/sc_cat_item ?sysparm_query={{describe_service_catalog_sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}{{api_url}}"
+					],
+					"path": [
+						"table",
+						"sc_cat_item "
+					],
+					"query": [
+						{
+							"key": "sysparm_query",
+							"value": "{{describe_service_catalog_sysparm_query}}",
+							"description": "'sc_catalogsLIKEe0d08b13c3330100c8b837659bba8fb4'"
+						},
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get variables",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "{{accept}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "{{content_type}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}{{api_url}}/table/sc_item_option_mtom?request_item={{get_variable_request_item}}",
+					"host": [
+						"{{base_url}}{{api_url}}"
+					],
+					"path": [
+						"table",
+						"sc_item_option_mtom"
+					],
+					"query": [
+						{
+							"key": "request_item",
+							"value": "{{get_variable_request_item}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"let credsParsed = CryptoJS.enc.Utf8.parse(`${pm.environment.get('username')}:${pm.environment.get('password')}`);",
+					"let credsEncoded = CryptoJS.enc.Base64.stringify(credsParsed);",
+					"pm.environment.set('authCreds', credsEncoded);",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://dev107525.service-now.com"
+		},
+		{
+			"key": "api_url_sc",
+			"value": ""
+		},
+		{
+			"key": "api_url",
+			"value": ""
+		},
+		{
+			"key": "sysparm_limit",
+			"value": "1"
+		},
+		{
+			"key": "sysparm_offset",
+			"value": "0"
+		},
+		{
+			"key": "sysparm_display_value",
+			"value": ""
+		},
+		{
+			"key": "state",
+			"value": ""
+		},
+		{
+			"key": "basic_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "describe_service_catalog",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "request_catalog_item_sys_id",
+			"value": ""
+		},
+		{
+			"key": "get_variable_request_item",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "describe_service_catalog_sysparm_query",
+			"value": ""
+		}
+	]
+}
