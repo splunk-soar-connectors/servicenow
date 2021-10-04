@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "630803ee-8dbd-4a53-847f-3c199d027350",
+		"_postman_id": "f2beba8c-ad16-488f-8456-728435fed835",
 		"name": "ServiceNow",
-		"description": "# Postman Collection of Endpoints for ServiceNow App on Splunk SOAR.\n\n- ### Prerequisite\n\nThe below mentioned are the required fields to use this collection. So, Set this all fields before run the request.\n\n| Variable Name | Description |\n| ------ | ------ |\n| username  | ServiceNow instance username (in environment variables & Basic Auth) |\n| password  | ServiceNow instance password (in environment variables & Basic Auth) |\n| base_url | ServiceNow instance URL ( in collection variables ) |\n| content_type | Content of current request eg. application/json ( in environment variables ) |\n| accept | Acceptable response eg. application/json ( in environment variables ) |\n\n- ### Variables needed to run the actions \n\n| Action Name | Variable(s) Name |\n| ------ | ------ |\n| List Services  | sysparm_offset, sysparm_limit |\n| List Categories  | sysparm_offset, sysparm_limit |\n| List Service Catalogs  | sysparm_offset, sysparm_limit |\n| List Ticket  | list_tickets_tb_name, sysparm_offset, sysparm_limit, sysparm_query | \n| Add Comment | sysparm_display_value, add_comment_content, add_comment_tb_name, add_comment_sys_id |\n| Add Work Note | sysparm_display_value, add_work_note_content, add_work_note_tb_name, add_work_note_sys_id |\n| Run Query | run_query_tb_name ,run_query_query, sysparm_offset, sysparm_limit |\n| Describe Catalog Item | describe_catalog_item_sys_id |\n| On Poll | on_poll_sysparm_query, sysparm_offset, sysparm_limit, on_poll_tb_name |\n| Get Ticket | get_ticket_sysparm_query, get_ticket_tb_name |\n| Create Ticket | create_ticket_tb_name, create_ticket_short_description, create_ticket_description |\n| Update Ticket | update_ticket_tb_name, update_ticket_sys_id, update_ticket_description, basic_sysparm_query |\n| Request Catalog Item | request_catalog_item_sys_id |\n| Describe Service Catalog | describe_service_catalog_sysparm_query |\n| Get Variables | get_variable_request_item |\n\n\n> **_NOTE:_**  The body parameters for the requests have been mentioned in the above table. Please set them as per your requirements. Refer the documentation of individual requests.",
+		"description": "# Postman Collection of Endpoints for ServiceNow App on Splunk SOAR.\n\n- ### Prerequisite\n\nThe below mentioned are the required fields to use this collection. So, Set this all fields before run the request.\n\n| Variable Name | Description |\n| ------ | ------ |\n| username  | ServiceNow instance username (in environment variables & Basic Auth) |\n| password  | ServiceNow instance password (in environment variables & Basic Auth) |\n| base_url | ServiceNow instance URL ( in collection variables ) |\n| content_type | Content of current request eg. application/json ( in environment variables ) |\n| accept | Acceptable response eg. application/json ( in environment variables ) |\n\n- ### Variables needed to run the actions \n\n| Action Name | Variable(s) Name |\n| ------ | ------ |\n| List Services  | sysparm_offset, sysparm_limit |\n| List Categories  | sysparm_offset, sysparm_limit |\n| List Service Catalogs  | sysparm_offset, sysparm_limit |\n| List Ticket  | list_tickets_tb_name, sysparm_offset, sysparm_limit, sysparm_query | \n| Add Comment | sysparm_display_value, add_comment_content, add_comment_tb_name, add_comment_sys_id |\n| Add Work Note | sysparm_display_value, add_work_note_content, add_work_note_tb_name, add_work_note_sys_id |\n| Run Query | run_query_tb_name ,run_query_query, sysparm_offset, sysparm_limit |\n| Describe Catalog Item | describe_catalog_item_sys_id |\n| Get Variables | get_variable_request_item |\n| On Poll | on_poll_sysparm_query, sysparm_offset, sysparm_limit, on_poll_tb_name |\n| Get Ticket | get_ticket_sysparm_query, get_ticket_tb_name |\n| Create Ticket | create_ticket_tb_name, create_ticket_short_description, create_ticket_description |\n| Update Ticket | update_ticket_tb_name, update_ticket_sys_id, update_ticket_description, basic_sysparm_query |\n| Request Catalog Item | request_catalog_item_sys_id, sysparm_quantity |\n| Describe Service Catalog | describe_service_catalog_sysparm_query |\n\n\n> **_NOTE:_**  The body parameters for the requests have been mentioned in the above table. Please set them as per your requirements. Refer the documentation of individual requests.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -157,7 +157,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.collectionVariables.set(\"sysparm_query\", \"\");"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -508,6 +508,7 @@
 							"    }",
 							"}",
 							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
 							"    var response = response.json()",
 							"    pm.variables.set(\"get_ticket_sys_id\", response['result'][0]['sys_id'])",
 							"});",
@@ -523,9 +524,8 @@
 							"        'Authentication': auth",
 							"    }",
 							"}, function (err, response) {",
-							"    var response = response.json()",
-							"    var value = \"table_sys_id=\"+pm.variables.get(\"get_ticket_sys_id\")",
-							"    pm.variables.set(\"get_ticket_sysparm_query\", value)",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"    pm.variables.set(\"get_ticket_sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"get_ticket_sys_id\"))",
 							"});",
 							"}, 3000);",
 							"",
@@ -543,9 +543,9 @@
 							"        }",
 							"    }",
 							"    pm.sendRequest(req3, function (err, response) {",
-							"        var response = response.json()",
+							"        if (err) throw new Error(JSON.stringify(err))",
 							"        pm.variables.set(\"get_ticket_element_id\", pm.variables.get(\"get_ticket_sys_id\"))",
-							"        pm.variables.set(\"get_ticket_sysparm_query\", \"element=comments^ORelement=work_notes\")",
+							"        pm.variables.set(\"get_ticket_sysparm_query\", pm.variables.get(\"basic_sysparm_query\"))",
 							"    });",
 							"},6000);",
 							""
@@ -589,7 +589,8 @@
 							"value": "{{get_ticket_sysparm_query}}"
 						}
 					]
-				}
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Get system id using system parameter query\n\n2) Update system parameter query\n\n3) Get element id and system parameter query"
 			},
 			"response": []
 		},
@@ -601,9 +602,9 @@
 					"script": {
 						"exec": [
 							"var base_url = pm.variables.get(\"base_url\")",
-							"var api_url = pm.variables.get(\"api_url\")",
 							"var content_type = pm.variables.get(\"content_type\")",
 							"var accept = pm.variables.get(\"accept\")",
+							"var api_url = \"/api/now\"",
 							"var endpoint = \"/table/\"+ pm.variables.get(\"create_ticket_tb_name\")",
 							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
 							"",
@@ -621,6 +622,7 @@
 							"    }",
 							"}",
 							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
 							"    var response = response.json()",
 							"    pm.variables.set(\"create_ticket_sys_id\", response['result']['sys_id'])",
 							"    endpoint = endpoint + \"/\" + pm.variables.get(\"create_ticket_sys_id\")",
@@ -637,6 +639,7 @@
 							"        }",
 							"    }",
 							"    pm.sendRequest(req2, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
 							"        var response = response.json()",
 							"        endpoint = \"/attachment\"",
 							"        pm.variables.set(\"create_ticket_sys_id\", response['result']['sys_id'])",
@@ -656,9 +659,9 @@
 							"        }",
 							"    }",
 							"    pm.sendRequest(req3, function (err, response) {",
-							"        var response = response.json()",
+							"        if (err) throw new Error(JSON.stringify(err))",
 							"        pm.variables.set(\"create_ticket_element_id\", pm.variables.get(\"create_ticket_sys_id\"))",
-							"        pm.variables.set(\"create_ticket_sysparm_query\", \"element=comments^ORelement=work_notes\")",
+							"        pm.variables.set(\"create_ticket_sysparm_query\", pm.variables.get(\"basic_sysparm_query\"))",
 							"    });",
 							"}, 4000);",
 							""
@@ -682,11 +685,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}{{api_url}}/table/sys_journal_field?element_id={{create_ticket_element_id}}&sysparm_query={{create_ticket_sysparm_query}}",
+					"raw": "{{base_url}}/api/now/table/sys_journal_field?element_id={{create_ticket_element_id}}&sysparm_query={{create_ticket_sysparm_query}}",
 					"host": [
-						"{{base_url}}{{api_url}}"
+						"{{base_url}}"
 					],
 					"path": [
+						"api",
+						"now",
 						"table",
 						"sys_journal_field"
 					],
@@ -700,7 +705,8 @@
 							"value": "{{create_ticket_sysparm_query}}"
 						}
 					]
-				}
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Create ticket using description and get newly created system id\n\n2) Set system parameter query\n\n3) Get element id and update system parameter query"
 			},
 			"response": []
 		},
@@ -731,7 +737,7 @@
 							"    }",
 							"}",
 							"pm.sendRequest(req, function (err, response) {",
-							"    var response = response.json()",
+							"    if (err) throw new Error(JSON.stringify(err))",
 							"});",
 							"",
 							"setTimeout(function () { ",
@@ -745,7 +751,7 @@
 							"        }",
 							"    }",
 							"    pm.sendRequest(req2, function (err, response) {",
-							"        var response = response.json()",
+							"        if (err) throw new Error(JSON.stringify(err))",
 							"        endpoint = \"/attachment\"",
 							"        pm.variables.set(\"sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"update_ticket_sys_id\"))",
 							"    });",
@@ -763,7 +769,7 @@
 							"        }",
 							"    }",
 							"    pm.sendRequest(req3, function (err, response) {",
-							"        var response = response.json()",
+							"        if (err) throw new Error(JSON.stringify(err))",
 							"        pm.variables.set(\"update_ticket_element_id\", pm.variables.get(\"update_ticket_sys_id\"))",
 							"        pm.variables.set(\"basic_sysparm_query\", pm.variables.get(\"basic_sysparm_query\"))",
 							"    });",
@@ -809,7 +815,8 @@
 							"value": "{{basic_sysparm_query}}"
 						}
 					]
-				}
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Update description of given system id ticket\n\n2) Set system parameter query\n\n3) Get element id and update system parameter query"
 			},
 			"response": []
 		},
@@ -837,7 +844,7 @@
 							"    }",
 							"}",
 							"pm.sendRequest(req, function (err, response) {",
-							"    var response = response.json()",
+							"    if (err) throw new Error(JSON.stringify(err))",
 							"});",
 							"",
 							"setTimeout(function () { ",
@@ -845,7 +852,7 @@
 							"        url: base_url + api_url_sc + endpoint + \"/order_now\", ",
 							"        method: \"post\",",
 							"        body: JSON.stringify({",
-							"            \"sysparm_quantity\": 1",
+							"            \"sysparm_quantity\": pm.variables.get(\"sysparm_quantity\")",
 							"        }),",
 							"        header: {",
 							"            'Content-Type': content_type,",
@@ -854,6 +861,7 @@
 							"        }",
 							"    }",
 							"    pm.sendRequest(req2, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
 							"        var response = response.json()",
 							"        pm.variables.set(\"request_catalog_item_sys_id\", response['result']['sys_id'])",
 							"    });",
@@ -891,7 +899,8 @@
 						"sc_request",
 						"{{request_catalog_item_sys_id}}"
 					]
-				}
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Get catalog item using given system id\n\n2) Set the given quantity and update catalog item system id"
 			},
 			"response": []
 		},
@@ -922,6 +931,7 @@
 							"    }",
 							"}",
 							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
 							"    var response = response.json()",
 							"    endpoint = \"/table/sc_category\"",
 							"    pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalog=\" + response['result'][0]['sys_id'])",
@@ -938,6 +948,7 @@
 							"        }",
 							"    }",
 							"    pm.sendRequest(req2, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
 							"        var response = response.json()",
 							"        pm.variables.set(\"describe_service_catalog\", response['result'][0]['sc_catalog']['value'])",
 							"        pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalogsLIKE\" + pm.variables.get(\"describe_service_catalog\"))",
@@ -995,7 +1006,8 @@
 							"value": "{{sysparm_limit}}"
 						}
 					]
-				}
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Get catalog item using catalog system parameter query and update catalog system parameter query\n\n2) Set the catalog system parameter query"
 			},
 			"response": []
 		}
@@ -1181,6 +1193,10 @@
 		},
 		{
 			"key": "request_catalog_item_sys_id",
+			"value": ""
+		},
+		{
+			"key": "sysparm_quantity",
 			"value": ""
 		}
 	]
