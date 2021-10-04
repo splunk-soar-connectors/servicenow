@@ -2,11 +2,12 @@
 	"info": {
 		"_postman_id": "630803ee-8dbd-4a53-847f-3c199d027350",
 		"name": "ServiceNow",
+		"description": "# Postman Collection of Endpoints for ServiceNow App on Splunk SOAR.\n\n- ### Prerequisite\n\nThe below mentioned are the required fields to use this collection. So, Set this all fields before run the request.\n\n| Variable Name | Description |\n| ------ | ------ |\n| username  | ServiceNow instance username (in environment variables & Basic Auth) |\n| password  | ServiceNow instance password (in environment variables & Basic Auth) |\n| base_url | ServiceNow instance URL ( in collection variables ) |\n| content_type | Content of current request eg. application/json ( in environment variables ) |\n| accept | Acceptable response eg. application/json ( in environment variables ) |\n\n- ### Variables needed to run the actions \n\n| Action Name | Variable(s) Name |\n| ------ | ------ |\n| List Services  | sysparm_offset, sysparm_limit |\n| List Categories  | sysparm_offset, sysparm_limit |\n| List Service Catalogs  | sysparm_offset, sysparm_limit |\n| List Ticket  | list_tickets_tb_name, sysparm_offset, sysparm_limit, sysparm_query | \n| Add Comment | sysparm_display_value, add_comment_content, add_comment_tb_name, add_comment_sys_id |\n| Add Work Note | sysparm_display_value, add_work_note_content, add_work_note_tb_name, add_work_note_sys_id |\n| Run Query | run_query_tb_name ,run_query_query, sysparm_offset, sysparm_limit |\n| Describe Catalog Item | describe_catalog_item_sys_id |\n| On Poll | on_poll_sysparm_query, sysparm_offset, sysparm_limit, on_poll_tb_name |\n| Get Ticket | get_ticket_sysparm_query, get_ticket_tb_name |\n| Create Ticket | create_ticket_tb_name, create_ticket_short_description, create_ticket_description |\n| Update Ticket | update_ticket_tb_name, update_ticket_sys_id, update_ticket_description, basic_sysparm_query |\n| Request Catalog Item | request_catalog_item_sys_id |\n| Describe Service Catalog | describe_service_catalog_sysparm_query |\n| Get Variables | get_variable_request_item |\n\n\n> **_NOTE:_**  The body parameters for the requests have been mentioned in the above table. Please set them as per your requirements. Refer the documentation of individual requests.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "List services",
+			"name": "List Services",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -15,12 +16,12 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -54,7 +55,7 @@
 			"response": []
 		},
 		{
-			"name": "List categories",
+			"name": "List Categories",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -63,12 +64,12 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -102,7 +103,7 @@
 			"response": []
 		},
 		{
-			"name": "List service catalogs",
+			"name": "List Service Catalogs",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -111,12 +112,12 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -150,7 +151,7 @@
 			"response": []
 		},
 		{
-			"name": "List tickets",
+			"name": "List Tickets",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -170,12 +171,12 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -184,7 +185,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/now/table/incident?sysparm_query={{sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"raw": "{{base_url}}/api/now/table/{{list_tickets_tb_name}}?sysparm_query={{sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -192,7 +193,7 @@
 						"api",
 						"now",
 						"table",
-						"incident"
+						"{{list_tickets_tb_name}}"
 					],
 					"query": [
 						{
@@ -213,24 +214,24 @@
 			"response": []
 		},
 		{
-			"name": "Add comment",
+			"name": "Add Comment",
 			"request": {
 				"method": "PUT",
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"comments\": \"Testing add comment for postman collection\"\n}",
+					"raw": "{\n    \"comments\": \"{{add_comment_content}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -238,7 +239,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/api/now/table/incident/a8644d3e1b72301027f6ea03b24bcb29?sysparm_display_value={{sysparm_display_value}}",
+					"raw": "{{base_url}}/api/now/table/{{add_comment_tb_name}}/{{add_comment_sys_id}}?sysparm_display_value={{sysparm_display_value}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -246,8 +247,8 @@
 						"api",
 						"now",
 						"table",
-						"incident",
-						"a8644d3e1b72301027f6ea03b24bcb29"
+						"{{add_comment_tb_name}}",
+						"{{add_comment_sys_id}}"
 					],
 					"query": [
 						{
@@ -260,24 +261,24 @@
 			"response": []
 		},
 		{
-			"name": "Add work note",
+			"name": "Add Work Note",
 			"request": {
 				"method": "PUT",
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"work_notes\": \"Testing action add work note for postman collection\"\n}",
+					"raw": "{\n    \"work_notes\": \"{{add_work_note_content}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -285,7 +286,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/api/now/table/incident/a8644d3e1b72301027f6ea03b24bcb29 ?sysparm_display_value={{sysparm_display_value}}",
+					"raw": "{{base_url}}/api/now/table/{{add_work_note_tb_name}}/{{add_work_note_sys_id}}?sysparm_display_value={{sysparm_display_value}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -293,8 +294,8 @@
 						"api",
 						"now",
 						"table",
-						"incident",
-						"a8644d3e1b72301027f6ea03b24bcb29 "
+						"{{add_work_note_tb_name}}",
+						"{{add_work_note_sys_id}}"
 					],
 					"query": [
 						{
@@ -307,23 +308,23 @@
 			"response": []
 		},
 		{
-			"name": "Run query",
+			"name": "Run Query",
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}/api/now/table/incident?state={{state}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"raw": "{{base_url}}/api/now/table/{{run_query_tb_name}}?{{run_query_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -331,12 +332,12 @@
 						"api",
 						"now",
 						"table",
-						"incident"
+						"{{run_query_tb_name}}"
 					],
 					"query": [
 						{
-							"key": "state",
-							"value": "{{state}}"
+							"key": "{{run_query_query}}",
+							"value": null
 						},
 						{
 							"key": "sysparm_offset",
@@ -352,7 +353,7 @@
 			"response": []
 		},
 		{
-			"name": "Describe catalog item",
+			"name": "Describe Catalog Item",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -372,12 +373,12 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -386,21 +387,71 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}{{api_url_sc}}/servicecatalog/items/011f117a9f3002002920bde8132e7020",
+					"raw": "{{base_url}}/api/sn_sc/servicecatalog/items/{{describe_catalog_item_sys_id}}",
 					"host": [
-						"{{base_url}}{{api_url_sc}}"
+						"{{base_url}}"
 					],
 					"path": [
+						"api",
+						"sn_sc",
 						"servicecatalog",
 						"items",
-						"011f117a9f3002002920bde8132e7020"
+						"{{describe_catalog_item_sys_id}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "on poll",
+			"name": "Get Variables",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_item_option_mtom?request_item={{get_variable_request_item}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_item_option_mtom"
+					],
+					"query": [
+						{
+							"key": "request_item",
+							"value": "{{get_variable_request_item}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "On Poll",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -409,7 +460,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"sysparm_query\": \"ORDERBYsys_updated_on\",\n    \"sysparm_exclude_reference_link\": \"true\",\n    \"sysparm_offset\": 0,\n    \"sysparm_limit\": 1\n}",
+					"raw": "{\n    \"sysparm_query\": \"{{on_poll_sysparm_query}}\",\n    \"sysparm_exclude_reference_link\": \"true\",\n    \"sysparm_offset\": {{sysparm_offset}},\n    \"sysparm_limit\": {{sysparm_limit}}\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -417,7 +468,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{base_url}}/api/now/table/incident ",
+					"raw": "{{base_url}}/api/now/table/{{on_poll_tb_name}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -425,24 +476,24 @@
 						"api",
 						"now",
 						"table",
-						"incident "
+						"{{on_poll_tb_name}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get ticket",
+			"name": "Get Ticket",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
 							"var base_url = pm.variables.get(\"base_url\")",
-							"var api_url = pm.variables.get(\"api_url\")",
 							"var content_type = pm.variables.get(\"content_type\")",
 							"var accept = pm.variables.get(\"accept\")",
-							"var endpoint = \"/table/incident\"",
+							"var api_url = \"/api/now\"",
+							"var endpoint = \"/table/\"+ pm.variables.get(\"get_ticket_tb_name\")",
 							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
 							"const req = {",
 							"    url: base_url + api_url + endpoint,",
@@ -508,12 +559,12 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -543,7 +594,7 @@
 			"response": []
 		},
 		{
-			"name": "Create ticket",
+			"name": "Create Ticket",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -553,15 +604,15 @@
 							"var api_url = pm.variables.get(\"api_url\")",
 							"var content_type = pm.variables.get(\"content_type\")",
 							"var accept = pm.variables.get(\"accept\")",
-							"var endpoint = \"/table/incident\"",
+							"var endpoint = \"/table/\"+ pm.variables.get(\"create_ticket_tb_name\")",
 							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
 							"",
 							"const req = {",
 							"    url: base_url + api_url + endpoint,",
 							"    method: \"post\",",
 							"    body: JSON.stringify({",
-							"        'short_description': 'Simple testing ticket',",
-							"        'description': 'Simple testing ticket for postman collection'",
+							"        'short_description': pm.variables.get(\"create_ticket_short_description\"),",
+							"        'description': pm.variables.get(\"create_ticket_description\")",
 							"    }),",
 							"    header: {",
 							"        'Content-Type': content_type,",
@@ -589,7 +640,7 @@
 							"        var response = response.json()",
 							"        endpoint = \"/attachment\"",
 							"        pm.variables.set(\"create_ticket_sys_id\", response['result']['sys_id'])",
-							"        pm.variables.set(\"createticket_sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"create_ticket_sys_id\"))",
+							"        pm.variables.set(\"create_ticket_sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"create_ticket_sys_id\"))",
 							"    });",
 							"}, 3000);",
 							"",
@@ -607,7 +658,7 @@
 							"    pm.sendRequest(req3, function (err, response) {",
 							"        var response = response.json()",
 							"        pm.variables.set(\"create_ticket_element_id\", pm.variables.get(\"create_ticket_sys_id\"))",
-							"        pm.variables.set(\"createticket_sysparm_query\", \"element=comments^ORelement=work_notes\")",
+							"        pm.variables.set(\"create_ticket_sysparm_query\", \"element=comments^ORelement=work_notes\")",
 							"    });",
 							"}, 4000);",
 							""
@@ -621,17 +672,17 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}{{api_url}}/table/sys_journal_field?element_id={{create_ticket_element_id}}&sysparm_query={{createticket_sysparm_query}}",
+					"raw": "{{base_url}}{{api_url}}/table/sys_journal_field?element_id={{create_ticket_element_id}}&sysparm_query={{create_ticket_sysparm_query}}",
 					"host": [
 						"{{base_url}}{{api_url}}"
 					],
@@ -642,13 +693,11 @@
 					"query": [
 						{
 							"key": "element_id",
-							"value": "{{create_ticket_element_id}}",
-							"description": "a414b9321b36301027f6ea03b24bcb81"
+							"value": "{{create_ticket_element_id}}"
 						},
 						{
 							"key": "sysparm_query",
-							"value": "{{createticket_sysparm_query}}",
-							"description": "'element=comments^ORelement=work_notes'"
+							"value": "{{create_ticket_sysparm_query}}"
 						}
 					]
 				}
@@ -656,24 +705,24 @@
 			"response": []
 		},
 		{
-			"name": "Update ticket",
+			"name": "Update Ticket",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
 							"var base_url = pm.variables.get(\"base_url\")",
-							"var api_url = pm.variables.get(\"api_url\")",
 							"var content_type = pm.variables.get(\"content_type\")",
 							"var accept = pm.variables.get(\"accept\")",
-							"var endpoint = \"/table/incident\"+pm.variables.get(\"sys_id\")",
+							"var api_url = \"/api/now\"",
+							"var endpoint = \"/table/\"+ pm.variables.get(\"update_ticket_tb_name\") + pm.variables.get(\"update_ticket_sys_id\")",
 							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
 							"",
 							"const req = {",
 							"    url: base_url + api_url + endpoint,",
 							"    method: \"put\",",
 							"    body: JSON.stringify({",
-							"        'description': 'Test update ticket action for postman collection'",
+							"        'description': pm.variables.get(\"update_ticket_description\")",
 							"    }),",
 							"    header: {",
 							"        'Content-Type': content_type,",
@@ -730,21 +779,23 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}{{api_url}}/table/sys_journal_field?element_id={{update_ticket_element_id}}&sysparm_query={{basic_sysparm_query}}",
+					"raw": "{{base_url}}/api/now/table/sys_journal_field?element_id={{update_ticket_element_id}}&sysparm_query={{basic_sysparm_query}}",
 					"host": [
-						"{{base_url}}{{api_url}}"
+						"{{base_url}}"
 					],
 					"path": [
+						"api",
+						"now",
 						"table",
 						"sys_journal_field"
 					],
@@ -763,16 +814,16 @@
 			"response": []
 		},
 		{
-			"name": "request catalog item",
+			"name": "Request Catalog Item",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
 							"var base_url = pm.variables.get(\"base_url\")",
-							"var api_url_sc = pm.variables.get(\"api_url_sc\")",
 							"var content_type = pm.variables.get(\"content_type\")",
 							"var accept = pm.variables.get(\"accept\")",
+							"var api_url_sc = \"/api/sn_sc\"",
 							"var endpoint = \"/servicecatalog/items/\"+ pm.variables.get(\"request_catalog_item_sys_id\")",
 							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
 							"",
@@ -819,21 +870,23 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "{{base_url}}{{api_url}}/table/sc_request/{{request_catalog_item_sys_id}}",
+					"raw": "{{base_url}}/api/now/table/sc_request/{{request_catalog_item_sys_id}}",
 					"host": [
-						"{{base_url}}{{api_url}}"
+						"{{base_url}}"
 					],
 					"path": [
+						"api",
+						"now",
 						"table",
 						"sc_request",
 						"{{request_catalog_item_sys_id}}"
@@ -843,17 +896,16 @@
 			"response": []
 		},
 		{
-			"name": "Describe service catalog",
+			"name": "Describe Service Catalog",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.variables.set(\"sysparm_query\", \"sys_id=e0d08b13c3330100c8b837659bba8fb4\")",
 							"var base_url = pm.variables.get(\"base_url\")",
-							"var api_url = pm.variables.get(\"api_url\")",
 							"var content_type = pm.variables.get(\"content_type\")",
 							"var accept = pm.variables.get(\"accept\")",
+							"var api_url = \"/api/now\"",
 							"var endpoint = \"/table/sc_catalog\"",
 							"var auth = \"Basic \" + pm.environment.get(\"authCreds\");",
 							"",
@@ -871,9 +923,8 @@
 							"}",
 							"pm.sendRequest(req, function (err, response) {",
 							"    var response = response.json()",
-							"    pm.variables.set(\"sys_id\", response['result'][0]['sys_id'])",
 							"    endpoint = \"/table/sc_category\"",
-							"    pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalog=\" + pm.variables.get(\"sys_id\"))",
+							"    pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalog=\" + response['result'][0]['sys_id'])",
 							"});",
 							"",
 							"setTimeout(function () { ",
@@ -906,12 +957,12 @@
 				"header": [
 					{
 						"key": "Accept",
-						"value": "{{accept}}",
+						"value": "application/json",
 						"type": "text"
 					},
 					{
 						"key": "Content-Type",
-						"value": "{{content_type}}",
+						"value": "application/json",
 						"type": "text"
 					}
 				],
@@ -920,19 +971,20 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}{{api_url}}/table/sc_cat_item ?sysparm_query={{describe_service_catalog_sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"raw": "{{base_url}}/api/now/table/sc_cat_item?sysparm_query={{describe_service_catalog_sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
 					"host": [
-						"{{base_url}}{{api_url}}"
+						"{{base_url}}"
 					],
 					"path": [
+						"api",
+						"now",
 						"table",
-						"sc_cat_item "
+						"sc_cat_item"
 					],
 					"query": [
 						{
 							"key": "sysparm_query",
-							"value": "{{describe_service_catalog_sysparm_query}}",
-							"description": "'sc_catalogsLIKEe0d08b13c3330100c8b837659bba8fb4'"
+							"value": "{{describe_service_catalog_sysparm_query}}"
 						},
 						{
 							"key": "sysparm_offset",
@@ -941,52 +993,6 @@
 						{
 							"key": "sysparm_limit",
 							"value": "{{sysparm_limit}}"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get variables",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "{{accept}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "{{content_type}}",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{base_url}}{{api_url}}/table/sc_item_option_mtom?request_item={{get_variable_request_item}}",
-					"host": [
-						"{{base_url}}{{api_url}}"
-					],
-					"path": [
-						"table",
-						"sc_item_option_mtom"
-					],
-					"query": [
-						{
-							"key": "request_item",
-							"value": "{{get_variable_request_item}}"
 						}
 					]
 				}
@@ -1035,70 +1041,30 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "https://dev107525.service-now.com"
-		},
-		{
-			"key": "api_url_sc",
-			"value": ""
-		},
-		{
-			"key": "api_url",
 			"value": ""
 		},
 		{
 			"key": "sysparm_limit",
-			"value": "1"
+			"value": ""
 		},
 		{
 			"key": "sysparm_offset",
-			"value": "0"
+			"value": ""
 		},
 		{
 			"key": "sysparm_display_value",
 			"value": ""
 		},
 		{
-			"key": "state",
+			"key": "sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "list_tickets_tb_name",
 			"value": ""
 		},
 		{
 			"key": "basic_sysparm_query",
-			"value": ""
-		},
-		{
-			"key": "describe_service_catalog",
-			"value": ""
-		},
-		{
-			"key": "get_ticket_sysparm_query",
-			"value": ""
-		},
-		{
-			"key": "get_ticket_sys_id",
-			"value": ""
-		},
-		{
-			"key": "get_ticket_element_id",
-			"value": ""
-		},
-		{
-			"key": "create_ticket_sys_id",
-			"value": ""
-		},
-		{
-			"key": "create_ticket_element_id",
-			"value": ""
-		},
-		{
-			"key": "create_ticket_sysparm_query",
-			"value": ""
-		},
-		{
-			"key": "update_ticket_sys_id",
-			"value": ""
-		},
-		{
-			"key": "request_catalog_item_sys_id",
 			"value": ""
 		},
 		{
@@ -1110,7 +1076,111 @@
 			"value": ""
 		},
 		{
+			"key": "add_comment_content",
+			"value": ""
+		},
+		{
+			"key": "add_comment_tb_name",
+			"value": ""
+		},
+		{
+			"key": "add_comment_sys_id",
+			"value": ""
+		},
+		{
+			"key": "add_work_note_sys_id",
+			"value": ""
+		},
+		{
+			"key": "add_work_note_content",
+			"value": ""
+		},
+		{
+			"key": "add_work_note_tb_name",
+			"value": ""
+		},
+		{
+			"key": "run_query_query",
+			"value": ""
+		},
+		{
+			"key": "run_query_tb_name",
+			"value": ""
+		},
+		{
+			"key": "describe_catalog_item_sys_id",
+			"value": ""
+		},
+		{
+			"key": "on_poll_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "on_poll_tb_name",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_tb_name",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_short_description",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_description",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_tb_name",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_tb_name",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_description",
+			"value": ""
+		},
+		{
 			"key": "describe_service_catalog_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "describe_service_catalog",
+			"value": ""
+		},
+		{
+			"key": "request_catalog_item_sys_id",
 			"value": ""
 		}
 	]
