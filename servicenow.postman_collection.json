@@ -1,0 +1,1203 @@
+{
+	"info": {
+		"_postman_id": "f2beba8c-ad16-488f-8456-728435fed835",
+		"name": "ServiceNow",
+		"description": "# Postman Collection of Endpoints for ServiceNow App on Splunk SOAR.\n\n- ### Prerequisite\n\nThe below mentioned are the required fields to use this collection. So, Set this all fields before run the request.\n\n| Variable Name | Description |\n| ------ | ------ |\n| username  | ServiceNow instance username (in environment variables & Basic Auth) |\n| password  | ServiceNow instance password (in environment variables & Basic Auth) |\n| base_url | ServiceNow instance URL ( in collection variables ) |\n| content_type | Content of current request eg. application/json ( in environment variables ) |\n| accept | Acceptable response eg. application/json ( in environment variables ) |\n\n- ### Variables needed to run the actions \n\n| Action Name | Variable(s) Name |\n| ------ | ------ |\n| List Services  | sysparm_offset, sysparm_limit |\n| List Categories  | sysparm_offset, sysparm_limit |\n| List Service Catalogs  | sysparm_offset, sysparm_limit |\n| List Ticket  | list_tickets_tb_name, sysparm_offset, sysparm_limit, sysparm_query | \n| Add Comment | sysparm_display_value, add_comment_content, add_comment_tb_name, add_comment_sys_id |\n| Add Work Note | sysparm_display_value, add_work_note_content, add_work_note_tb_name, add_work_note_sys_id |\n| Run Query | run_query_tb_name ,run_query_query, sysparm_offset, sysparm_limit |\n| Describe Catalog Item | describe_catalog_item_sys_id |\n| Get Variables | get_variable_request_item |\n| On Poll | on_poll_sysparm_query, sysparm_offset, sysparm_limit, on_poll_tb_name |\n| Get Ticket | get_ticket_sysparm_query, get_ticket_tb_name |\n| Create Ticket | create_ticket_tb_name, create_ticket_short_description, create_ticket_description |\n| Update Ticket | update_ticket_tb_name, update_ticket_sys_id, update_ticket_description, basic_sysparm_query |\n| Request Catalog Item | request_catalog_item_sys_id, sysparm_quantity |\n| Describe Service Catalog | describe_service_catalog_sysparm_query |\n\n\n> **_NOTE:_**  The body parameters for the requests have been mentioned in the above table. Please set them as per your requirements. Refer the documentation of individual requests.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List Services",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_cat_item?sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_cat_item"
+					],
+					"query": [
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Categories",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_category?sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_category"
+					],
+					"query": [
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Service Catalogs",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_catalog?sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_catalog"
+					],
+					"query": [
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Tickets",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/{{list_tickets_tb_name}}?sysparm_query={{sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"{{list_tickets_tb_name}}"
+					],
+					"query": [
+						{
+							"key": "sysparm_query",
+							"value": "{{sysparm_query}}"
+						},
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Comment",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"comments\": \"{{add_comment_content}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/{{add_comment_tb_name}}/{{add_comment_sys_id}}?sysparm_display_value={{sysparm_display_value}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"{{add_comment_tb_name}}",
+						"{{add_comment_sys_id}}"
+					],
+					"query": [
+						{
+							"key": "sysparm_display_value",
+							"value": "{{sysparm_display_value}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Work Note",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"work_notes\": \"{{add_work_note_content}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/{{add_work_note_tb_name}}/{{add_work_note_sys_id}}?sysparm_display_value={{sysparm_display_value}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"{{add_work_note_tb_name}}",
+						"{{add_work_note_sys_id}}"
+					],
+					"query": [
+						{
+							"key": "sysparm_display_value",
+							"value": "{{sysparm_display_value}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Run Query",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/{{run_query_tb_name}}?{{run_query_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"{{run_query_tb_name}}"
+					],
+					"query": [
+						{
+							"key": "{{run_query_query}}",
+							"value": null
+						},
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Describe Catalog Item",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/sn_sc/servicecatalog/items/{{describe_catalog_item_sys_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"sn_sc",
+						"servicecatalog",
+						"items",
+						"{{describe_catalog_item_sys_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Variables",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_item_option_mtom?request_item={{get_variable_request_item}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_item_option_mtom"
+					],
+					"query": [
+						{
+							"key": "request_item",
+							"value": "{{get_variable_request_item}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "On Poll",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sysparm_query\": \"{{on_poll_sysparm_query}}\",\n    \"sysparm_exclude_reference_link\": \"true\",\n    \"sysparm_offset\": {{sysparm_offset}},\n    \"sysparm_limit\": {{sysparm_limit}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/{{on_poll_tb_name}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"{{on_poll_tb_name}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Ticket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var api_url = \"/api/now\"",
+							"var endpoint = \"/table/\"+ pm.variables.get(\"get_ticket_tb_name\")",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"get\",",
+							"    body: JSON.stringify({",
+							"        \"sysparm_query\": pm.variables.get(\"get_ticket_sysparm_query\")",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"    var response = response.json()",
+							"    pm.variables.set(\"get_ticket_sys_id\", response['result'][0]['sys_id'])",
+							"});",
+							"",
+							"",
+							"setTimeout(function () { ",
+							"    pm.sendRequest({",
+							"    url: base_url + api_url + endpoint + \"/\" + pm.variables.get(\"get_ticket_sys_id\"),",
+							"    method: \"get\",",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"    pm.variables.set(\"get_ticket_sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"get_ticket_sys_id\"))",
+							"});",
+							"}, 3000);",
+							"",
+							"setTimeout(function () {",
+							"    const req3 = {",
+							"        url: base_url + api_url + \"/attachment\",",
+							"        method: \"get\",",
+							"        body: JSON.stringify({",
+							"            \"sysparm_query\": pm.variables.get(\"get_ticket_sysparm_query\")",
+							"        }),",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req3, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
+							"        pm.variables.set(\"get_ticket_element_id\", pm.variables.get(\"get_ticket_sys_id\"))",
+							"        pm.variables.set(\"get_ticket_sysparm_query\", pm.variables.get(\"basic_sysparm_query\"))",
+							"    });",
+							"},6000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sys_journal_field?element_id={{get_ticket_element_id}}&sysparm_query={{get_ticket_sysparm_query}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sys_journal_field"
+					],
+					"query": [
+						{
+							"key": "element_id",
+							"value": "{{get_ticket_element_id}}"
+						},
+						{
+							"key": "sysparm_query",
+							"value": "{{get_ticket_sysparm_query}}"
+						}
+					]
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Get system id using system parameter query\n\n2) Update system parameter query\n\n3) Get element id and system parameter query"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Ticket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var api_url = \"/api/now\"",
+							"var endpoint = \"/table/\"+ pm.variables.get(\"create_ticket_tb_name\")",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"post\",",
+							"    body: JSON.stringify({",
+							"        'short_description': pm.variables.get(\"create_ticket_short_description\"),",
+							"        'description': pm.variables.get(\"create_ticket_description\")",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"    var response = response.json()",
+							"    pm.variables.set(\"create_ticket_sys_id\", response['result']['sys_id'])",
+							"    endpoint = endpoint + \"/\" + pm.variables.get(\"create_ticket_sys_id\")",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
+							"        var response = response.json()",
+							"        endpoint = \"/attachment\"",
+							"        pm.variables.set(\"create_ticket_sys_id\", response['result']['sys_id'])",
+							"        pm.variables.set(\"create_ticket_sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"create_ticket_sys_id\"))",
+							"    });",
+							"}, 3000);",
+							"",
+							"",
+							"setTimeout(function () { ",
+							"    const req3 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req3, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
+							"        pm.variables.set(\"create_ticket_element_id\", pm.variables.get(\"create_ticket_sys_id\"))",
+							"        pm.variables.set(\"create_ticket_sysparm_query\", pm.variables.get(\"basic_sysparm_query\"))",
+							"    });",
+							"}, 4000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sys_journal_field?element_id={{create_ticket_element_id}}&sysparm_query={{create_ticket_sysparm_query}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sys_journal_field"
+					],
+					"query": [
+						{
+							"key": "element_id",
+							"value": "{{create_ticket_element_id}}"
+						},
+						{
+							"key": "sysparm_query",
+							"value": "{{create_ticket_sysparm_query}}"
+						}
+					]
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Create ticket using description and get newly created system id\n\n2) Set system parameter query\n\n3) Get element id and update system parameter query"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Ticket",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var api_url = \"/api/now\"",
+							"var endpoint = \"/table/\"+ pm.variables.get(\"update_ticket_tb_name\") + pm.variables.get(\"update_ticket_sys_id\")",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"put\",",
+							"    body: JSON.stringify({",
+							"        'description': pm.variables.get(\"update_ticket_description\")",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
+							"        endpoint = \"/attachment\"",
+							"        pm.variables.set(\"sysparm_query\", \"table_sys_id=\" + pm.variables.get(\"update_ticket_sys_id\"))",
+							"    });",
+							"}, 3000);",
+							"",
+							"",
+							"setTimeout(function () { ",
+							"    const req3 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req3, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
+							"        pm.variables.set(\"update_ticket_element_id\", pm.variables.get(\"update_ticket_sys_id\"))",
+							"        pm.variables.set(\"basic_sysparm_query\", pm.variables.get(\"basic_sysparm_query\"))",
+							"    });",
+							"}, 4000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sys_journal_field?element_id={{update_ticket_element_id}}&sysparm_query={{basic_sysparm_query}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sys_journal_field"
+					],
+					"query": [
+						{
+							"key": "element_id",
+							"value": "{{update_ticket_element_id}}"
+						},
+						{
+							"key": "sysparm_query",
+							"value": "{{basic_sysparm_query}}"
+						}
+					]
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Update description of given system id ticket\n\n2) Set system parameter query\n\n3) Get element id and update system parameter query"
+			},
+			"response": []
+		},
+		{
+			"name": "Request Catalog Item",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var api_url_sc = \"/api/sn_sc\"",
+							"var endpoint = \"/servicecatalog/items/\"+ pm.variables.get(\"request_catalog_item_sys_id\")",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\")",
+							"",
+							"const req = {",
+							"    url: base_url + api_url_sc + endpoint,",
+							"    method: \"get\",",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url_sc + endpoint + \"/order_now\", ",
+							"        method: \"post\",",
+							"        body: JSON.stringify({",
+							"            \"sysparm_quantity\": pm.variables.get(\"sysparm_quantity\")",
+							"        }),",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
+							"        var response = response.json()",
+							"        pm.variables.set(\"request_catalog_item_sys_id\", response['result']['sys_id'])",
+							"    });",
+							"}, 3000);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_request/{{request_catalog_item_sys_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_request",
+						"{{request_catalog_item_sys_id}}"
+					]
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Get catalog item using given system id\n\n2) Set the given quantity and update catalog item system id"
+			},
+			"response": []
+		},
+		{
+			"name": "Describe Service Catalog",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var base_url = pm.variables.get(\"base_url\")",
+							"var content_type = pm.variables.get(\"content_type\")",
+							"var accept = pm.variables.get(\"accept\")",
+							"var api_url = \"/api/now\"",
+							"var endpoint = \"/table/sc_catalog\"",
+							"var auth = \"Basic \" + pm.environment.get(\"authCreds\");",
+							"",
+							"const req = {",
+							"    url: base_url + api_url + endpoint,",
+							"    method: \"get\",",
+							"    body: JSON.stringify({",
+							"        \"sysparm_query\": pm.variables.get(\"describe_service_catalog_sysparm_query\")",
+							"    }),",
+							"    header: {",
+							"        'Content-Type': content_type,",
+							"        'Accept': accept,",
+							"        'Authentication': auth",
+							"    }",
+							"}",
+							"pm.sendRequest(req, function (err, response) {",
+							"    if (err) throw new Error(JSON.stringify(err))",
+							"    var response = response.json()",
+							"    endpoint = \"/table/sc_category\"",
+							"    pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalog=\" + response['result'][0]['sys_id'])",
+							"});",
+							"",
+							"setTimeout(function () { ",
+							"    const req2 = {",
+							"        url: base_url + api_url + endpoint, ",
+							"        method: \"get\",",
+							"        header: {",
+							"            'Content-Type': content_type,",
+							"            'Accept': accept,",
+							"            'Authentication': auth",
+							"        }",
+							"    }",
+							"    pm.sendRequest(req2, function (err, response) {",
+							"        if (err) throw new Error(JSON.stringify(err))",
+							"        var response = response.json()",
+							"        pm.variables.set(\"describe_service_catalog\", response['result'][0]['sc_catalog']['value'])",
+							"        pm.variables.set(\"describe_service_catalog_sysparm_query\", \"sc_catalogsLIKE\" + pm.variables.get(\"describe_service_catalog\"))",
+							"    });",
+							"}, 3000);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/now/table/sc_cat_item?sysparm_query={{describe_service_catalog_sysparm_query}}&sysparm_offset={{sysparm_offset}}&sysparm_limit={{sysparm_limit}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"now",
+						"table",
+						"sc_cat_item"
+					],
+					"query": [
+						{
+							"key": "sysparm_query",
+							"value": "{{describe_service_catalog_sysparm_query}}"
+						},
+						{
+							"key": "sysparm_offset",
+							"value": "{{sysparm_offset}}"
+						},
+						{
+							"key": "sysparm_limit",
+							"value": "{{sysparm_limit}}"
+						}
+					]
+				},
+				"description": "This action uses the below mentioned API calls.\n\n1) Get catalog item using catalog system parameter query and update catalog system parameter query\n\n2) Set the catalog system parameter query"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"let credsParsed = CryptoJS.enc.Utf8.parse(`${pm.environment.get('username')}:${pm.environment.get('password')}`);",
+					"let credsEncoded = CryptoJS.enc.Base64.stringify(credsParsed);",
+					"pm.environment.set('authCreds', credsEncoded);",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": ""
+		},
+		{
+			"key": "sysparm_limit",
+			"value": ""
+		},
+		{
+			"key": "sysparm_offset",
+			"value": ""
+		},
+		{
+			"key": "sysparm_display_value",
+			"value": ""
+		},
+		{
+			"key": "sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "list_tickets_tb_name",
+			"value": ""
+		},
+		{
+			"key": "basic_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "get_variable_request_item",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "add_comment_content",
+			"value": ""
+		},
+		{
+			"key": "add_comment_tb_name",
+			"value": ""
+		},
+		{
+			"key": "add_comment_sys_id",
+			"value": ""
+		},
+		{
+			"key": "add_work_note_sys_id",
+			"value": ""
+		},
+		{
+			"key": "add_work_note_content",
+			"value": ""
+		},
+		{
+			"key": "add_work_note_tb_name",
+			"value": ""
+		},
+		{
+			"key": "run_query_query",
+			"value": ""
+		},
+		{
+			"key": "run_query_tb_name",
+			"value": ""
+		},
+		{
+			"key": "describe_catalog_item_sys_id",
+			"value": ""
+		},
+		{
+			"key": "on_poll_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "on_poll_tb_name",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_tb_name",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "get_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_short_description",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_description",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_tb_name",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_element_id",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "create_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_tb_name",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_sys_id",
+			"value": ""
+		},
+		{
+			"key": "update_ticket_description",
+			"value": ""
+		},
+		{
+			"key": "describe_service_catalog_sysparm_query",
+			"value": ""
+		},
+		{
+			"key": "describe_service_catalog",
+			"value": ""
+		},
+		{
+			"key": "request_catalog_item_sys_id",
+			"value": ""
+		},
+		{
+			"key": "sysparm_quantity",
+			"value": ""
+		}
+	]
+}
