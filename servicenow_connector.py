@@ -1590,7 +1590,8 @@ class ServicenowConnector(BaseConnector):
 
         self.debug_print("Polling with this query: {0}".format(query))
 
-        endpoint = '/table/' + config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
+        on_poll_table_name = config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
+        endpoint = '/table/{}'.format(on_poll_table_name.lower())
         params = {
             'sysparm_query': query,
             'sysparm_exclude_reference_link': 'true'}
