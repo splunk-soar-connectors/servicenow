@@ -67,27 +67,27 @@
 				<li> When the app is installed with Python version 2 and if the data is ingested using On Poll with query A and label B, it will list down the containers accordingly. If the ticket that is already ingested is updated, and then if the On Poll is executed again with the same label i.e. label B and with the same query A, it will add details of the updated ticket as an artifact in the already created container and update the container properties accordingly.</li>
 				<li> When the app is installed with Python version 3 and if the data is ingested using On Poll with query A and label B, it will list down the containers accordingly. If the ticket that is already ingested is updated, and then if the On Poll is executed again with the same label i.e. label B and with the same query A, it will not update the container properties but will add the updated ticket as an artifact in the already created container.</li>
 			</ul>
-		</ul>
 		<br>
 		<li><b>The functioning of Test Connectivity</b></li>
 		<br>
 		<ul>
 		<li><b>Case 1: If Client ID & Client Secret are provided: </b></li>
 			<ul>
-			<li>Step1: While running the test connectivity, the system will check the refresh token is present or not in the state file.</li>
-			<li>Step2(a): If a refresh token is present then the system will make the API call to fetch a new token. Using new token test connectivity will get passed.</li>
+			<li>Step1: While running the test connectivity, the system will check if the refresh token is present or not in the state file.</li>
+			<li>Step2(a): If a refresh token is present then the system will make the API call to fetch a new token. Using new token the test connectivity will get passed.</li>
 			<li>Step2(b): If the refresh token is not present then the system will check for the Username and Password. Using Username & Password system will make an API call to fetch a new token and test connectivity will get passed.</li>
-			<li>Step3: If the refresh token is not present and Username and Password are not provided then the system will return an error then the action will get failed.</li>
+			<li>Step3: If the refresh token is not present and Username and Password are not provided then the system will return an error and the action will fail.</li>
 			</ul>
 			<br>
 		<li><b>Case 2: If Client ID & Client Secret are not provided:</b></li>
 			<ul>
-				<li>Step1: While running the test connectivity, System will check the Username and Password are provided or not.</li>
+				<li>Step1: While running the test connectivity, System will check if the Username and Password are provided or not.</li>
 				<li>Step2: If Username & Password are provided then the system will get authenticated and test connectivity will get passed.</li>
-				<li>Step3: If the Username & Password are not provided then the system will return an error and action will get failed.</li>
+				<li>Step3: If the Username & Password are not provided then the system will return an error and the action will fail.</li>
 			</ul>
 		</ul>
 		<br>
-	</ul>
 	<li>In order to use the app actions, a user must have these roles itil, sn_request_write, and catalog. In some actions, the user can also provide the table name as input in that case the user must have the role/permission to access that table.</li>
+</ul>
+</ul>
 </p>
