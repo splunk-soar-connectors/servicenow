@@ -259,7 +259,7 @@ class ServicenowConnector(BaseConnector):
                 return RetVal(action_result.set_status(phantom.APP_ERROR,
                                 "Empty response and no information in the header"), None)
 
-        location_name = '{}{}{}'.format(self._base_url, self._api_uri, '/table')
+        location_name = '{}{}/table'.format(self._base_url, self._api_uri)
         if location.startswith(location_name):
             resp_json = dict()
             try:
