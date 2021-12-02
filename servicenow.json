@@ -76,8 +76,7 @@
         "severity": {
             "order": 10,
             "description": "Severity to apply to Containers and Artifacts ingested via On Poll (Automation user must have System Settings permissions)",
-            "data_type": "string",
-            "default": "medium"
+            "data_type": "string"
         }
     },
     "actions": [
@@ -7435,14 +7434,14 @@
                     "data_path": "action_result.data.*.model.link",
                     "data_type": "string",
                     "example_values": [
-                        "https://dev78070.service-now.com/api/now/table/cmdb_model/phantomqa"
+                        "https://dev78070.service-now.com/api/now/table/cmdb_model/test_user"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.model.value",
                     "data_type": "string",
                     "example_values": [
-                        "phantomqa"
+                        "test_user"
                     ]
                 },
                 {

@@ -8,26 +8,25 @@
 
 # Phantom imports
 import phantom.app as phantom
+
 try:
     import phantom.rules as phrules
 except:
     pass
-from phantom.base_connector import BaseConnector
+import json
+import re
+import sys
+from datetime import datetime
+
+import magic
+import pytz
+import requests
+from bs4 import BeautifulSoup, UnicodeDammit
 from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
 
 # THIS Connector imports
 from servicenow_consts import *
-
-import sys
-import pytz
-import json
-import magic
-import requests
-from bs4 import BeautifulSoup
-from bs4 import UnicodeDammit
-from datetime import datetime
-import re
-
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -91,7 +90,8 @@ class ServicenowConnector(BaseConnector):
         if self._base_url.endswith('/'):
             self._base_url = self._base_url[:-1]
 
-        self._first_run_container = self._validate_integers(self, config.get('first_run_container', SERVICENOW_DEFAULT_LIMIT), 'first_run_container')
+        self._first_run_container = self._validate_integers(self,
+            config.get('first_run_container', SERVICENOW_DEFAULT_LIMIT), 'first_run_container')
         if self._first_run_container is None:
             return self.get_status()
 
@@ -102,8 +102,7 @@ class ServicenowConnector(BaseConnector):
         if config.get('severity'):
             severity = config.get('severity', 'medium').lower()
             if len(severity) > 20:
-                self.save_progress('Severity length must be less than 20 characters')
-                return phantom.APP_ERROR
+                return self.set_status(phantom.APP_ERROR, 'Severity length must be less than equal to 20 characters')
 
         self._host = self._base_url[self._base_url.find('//') + 2:]
         self._headers = {'Accept': 'application/json'}
@@ -159,10 +158,12 @@ class ServicenowConnector(BaseConnector):
                 return None
 
             if parameter < 0:
-                action_result.set_status(phantom.APP_ERROR, "Please provide a valid non-negative integer value in the {} parameter".format(key))
+                action_result.set_status(phantom.APP_ERROR,
+                    "Please provide a valid non-negative integer value in the {} parameter".format(key))
                 return None
             if not allow_zero and parameter == 0:
-                action_result.set_status(phantom.APP_ERROR, "Please provide a positive integer value in the {} parameter".format(key))
+                action_result.set_status(phantom.APP_ERROR,
+                    "Please provide a positive integer value in the {} parameter".format(key))
                 return None
 
         return parameter
@@ -228,7 +229,8 @@ class ServicenowConnector(BaseConnector):
             else:
                 if isinstance(resp_json, dict):
                     error_details["message"] = self._handle_py_ver_compat_for_input_str(error_info) if error_info else "Not Found"
-                    error_details["detail"] = self._handle_py_ver_compat_for_input_str(resp_json.get("error_description", "Not supplied"))
+                    error_description = resp_json.get("error_description", "Not supplied")
+                    error_details["detail"] = self._handle_py_ver_compat_for_input_str(error_description)
                 return error_details
 
         # Handle the scenario of "message" and "detail" keys not in the required format
@@ -254,9 +256,11 @@ class ServicenowConnector(BaseConnector):
             if 200 <= response.status_code < 205:
                 return RetVal(phantom.APP_SUCCESS, {})
             else:
-                return RetVal(action_result.set_status(phantom.APP_ERROR, "Empty response and no information in the header"), None)
+                return RetVal(action_result.set_status(phantom.APP_ERROR,
+                                "Empty response and no information in the header"), None)
 
-        if location.startswith(self._base_url + self._api_uri + '/table'):
+        location_name = '{}{}{}'.format(self._base_url, self._api_uri, '/table')
+        if location.startswith(location_name):
             resp_json = dict()
             try:
                 sys_id = location.rsplit('/', 1)[-1]
@@ -300,7 +304,8 @@ class ServicenowConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse response as JSON", self._get_error_message_from_exception(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR,
+                            "Unable to parse response as JSON", self._get_error_message_from_exception(e)), None)
 
         # What's with the special case 201?
         if 200 <= r.status_code < 205:
@@ -312,7 +317,8 @@ class ServicenowConnector(BaseConnector):
 
         if r.status_code != requests.codes.ok:  # pylint: disable=E1101
             error_details = self._get_error_details(resp_json)
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FROM_SERVER.format(status=r.status_code, **error_details)), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR,
+                            SERVICENOW_ERR_FROM_SERVER.format(status=r.status_code, **error_details)), resp_json)
 
         return RetVal(phantom.APP_SUCCESS, resp_json)
 
@@ -358,7 +364,8 @@ class ServicenowConnector(BaseConnector):
                     headers=headers,
                     params=params)
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR,
+                            SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -368,12 +375,14 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
+            request_url = '{}{}'.format(self._base_url, '/oauth_token.do')
             r = requests.post(
-                    self._base_url + '/oauth_token.do',
+                    request_url,
                     data=data  # Mostly this line
             )
         except Exception as e:
-            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
+            return (action_result.set_status(phantom.APP_ERROR,
+                        SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -398,13 +407,15 @@ class ServicenowConnector(BaseConnector):
                     headers=headers,
                     params=params)
         except Exception as e:
-            return (action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
+            return (action_result.set_status(phantom.APP_ERROR,
+                        SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
 
         return self._process_response(r, action_result)
 
     def _make_rest_call_helper(self, action_result, endpoint, params={}, data={}, headers={}, method="get", auth=None):
         try:
-            return self._make_rest_call(action_result, endpoint, params=params, data=data, headers=headers, method=method, auth=auth)
+            return self._make_rest_call(action_result, endpoint,
+                                            params=params, data=data, headers=headers, method=method, auth=auth)
         except UnauthorizedOAuthTokenException:
             # We should only be here if we didn't generate a new token, and if the old token wasn't valid
             # (Hopefully) this should only happen rarely
@@ -471,7 +482,8 @@ class ServicenowConnector(BaseConnector):
 
         if phantom.is_fail(ret_val):
             error_message = self._handle_py_ver_compat_for_input_str(action_result.get_message())
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error in token request. Error: {}".format(error_message)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR,
+                                                    "Error in token request. Error: {}".format(error_message)), None)
 
         self._state['oauth_token'] = response_json
         self._state['retrieval_time'] = datetime.now().strftime(DT_STR_FORMAT)
@@ -485,7 +497,8 @@ class ServicenowConnector(BaseConnector):
                     self._state = {'first_run': self._state.get('first_run')}
             else:
                 self._state = {}
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to parse access token", self._get_error_message_from_exception(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR,
+                        "Unable to parse access token", self._get_error_message_from_exception(e)), None)
 
     def _get_oauth_token(self, action_result, force_new=False):
         if self._state.get('oauth_token') and not force_new:
@@ -528,8 +541,10 @@ class ServicenowConnector(BaseConnector):
 
     def _check_for_existing_container(self, sdi, label):
 
-        request_str = '{0}rest/container?page_size=0&_filter_source_data_identifier="{1}"&_filter_label="{2}"&sort=create_time&order=asc'\
-            .format(self.get_phantom_base_url(), sdi, label)
+        uri = 'rest/container?page_size=0&_filter_source_data_identifier='
+        filter = '&_filter_label='
+        prefix = '&sort=create_time&order=asc'
+        request_str = '{0}{1}"{2}"{3}"{4}"{5}'.format(self.get_phantom_base_url(), uri, sdi, filter, label, prefix)
 
         try:
             r = requests.get(request_str, verify=False)
@@ -552,7 +567,8 @@ class ServicenowConnector(BaseConnector):
         if count > 0:
             if count > 1:
                 self.debug_print('More than one container exists with SDI {0}. Going with oldest.'.format(sdi))
-            return resp_json['data'][0]['id'], resp_json['data'][0]['label'], resp_json['data'][0]['name'], resp_json['data'][0]['description']
+            response_data = resp_json['data'][0]
+            return response_data['id'], response_data['label'], response_data['name'], response_data['description']
         elif count < 0:
             self.debug_print('Something went wrong getting container count')
             self.debug_print(resp_json)
@@ -579,7 +595,8 @@ class ServicenowConnector(BaseConnector):
 
         self.save_progress(SERVICENOW_MESSAGE_GET_INCIDENT_TEST)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, params=request_params, headers=headers, auth=auth)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+                                params=request_params, headers=headers, auth=auth)
 
         if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
@@ -605,7 +622,8 @@ class ServicenowConnector(BaseConnector):
         try:
             fields = json.loads(fields)
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE, self._get_error_message_from_exception(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR,
+                            SERVICENOW_ERR_FIELDS_JSON_PARSE, self._get_error_message_from_exception(e)), None)
 
         return RetVal(phantom.APP_SUCCESS, fields)
 
@@ -647,16 +665,19 @@ class ServicenowConnector(BaseConnector):
             data.update({'short_description': short_desc})
 
         if desc:
-            data.update({'description': '{0}\n\n{1}{2}'.format(self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, '')), SERVICENOW_TICKET_FOOTNOTE,
+            json_description = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, ''))
+            data.update({'description': '{0}\n\n{1}{2}'.format(json_description, SERVICENOW_TICKET_FOOTNOTE,
                     self.get_container_id())})
         elif fields and 'description' in fields:
-            data.update({'description': '{0}\n\n{1}{2}'.format(self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, '')), SERVICENOW_TICKET_FOOTNOTE,
+            field_description = self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, ''))
+            data.update({'description': '{0}\n\n{1}{2}'.format(field_description, SERVICENOW_TICKET_FOOTNOTE,
                     self.get_container_id())})
         else:
             data.update({'description': '{0}\n\n{1}{2}'.format("", SERVICENOW_TICKET_FOOTNOTE,
                     self.get_container_id())})
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=data, auth=auth, headers=headers, method="post")
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+                                    data=data, auth=auth, headers=headers, method="post")
 
         if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
@@ -675,14 +696,16 @@ class ServicenowConnector(BaseConnector):
             try:
                 vault_process, response = self._add_attachment(action_result, table, created_ticket_id, vault_id)
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", self._get_error_message_from_exception(e))
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID",
+                                    self._get_error_message_from_exception(e))
             if phantom.is_success(vault_process):
                 action_result.update_summary({'attachment_added': True, 'attachment_id': response['result']['sys_id']})
             else:
                 action_result.update_summary({'attachment_added': False, 'attachment_error': action_result.get_message()})
                 self.debug_print(action_result.get_message())
 
-        ret_val = self._get_ticket_details(action_result, param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE), created_ticket_id)
+        ret_val = self._get_ticket_details(action_result,
+                        param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE), created_ticket_id)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -728,7 +751,8 @@ class ServicenowConnector(BaseConnector):
                 'table_sys_id': ticket_id,
                 'file_name': filename}
 
-        ret_val, response = self._upload_file_helper(action_result, '/attachment/file', headers=headers, params=params, data=data, auth=auth)
+        ret_val, response = self._upload_file_helper(action_result, '/attachment/file',
+                                headers=headers, params=params, data=data, auth=auth)
 
         if phantom.is_fail(ret_val):
             return (action_result.get_status(), response)
@@ -768,12 +792,14 @@ class ServicenowConnector(BaseConnector):
                 sys_id = response.get("result")[0].get("sys_id")
 
                 if not sys_id:
-                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(ticket_id))
+                    return action_result.set_status(phantom.APP_ERROR,
+                                        "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(ticket_id))
 
                 ticket_id = sys_id
             else:
                 return action_result.set_status(phantom.APP_ERROR,
-                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' \
+                                parameter and provide a valid 'sys_id' in the 'id' parameter")
 
         endpoint = '/table/{0}/{1}'.format(table, ticket_id)
 
@@ -789,7 +815,8 @@ class ServicenowConnector(BaseConnector):
 
         if fields:
             self.save_progress("Updating ticket with the provided fields")
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=fields, auth=auth, headers=headers, method="put")
+            ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=fields,
+                                auth=auth, headers=headers, method="put")
 
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -803,7 +830,8 @@ class ServicenowConnector(BaseConnector):
                 ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
                 action_result.update_summary({'attachment_added': ret_val})
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID", self._get_error_message_from_exception(e))
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter \
+                                    valid Vault ID", self._get_error_message_from_exception(e))
 
             if phantom.is_success(ret_val):
                 action_result.update_summary({'attachment_id': response['result']['sys_id']})
@@ -835,11 +863,12 @@ class ServicenowConnector(BaseConnector):
                 sys_id = response.get("result")[0].get("sys_id")
 
                 if not sys_id:
-                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(sys_id))
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID \
+                                    for the provided ticket number: {0}".format(sys_id))
 
             else:
-                return action_result.set_status(phantom.APP_ERROR,
-                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+                return action_result.set_status(phantom.APP_ERROR, "Please provide a valid Ticket Number in the \
+                    'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
 
         endpoint = '/table/{0}/{1}'.format(table, sys_id)
 
@@ -857,7 +886,8 @@ class ServicenowConnector(BaseConnector):
         params = {'sysparm_query': 'table_sys_id={0}'.format(ticket_sys_id)}
 
         # get the attachment details
-        ret_val, attach_resp = self._make_rest_call_helper(action_result, '/attachment', auth=auth, headers=headers, params=params)
+        ret_val, attach_resp = self._make_rest_call_helper(action_result, '/attachment',
+                            auth=auth, headers=headers, params=params)
 
         # is some versions of servicenow fail the attachment query if not present
         # some pass it with no data if not present, so only add data if present and valid
@@ -873,10 +903,12 @@ class ServicenowConnector(BaseConnector):
         params = {}
         params["element_id"] = sys_id
         params["sysparm_query"] = "element=comments^ORelement=work_notes"
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+                                auth=auth, headers=headers, params=params)
 
         if phantom.is_fail(ret_val):
-            self.debug_print("Unable to fetch comments and work_notes for the ticket with sys ID: {0}. Details: {1}".format(ticket_sys_id, action_result.get_message()))
+            self.debug_print("Unable to fetch comments and work_notes for \
+                    the ticket with sys ID: {0}. Details: {1}".format(ticket_sys_id, action_result.get_message()))
 
         comment_section = []
         worknotes_section = []
@@ -951,7 +983,7 @@ class ServicenowConnector(BaseConnector):
             if len(items.get("result")) < SERVICENOW_DEFAULT_LIMIT:
                 break
 
-            payload['sysparm_offset'] = payload['sysparm_offset'] + SERVICENOW_DEFAULT_LIMIT
+            payload['sysparm_offset'] = '{}{}'.format(payload['sysparm_offset'], SERVICENOW_DEFAULT_LIMIT)
 
         return items_list
 
@@ -973,7 +1005,8 @@ class ServicenowConnector(BaseConnector):
         request_params = dict()
         request_params["sysparm_query"] = "sys_id={}".format(catalog_sys_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+                            auth=auth, headers=headers, params=request_params)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -989,7 +1022,8 @@ class ServicenowConnector(BaseConnector):
         request_params = dict()
         request_params["sysparm_query"] = "sc_catalog={}".format(catalog_sys_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+                            auth=auth, headers=headers, params=request_params)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -1039,7 +1073,8 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+                                SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1060,8 +1095,8 @@ class ServicenowConnector(BaseConnector):
             query.append("category={}".format(self._handle_py_ver_compat_for_input_str(category_sys_id)))
 
         if search_text:
-            query.append("nameLIKE{search_text}^ORdescriptionLIKE{search_text}^ORsys_nameLIKE{search_text}^ORshort_descriptionLIKE{search_text}".format(
-                            search_text=self._handle_py_ver_compat_for_input_str(search_text)))
+            search_text = self._handle_py_ver_compat_for_input_str(search_text)
+            query.append("nameLIKE{0}^ORdescriptionLIKE{0}^ORsys_nameLIKE{0}^ORshort_descriptionLIKE{0}".format(search_text))
 
         endpoint = '/table/sc_cat_item'
 
@@ -1110,7 +1145,8 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+                        SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1136,7 +1172,8 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+                        SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1185,12 +1222,13 @@ class ServicenowConnector(BaseConnector):
                 new_sys_id = response.get("result")[0].get("sys_id")
 
                 if not new_sys_id:
-                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(sys_id))
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the \
+                            ticket SYS ID for the provided ticket number: {0}".format(sys_id))
 
                 sys_id = new_sys_id
             else:
-                return action_result.set_status(phantom.APP_ERROR,
-                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+                return action_result.set_status(phantom.APP_ERROR, "Please provide a valid Ticket Number \
+                    in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
 
         work_note = param.get("work_note")
 
@@ -1200,7 +1238,8 @@ class ServicenowConnector(BaseConnector):
         request_params = {}
         request_params["sysparm_display_value"] = True
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params, method="put")
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth,
+                            data=data, headers=headers, params=request_params, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -1238,7 +1277,8 @@ class ServicenowConnector(BaseConnector):
             try:
                 variables_param = json.loads(self._handle_py_ver_compat_for_input_str(variables_param))
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON input", self._get_error_message_from_exception(e))
+                return action_result.set_status(phantom.APP_ERROR,
+                        "Error while parsing the JSON input", self._get_error_message_from_exception(e))
 
         endpoint = '/servicecatalog/items/{}'.format(sys_id)
 
@@ -1274,7 +1314,8 @@ class ServicenowConnector(BaseConnector):
         if variables_param:
             data["variables"] = variables_param
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, method="post")
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth,
+                            data=data, headers=headers, method="post")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -1324,12 +1365,13 @@ class ServicenowConnector(BaseConnector):
                 new_sys_id = response.get("result")[0].get("sys_id")
 
                 if not new_sys_id:
-                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket SYS ID for the provided ticket number: {0}".format(sys_id))
+                    return action_result.set_status(phantom.APP_ERROR, "Unable to fetch the ticket \
+                                    SYS ID for the provided ticket number: {0}".format(sys_id))
 
                 sys_id = new_sys_id
             else:
-                return action_result.set_status(phantom.APP_ERROR,
-                            "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+                return action_result.set_status(phantom.APP_ERROR, "Please provide a valid Ticket Number \
+                    in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
 
         comment = param.get("comment")
         endpoint = "/table/{}/{}".format(table_name, sys_id)
@@ -1338,7 +1380,8 @@ class ServicenowConnector(BaseConnector):
         request_params = {}
         request_params["sysparm_display_value"] = True
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data, headers=headers, params=request_params, method="put")
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data,
+                            headers=headers, params=request_params, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -1359,13 +1402,14 @@ class ServicenowConnector(BaseConnector):
 
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
-
-        endpoint = '/table/{0}'.format(self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)))
+        table_name = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
+        endpoint = '/table/{0}'.format(table_name)
         request_params = {
             'sysparm_query': param.get(SERVICENOW_JSON_FILTER, "")
         }
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+                                SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1403,26 +1447,30 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=request_params)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth,
+                                headers=headers, params=request_params)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         if not response.get('result'):
-            return action_result.set_status(phantom.APP_ERROR, 'No data found for the requested item having System ID: {0}'.format(sys_id))
+            return action_result.set_status(phantom.APP_ERROR, 'No data found for the \
+                        requested item having System ID: {0}'.format(sys_id))
 
         variables = dict()
         for item in response['result']:
             sc_item_option = item.get('sc_item_option')
             if not sc_item_option or not item['sc_item_option'].get('value'):
-                return action_result.set_status(phantom.APP_ERROR, 'Error occurred while fetching variable info for the System ID: {0}'.format(sys_id))
+                return action_result.set_status(phantom.APP_ERROR, 'Error occurred \
+                    while fetching variable info for the System ID: {0}'.format(sys_id))
 
             item_option_value = item['sc_item_option']['value']
 
             try:
                 item_option_value = self._handle_py_ver_compat_for_input_str(item_option_value)
             except:
-                self.debug_print("Error while handling Unicode characters (if any or if applicable) in the 'sc_item_option' value")
+                self.debug_print("Error while handling Unicode characters \
+                    (if any or if applicable) in the 'sc_item_option' value")
                 item_option_value = item['sc_item_option']['value']
 
             endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_TABLE, item_option_value)
@@ -1437,16 +1485,21 @@ class ServicenowConnector(BaseConnector):
 
             # If no result found or no key for value found, throw error
             if not response.get('result') or response['result'].get('value') is None:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_VALUE.format(item_opt_value=item_option_value, sys_id=sys_id))
+                return action_result.set_status(phantom.APP_ERROR,
+                SERVICENOW_ERR_FETCH_VALUE.format(item_opt_value=item_option_value, sys_id=sys_id))
 
             response_value = response['result']['value']
 
-            # If no result found or no key for item_option_new found or no key found for value inside item_option_new dictionary, throw error
-            if not response.get('result') or response['result'].get('item_option_new') is None or \
-                    (isinstance(response['result']['item_option_new'], dict) and not response['result']['item_option_new'].get('value')):
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_QUESTION_ID.format(item_opt_value=item_option_value, sys_id=sys_id))
+            # If no result found or no key for item_option_new found or no key found for
+            # value inside item_option_new dictionary, throw error
+            new_option = 'item_option_new'
+            if not response.get('result') or response['result'].get(new_option) is None or \
+                    (isinstance(response['result'][new_option], dict) and not response['result'][new_option].get('value')):
+                return action_result.set_status(phantom.APP_ERROR,
+                SERVICENOW_ERR_FETCH_QUESTION_ID.format(item_opt_value=item_option_value, sys_id=sys_id))
 
-            # The dictionary for item_option_new can be empty if no question is available for a given variable which is a valid scenario
+            # The dictionary for item_option_new can be empty if no question is available
+            # for a given variable which is a valid scenario
             if not response['result']['item_option_new']:
                 response_question = ""
                 variables[response_question] = response_value
@@ -1471,7 +1524,8 @@ class ServicenowConnector(BaseConnector):
 
             # If no result found or no key for question_text found, throw error
             if not response.get('result') or response['result'].get('question_text') is None:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FETCH_QUESTION.format(question_id=question_id, item_opt_value=item_option_value, sys_id=sys_id))
+                return action_result.set_status(phantom.APP_ERROR,
+                SERVICENOW_ERR_FETCH_QUESTION.format(question_id=question_id, item_opt_value=item_option_value, sys_id=sys_id))
 
             response_question = response['result']['question_text']
 
@@ -1498,8 +1552,9 @@ class ServicenowConnector(BaseConnector):
 
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
-        endpoint = SERVICENOW_BASE_QUERY_URI + lookup_table + "?" + query
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
+        endpoint = '{}{}?{}'.format(SERVICENOW_BASE_QUERY_URI, lookup_table, query)
+        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+                    SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1526,17 +1581,24 @@ class ServicenowConnector(BaseConnector):
         HASH_REGEX = '\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b'
         IP_REGEX = '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}'
         IPV6_REGEX = '\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))'
-        IPV6_REGEX += '|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|\
+            2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))'
+        IPV6_REGEX += '|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:\
+            ((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|'
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:\
+            ((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
             '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:\
+            [0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
     '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|\
+            ((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
     '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
-        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
+        IPV6_REGEX += '(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|\
+            ((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.' \
     '(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|'
-        IPV6_REGEX += '(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*'
+        IPV6_REGEX += '(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|\
+            [1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*'
         uri_regexc = re.compile(URI_REGEX)
         hash_regexc = re.compile(HASH_REGEX)
         ip_regexc = re.compile(IP_REGEX)
@@ -1565,7 +1627,7 @@ class ServicenowConnector(BaseConnector):
         action_query = config.get(SERVICENOW_JSON_ON_POLL_FILTER, "")
 
         if len(action_query) > 0:
-            query += '^' + action_query
+            query += '^{}'.format(action_query)
 
         # If it's a poll now don't filter based on update time
         if self.is_poll_now():
@@ -1578,15 +1640,19 @@ class ServicenowConnector(BaseConnector):
         else:
             # "last_time" should be of the format "%Y-%m-%d %H:%M:%S"
             if last_time and len(last_time.split(" ")) == 2:
-                query += "^sys_updated_on>=javascript:gs.dateGenerate('{}','{}')".format(last_time.split(" ")[0], last_time.split(" ")[1])
+                query_prefix = last_time.split(" ")
+                query += "^sys_updated_on>=javascript:gs.dateGenerate('{}','{}')".format(query_prefix[0], query_prefix[1])
                 max_tickets = self._max_container
             else:
-                self.debug_print("Either 'last_time' is None or empty or it is not in the expected format of %Y-%m-%d %H:%M:%S. last_time: {}".format(last_time))
-                self.debug_print("Considering this as the first scheduled|interval polling run; skipping time-based query filtering; processing the on_poll workflow accordingly")
+                self.debug_print("Either 'last_time' is None or empty or it is not \
+                    in the expected format of %Y-%m-%d %H:%M:%S. last_time: {}".format(last_time))
+                self.debug_print("Considering this as the first scheduled|interval \
+                    polling run; skipping time-based query filtering; processing the on_poll workflow accordingly")
 
                 max_tickets = self._first_run_container
 
-                self.debug_print("Setting the 'max_tickets' to the value of 'first_run_container'. max_tickets: {}".format(max_tickets))
+                self.debug_print("Setting the 'max_tickets' to the value of \
+                    'first_run_container'. max_tickets: {}".format(max_tickets))
 
         self.debug_print("Polling with this query: {0}".format(query))
 
@@ -1620,7 +1686,10 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
         else:
-            severity = config.get('severity', 'medium').lower()
+            ret_val, default_severity = self._find_default_severity(action_result)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+            severity = config.get('severity', default_severity).lower()
 
         for issue in issues:
 
@@ -1741,25 +1810,53 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _find_default_severity(self, action_result):
+        try:
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)
+            resp_json = r.json()
+        except Exception as e:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
+                                from platform: {0}".format(e)), None)
+
+        if r.status_code == 401:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
+                from platform: {0}".format(resp_json.get('message', 'Authentication Error'))), None)
+
+        if r.status_code != 200:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
+                from platform: {0}".format(resp_json.get('message', 'Unknown Error'))), None)
+
+        severity = None
+
+        for severity_data in resp_json['data']:
+            if severity_data.get('is_default', False):
+                severity = severity_data['name']
+                break
+
+        return RetVal(phantom.APP_SUCCESS, severity)
+
     def _validate_custom_severity(self, action_result, severity):
 
         try:
             r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities from platform: {0}".format(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
+                            from platform: {0}".format(e)), None)
 
         if r.status_code == 401:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities from platform: {0}".format(resp_json.get('message', 'Authentication Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
+                from platform: {0}".format(resp_json.get('message', 'Authentication Error'))), None)
 
         if r.status_code != 200:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities from platform: {0}".format(resp_json.get('message', 'Unknown Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
+                from platform: {0}".format(resp_json.get('message', 'Unknown Error'))), None)
 
         severities = [s['name'] for s in resp_json['data']]
 
         if severity not in severities:
-            return RetVal(action_result.set_status(phantom.APP_ERROR,
-                            "Supplied severity, {0}, not found in configured severities: {1}".format(severity, ', '.join(severities))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Supplied severity, {0}, \
+                not found in configured severities: {1}".format(severity, ', '.join(severities))), None)
         else:
             return RetVal(phantom.APP_SUCCESS, {})
 
@@ -1814,8 +1911,9 @@ class ServicenowConnector(BaseConnector):
 
 if __name__ == '__main__':
 
-    import pudb
     import argparse
+
+    import pudb
 
     pudb.set_trace()
 
@@ -1840,7 +1938,7 @@ if __name__ == '__main__':
     if username and password:
         try:
             print("Accessing the Login page")
-            login_url = BaseConnector._get_phantom_base_url() + "login"
+            login_url = '{}{}'.format(BaseConnector._get_phantom_base_url(), "login")
             r = requests.get(login_url, verify=False)
             csrftoken = r.cookies['csrftoken']
 
@@ -1850,14 +1948,14 @@ if __name__ == '__main__':
             data['csrfmiddlewaretoken'] = csrftoken
 
             headers = dict()
-            headers['Cookie'] = 'csrftoken=' + csrftoken
-            headers['Referer'] = BaseConnector._get_phantom_base_url() + 'login'
+            headers['Cookie'] = 'csrftoken={}'.format(csrftoken)
+            headers['Referer'] = '{}{}'.format(BaseConnector._get_phantom_base_url(), 'login')
 
             print("Logging into Platform to get the session id")
             r2 = requests.post(login_url, verify=False, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
-            print("Unable to get session id from the platfrom. Error: " + str(e))
+            print("Unable to get session id from the platfrom. Error: {}".format(str(e)))
             exit(1)
 
     with open(args.input_test_json) as f:
