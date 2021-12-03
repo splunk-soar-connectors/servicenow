@@ -358,8 +358,10 @@ class ServicenowConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _upload_file(self, action_result, endpoint, headers={}, params=None, data=None, auth=None):
+    def _upload_file(self, action_result, endpoint, headers=None, params=None, data=None, auth=None):
 
+        if headers is None:
+            headers = {}
         # Create the headers
         headers.update(self._headers)
 
