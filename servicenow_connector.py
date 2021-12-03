@@ -394,8 +394,10 @@ class ServicenowConnector(BaseConnector):
 
         return self._process_response(r, action_result)
 
-    def _make_rest_call(self, action_result, endpoint, headers={}, params=None, data=None, auth=None, method="get"):
+    def _make_rest_call(self, action_result, endpoint, headers=None, params=None, data=None, auth=None, method="get"):
 
+        if headers is None:
+            headers = {}
         # Create the headers
         headers.update(self._headers)
 
