@@ -386,7 +386,7 @@ class ServicenowConnector(BaseConnector):
 
         try:
             request_url = '{}{}'.format(self._base_url, '/oauth_token.do')
-            r = requests.post(
+            r = requests.post( # nosemgrep
                     request_url,
                     data=data  # Mostly this line
             )
@@ -1824,7 +1824,7 @@ class ServicenowConnector(BaseConnector):
 
     def _find_default_severity(self, action_result):
         try:
-            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False) # nosemgrep
             resp_json = r.json()
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
@@ -1850,7 +1850,7 @@ class ServicenowConnector(BaseConnector):
     def _validate_custom_severity(self, action_result, severity):
 
         try:
-            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False) # nosemgrep
             resp_json = r.json()
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
