@@ -24,6 +24,7 @@
     -   first_run_container: Maximum containers to ingest for the first run of scheduled polling.
     -   max_container: Maximum containers to ingest for subsequent runs of scheduled polling.
     -   severity: Custom severity of the ingested artifact.
+    
         -   **Using Custom Severities on Ingested Data**
 
             - If you decide to use custom severities to apply to Containers and Artifacts ingested via On Poll, then you must make sure that the automation user you use has the correct permissions.
@@ -106,7 +107,7 @@
         - Step2: If Username & Password are provided then the system will get authenticated and test connectivity will get passed.
         - Step3: If the Username & Password are not provided then the system will return an error and the action will fail.
 
-    - In order to use the app actions, a user must have these roles itil, sn_request_write, and catalog. In some actions, the user can also provide the table name as input in that case the user must have the role/permission to access that table.
+- In order to use the app actions, a user must have these roles itil, sn_request_write, and catalog. In some actions, the user can also provide the table name as input in that case the user must have the role/permission to access that table.
 
 
   
