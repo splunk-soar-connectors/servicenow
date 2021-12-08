@@ -33,7 +33,6 @@ from bs4 import BeautifulSoup, UnicodeDammit
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
-# THIS Connector imports
 from servicenow_consts import *
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -1466,8 +1465,8 @@ class ServicenowConnector(BaseConnector):
             return action_result.get_status()
 
         if not response.get('result'):
-            return action_result.set_status(phantom.APP_ERROR, 'No data found for the \
-                        requested item having System ID: {0}'.format(sys_id))
+            return action_result.set_status(
+                phantom.APP_ERROR, 'No data found for the requested item having System ID: {0}'.format(sys_id))
 
         variables = dict()
         for item in response['result']:
@@ -1565,8 +1564,8 @@ class ServicenowConnector(BaseConnector):
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
         endpoint = '{}{}?{}'.format(SERVICENOW_BASE_QUERY_URI, lookup_table, query)
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
-                    SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
+        limit = self._validate_integers(
+            action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if limit is None:
             return action_result.get_status()
 
@@ -1663,8 +1662,8 @@ class ServicenowConnector(BaseConnector):
 
                 max_tickets = self._first_run_container
 
-                self.debug_print("Setting the 'max_tickets' to the value of \
-                    'first_run_container'. max_tickets: {}".format(max_tickets))
+                self.debug_print(
+                    "Setting the 'max_tickets' to the value of 'first_run_container'. max_tickets: {}".format(max_tickets))
 
         self.debug_print("Polling with this query: {0}".format(query))
 
@@ -1869,8 +1868,8 @@ class ServicenowConnector(BaseConnector):
         if severity not in severities:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Supplied severity, {0}, \
                 not found in configured severities: {1}".format(severity, ', '.join(severities))), None)
-        else:
-            return RetVal(phantom.APP_SUCCESS, {})
+
+        return RetVal(phantom.APP_SUCCESS, {})
 
     def handle_action(self, param):
         """Function that handles all the actions
