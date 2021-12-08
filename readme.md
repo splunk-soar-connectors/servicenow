@@ -34,6 +34,16 @@
             - In order to solve this problem, you must create a user of type **Automation** and assign this user a Role that has permissions to view or edit **System Settings**
 					(**Administration**>**User Management**>**Users**> **+ User** button on the top right corner). Then, choose this user in your ServiceNow **Asset Settings**
 					under **Advanced** and you will be able to successfully apply custom severities to your ingested data.
+
+                **Administration**>**User Management**>**Users**> **+ User**
+                [![](img/servicenow_create_user.png)](img/servicenow_create_user.png)
+
+                **Administration**>**User Management**>**Roles & Permissions**> **+ Role**
+                [![](img/servicenow_create_role.png)](img/servicenow_create_role.png)
+
+                **Asset Settings**>**Advance**
+                [![](img/servicenow_asset_settings.png)](img/servicenow_asset_settings.png)
+
             - In order to use the custom severity it is necessary to create a severity over (**Administration**>**Event Settings**>**Severity**). If custom severity has not been provided in the asset configuration, then the default severity from "**Administration**>**Event Settings**>**Severity**" will be considered.
 
       
