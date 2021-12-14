@@ -2,7 +2,7 @@
 # ServiceNow
 
 Publisher: Splunk  
-Connector Version: 2\.1\.2  
+Connector Version: 2\.1\.3  
 Product Vendor: ServiceNow  
 Product Name: ServiceNow  
 Product Version Supported (regex): "\.\*"  
@@ -171,6 +171,15 @@ This app integrates with ServiceNow to perform investigative and generic actions
 -   In order to use the app actions, a user must have these roles itil, sn_request_write, and
     catalog. In some actions, the user can also provide the table name as input in that case the
     user must have the role/permission to access that table.
+
+
+- **Port Information**
+    - The app uses HTTP/ HTTPS protocol for communicating with the ServiceNow server. Below are the default ports used by Splunk SOAR.
+
+    Service Name | Transport Protocol | Port
+    ------------ | ------------------ | ----
+    **http** | tcp | 80
+    **https** | tcp | 443
 
 
 ### Configuration Variables
