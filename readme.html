@@ -1,10 +1,19 @@
 <!-- File: readme.html
   Copyright (c) 2016-2021 Splunk Inc.
 
-  SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
-  without a valid written license from Splunk Inc. is PROHIBITED.
--->
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+either express or implied. See the License for the specific language governing permissions
+and limitations under the License.
+-->
+<html>
+<body>
 <p><b>Notes</b>
    <ul>
 		<li><b>Asset Configuration Parameter</b></li>
@@ -21,6 +30,47 @@
 			   <li>
 					max_container: Maximum containers to ingest for subsequent runs of scheduled polling.
 			   </li>
+			   <li>
+				   severity: Custom severity of the ingested artifact.
+				</li>
+				<br>
+				<ul>
+					<li>
+				   		<b>Using Custom Severities on Ingested Data</b>
+						<ul>
+						<li>
+							If you decide to use custom severities to apply to Containers and Artifacts ingested via On Poll, then you must make sure that the automation user you use has the correct permissions.
+						</li>
+						<li>
+							By default, the automation user is selected to run the ServiceNow ingestion action. (See <b>Asset Configuration</b>><b>Asset Settings</b>><b>Advanced</b>)
+							The automation user does <b>NOT</b> have access to view or edit <b>System Settings</b>, which includes the permission to view the custom severities on your instance.
+							This will cause your On Poll action to fail since your user cannot pull the custom severities on your instance.
+						</li>
+						<li>
+							In order to solve this problem, you must create a user of type <b>Automation</b> and assign this user a Role that has permissions to view or edit <b>System Settings</b>
+							(<b>Administration</b>><b>User Management</b>><b>Users</b><b>> + User</b> button on the top right corner). Then, choose this user in your ServiceNow <b>Asset Settings</b>
+							under <b>Advanced</b> and you will be able to successfully apply custom severities to your ingested data.
+							<br><br>
+							<b>Administration</b>><b>User Management</b>><b>Users</b><b>> + User</b>
+							<a href="/app_resource/servicenow_a590c3bc-ca41-4a0e-b063-8066ca868794/img/servicenow_create_user.png">  
+								<img src="/app_resource/servicenow_a590c3bc-ca41-4a0e-b063-8066ca868794/img/servicenow_create_user.png"/>
+							</a>
+							<br><br>
+							<b>Administration</b>><b>User Management</b>><b>Roles & Permissions </b><b>> + Role</b>
+							<a href="/app_resource/servicenow_a590c3bc-ca41-4a0e-b063-8066ca868794/img/servicenow_create_role.png">  
+								<img src="/app_resource/servicenow_a590c3bc-ca41-4a0e-b063-8066ca868794/img/servicenow_create_role.png"/>
+							</a>
+							<br><br>
+							<b>Asset Settings</b> > <b>Advanced</b>
+							<a href="/app_resource/servicenow_a590c3bc-ca41-4a0e-b063-8066ca868794/img/servicenow_asset_settings.png">  
+								<img src="/app_resource/servicenow_a590c3bc-ca41-4a0e-b063-8066ca868794/img/servicenow_asset_settings.png"/>
+							</a>
+							<br><br>
+						</li>
+						<li>In order to use the custom severity it is necessary to create a severity over (<b>Administration</b>><b>Event Settings</b>><b>Severity</b>). If custom severity has not been provided in the asset configuration, then the default severity from "<b>Administration</b>><b>Event Settings</b>><b>Severity</b>" will be considered.</li>
+					</ul>
+					</li>
+				</ul>
            </ul>
        <br>
 
@@ -51,7 +101,50 @@
 				<li> When the app is installed with Python version 2 and if the data is ingested using On Poll with query A and label B, it will list down the containers accordingly. If the ticket that is already ingested is updated, and then if the On Poll is executed again with the same label i.e. label B and with the same query A, it will add details of the updated ticket as an artifact in the already created container and update the container properties accordingly.</li>
 				<li> When the app is installed with Python version 3 and if the data is ingested using On Poll with query A and label B, it will list down the containers accordingly. If the ticket that is already ingested is updated, and then if the On Poll is executed again with the same label i.e. label B and with the same query A, it will not update the container properties but will add the updated ticket as an artifact in the already created container.</li>
 			</ul>
+		<br>
+		<li><b>The functioning of Test Connectivity</b></li>
+		<br>
+		<ul>
+		<li><b>Case 1: If Client ID & Client Secret are provided: </b></li>
+			<ul>
+			<li>Step1: While running the test connectivity, the system will check if the refresh token is present or not in the state file.</li>
+			<li>Step2(a): If a refresh token is present then the system will make the API call to fetch a new token. Using new token the test connectivity will get passed.</li>
+			<li>Step2(b): If the refresh token is not present then the system will check for the Username and Password. Using Username & Password system will make an API call to fetch a new token and test connectivity will get passed.</li>
+			<li>Step3: If the refresh token is not present and Username and Password are not provided then the system will return an error and the action will fail.</li>
+			</ul>
+			<br>
+		<li><b>Case 2: If Client ID & Client Secret are not provided:</b></li>
+			<ul>
+				<li>Step1: While running the test connectivity, System will check if the Username and Password are provided or not.</li>
+				<li>Step2: If Username & Password are provided then the system will get authenticated and test connectivity will get passed.</li>
+				<li>Step3: If the Username & Password are not provided then the system will return an error and the action will fail.</li>
+			</ul>
 		</ul>
-       <br>
-   </ul>
+		<br>
+	<li>In order to use the app actions, a user must have these roles itil, sn_request_write, and catalog. In some actions, the user can also provide the table name as input in that case the user must have the role/permission to access that table.</li>
+</ul>
+</ul>
 </p>
+<h2>Port Information</h2>
+<p>
+    The app uses HTTP/ HTTPS protocol for communicating with the ServiceNow server. Below are the default ports used by Splunk SOAR.
+    <table>
+        <tr class=plain>
+            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SERVICE NAME</th>
+            <th>TRANSPORT PROTOCOL</th>
+            <th>PORT</th>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http</td>
+            <td>tcp</td>
+            <td>80</td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https</td>
+            <td>tcp</td>
+            <td>443</td>
+        </tr>
+    </table>
+</p>
+</body>
+</html>
