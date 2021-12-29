@@ -367,7 +367,8 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
-            r = requests.post('{}{}{}'.format(self._base_url, self._api_uri, endpoint),
+            r = requests.post('{}{}{}'.format(self._base_url,     # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
+                    self._api_uri, endpoint),
                     auth=auth,
                     data=data,
                     headers=headers,
@@ -558,7 +559,7 @@ class ServicenowConnector(BaseConnector):
         request_str = '{0}{1}"{2}"{3}"{4}"{5}'.format(self.get_phantom_base_url(), uri, sdi, filter, label, prefix)
 
         try:
-            r = requests.get(request_str, verify=False)
+            r = requests.get(request_str, verify=verify)   # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
         except Exception as e:
             self.debug_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
             return 0, None, None, None
@@ -1933,12 +1934,14 @@ if __name__ == '__main__':
     argparser.add_argument('input_test_json', help='Input Test JSON file')
     argparser.add_argument('-u', '--username', help='username', required=False)
     argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
 
     username = args.username
     password = args.password
+    verify = args.verify
 
     if username is not None and password is None:
 
@@ -1950,7 +1953,7 @@ if __name__ == '__main__':
         try:
             print("Accessing the Login page")
             login_url = '{}{}'.format(BaseConnector._get_phantom_base_url(), "login")
-            r = requests.get(login_url, verify=False)
+            r = requests.get(login_url, verify=verify)    # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -1963,7 +1966,8 @@ if __name__ == '__main__':
             headers['Referer'] = '{}{}'.format(BaseConnector._get_phantom_base_url(), 'login')
 
             print("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url,    # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
+                                verify=verify, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platfrom. Error: {}".format(str(e)))

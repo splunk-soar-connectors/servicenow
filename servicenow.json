@@ -10,6 +10,7 @@
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
     "app_version": "2.1.4",
+    "fips_compliant": true,
     "min_phantom_version": "5.0.0",
     "python_version": "3",
     "latest_tested_versions": [
