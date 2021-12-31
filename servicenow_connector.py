@@ -678,11 +678,11 @@ class ServicenowConnector(BaseConnector):
 
         if desc:
             json_description = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, ''))
-            data.update({'description': '{0}\n\n{1}{2}'.format(bytes(json_description, 'utf-8').decode("unicode_escape"),
+            data.update({'description': '{0}\n\n{1}{2}'.format(json_description.replace("\\n", '\n').replace("\\r", '\r').replace("\\t", '\t'),
                     SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         elif fields and 'description' in fields:
             field_description = self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, ''))
-            data.update({'description': '{0}\n\n{1}{2}'.format(bytes(field_description, 'utf-8').decode("unicode_escape"),
+            data.update({'description': '{0}\n\n{1}{2}'.format(field_description.replace("\\n", '\n').replace("\\r", '\r').replace("\\t", '\t'),
                     SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         else:
             data.update({'description': '{0}\n\n{1}{2}'.format("", SERVICENOW_TICKET_FOOTNOTE,
