@@ -172,14 +172,15 @@ This app integrates with ServiceNow to perform investigative and generic actions
     catalog. In some actions, the user can also provide the table name as input in that case the
     user must have the role/permission to access that table.
 
+## Port Information
 
-### Port Information
-The app uses HTTP/ HTTPS protocol for communicating with the ServiceNow server. Below are the default ports used by Splunk SOAR.
+The app uses HTTP/ HTTPS protocol for communicating with the ServiceNow server. Below are the
+default ports used by Splunk SOAR.
 
-SERVICE NAME | TRANSPORT PROTOCOL | PORT
------------- | ------------------ | ----
-**http** | tcp | 80
-**https** | tcp | 443
+|         SERVICE NAME | TRANSPORT PROTOCOL | PORT |
+|----------------------|--------------------|------|
+|         http         | tcp                | 80   |
+|         https        | tcp                | 443  |
 
 
 ### Configuration Variables
