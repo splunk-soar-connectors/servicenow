@@ -9,7 +9,7 @@
     "license": "Copyright (c) 2016-2022 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.1.4",
+    "app_version": "2.2.0",
     "fips_compliant": true,
     "min_phantom_version": "5.0.0",
     "python_version": "3",
