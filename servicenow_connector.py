@@ -21,6 +21,7 @@ try:
     import phantom.rules as phrules
 except:
     pass
+import ast
 import json
 import re
 import sys
@@ -34,7 +35,6 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 from servicenow_consts import *
-import ast
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -692,8 +692,7 @@ class ServicenowConnector(BaseConnector):
             json_description = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, ''))
             data.update({'description': '{0}\n\n{1}{2}'.format(
                 json_description.replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\'", "\'").replace(
-                    '\\"', '\"').replace("\\a", "\a").replace("\\b", "\b"),
-                    SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
+                    '\\"', '\"').replace("\\a", "\a").replace("\\b", "\b"), SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         elif fields and 'description' in fields:
             field_description = self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, ''))
             data.update({'description': '{0}\n\n{1}{2}'.format(
