@@ -10,7 +10,7 @@ Minimum Product Version: 5\.0\.0
 
 This app integrates with ServiceNow to perform investigative and generic actions
 
-[comment]: # " File: readme.md"
+[comment]: # " File: README.md"
 [comment]: # "  Copyright (c) 2016-2022 Splunk Inc."
 [comment]: # ""
 [comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"

@@ -34,6 +34,7 @@ from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
 from servicenow_consts import *
+import ast
 
 DT_STR_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
@@ -559,7 +560,7 @@ class ServicenowConnector(BaseConnector):
         request_str = '{0}{1}"{2}"{3}"{4}"{5}'.format(self.get_phantom_base_url(), uri, sdi, filter, label, prefix)
 
         try:
-            r = requests.get(request_str, verify=verify)   # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
+            r = requests.get(request_str, verify=False)   # nosemgrep
         except Exception as e:
             self.debug_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
             return 0, None, None, None
@@ -630,12 +631,21 @@ class ServicenowConnector(BaseConnector):
         if not fields:
             return RetVal(phantom.APP_SUCCESS, None)
 
-        # we take in as a dictionary string, first try to load it as is
+        # # we take in as a dictionary string, first try to load it as is
+        # try:
+        #     fields = json.loads(fields)
+        # except Exception as e:
+        #     return RetVal(action_result.set_status(phantom.APP_ERROR,
+        #                     SERVICENOW_ERR_FIELDS_JSON_PARSE, self._get_error_message_from_exception(e)), None)
         try:
-            fields = json.loads(fields)
+            fields = ast.literal_eval(param["fields"])
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR,
-                            SERVICENOW_ERR_FIELDS_JSON_PARSE, self._get_error_message_from_exception(e)), None)
+            error_msg = self._get_error_message_from_exception(e)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error building fields dictionary: {0}. \
+                        Please ensure that provided input is in valid JSON format".format(error_msg)), None)
+
+        if not isinstance(fields, dict):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE), None)
 
         return RetVal(phantom.APP_SUCCESS, fields)
 
@@ -674,20 +684,23 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_ONE_PARAM_REQ)
 
         if short_desc:
-            data.update({'short_description': short_desc})
+            data.update({'short_description': short_desc.replace(
+                "\\n", "\n").replace("\\t", "\t").replace("\\'", "\'").replace('\\"', '\"').replace("\\a", "\a").replace(
+                "\\b", "\b")})
 
         if desc:
             json_description = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, ''))
-            data.update({'description': '{0}\n\n{1}{2}'.format(json_description.replace("\\n", '\n').replace("\\r", '\r').replace("\\t", '\t'),
+            data.update({'description': '{0}\n\n{1}{2}'.format(
+                json_description.replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\'", "\'").replace(
+                    '\\"', '\"').replace("\\a", "\a").replace("\\b", "\b"),
                     SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         elif fields and 'description' in fields:
             field_description = self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, ''))
-            data.update({'description': '{0}\n\n{1}{2}'.format(field_description.replace("\\n", '\n').replace("\\r", '\r').replace("\\t", '\t'),
-                    SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
+            data.update({'description': '{0}\n\n{1}{2}'.format(
+                    field_description, SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         else:
             data.update({'description': '{0}\n\n{1}{2}'.format("", SERVICENOW_TICKET_FOOTNOTE,
                     self.get_container_id())})
-
         ret_val, response = self._make_rest_call_helper(action_result, endpoint,
                                     data=data, auth=auth, headers=headers, method="post")
 
@@ -1245,7 +1258,7 @@ class ServicenowConnector(BaseConnector):
         work_note = param.get("work_note")
 
         endpoint = "/table/{}/{}".format(table_name, sys_id)
-        data = {"work_notes": work_note}
+        data = {"work_notes": work_note.replace("\\n", "\n").replace("\\'", "\'").replace('\\"', '\"').replace("\\b", "\b")}
 
         request_params = {}
         request_params["sysparm_display_value"] = True
@@ -1287,10 +1300,21 @@ class ServicenowConnector(BaseConnector):
 
         if variables_param:
             try:
-                variables_param = json.loads(self._handle_py_ver_compat_for_input_str(variables_param))
+                # variables_param = json.loads(self._handle_py_ver_compat_for_input_str(variables_param))
+                variables_param = self._handle_py_ver_compat_for_input_str(variables_param)
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR,
-                        "Error while parsing the JSON input", self._get_error_message_from_exception(e))
+                        "Please provide valid input parameters", self._get_error_message_from_exception(e))
+
+            try:
+                variables_param = ast.literal_eval(variables_param)
+            except Exception as e:
+                error_msg = self._get_error_message_from_exception(e)
+                return RetVal(action_result.set_status(phantom.APP_ERROR, "Error building fields dictionary: {0}. \
+                            Please ensure that provided input is in valid JSON format".format(error_msg)), None)
+
+            if not isinstance(variables_param, dict):
+                return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_VARIABLES_JSON_PARSE), None)
 
         endpoint = '/servicecatalog/items/{}'.format(sys_id)
 
@@ -1387,7 +1411,7 @@ class ServicenowConnector(BaseConnector):
 
         comment = param.get("comment")
         endpoint = "/table/{}/{}".format(table_name, sys_id)
-        data = {"comments": comment}
+        data = {"comments": comment.replace("\\n", "\n").replace("\\'", "\'").replace('\\"', '\"').replace("\\b", "\b")}
 
         request_params = {}
         request_params["sysparm_display_value"] = True

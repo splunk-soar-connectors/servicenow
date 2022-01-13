@@ -50,6 +50,7 @@ SERVICENOW_ERR_FETCH_QUESTION = ('Error occurred while fetching question for'
 SERVICENOW_ERR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}"
 SERVICENOW_MESSAGE_GET_INCIDENT_TEST = "Querying a single Incident to check credentials"
 SERVICENOW_ERR_FIELDS_JSON_PARSE = "Unable to parse the fields parameter into a dictionary"
+SERVICENOW_ERR_VARIABLES_JSON_PARSE = "Unable to parse the variables parameter into a dictionary"
 SERVICENOW_ERR_API_UNSUPPORTED_METHOD = "Unsupported method"
 SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = ('Provide username and password to generate'
     'OAuth token for running Test Connectivity for the first time')
