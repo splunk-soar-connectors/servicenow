@@ -94,7 +94,7 @@
         {
             "action": "add work note",
             "description": "Add a work note to a record",
-            "verbose": "Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
+            "verbose": "Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run. For 'work_note' parameter, users can provide New Line(\\n), Single Quote(\\'), Double Quote(\\\") and Backspace(\\b) as escape sequences.",
             "type": "generic",
             "identifier": "add_work_note",
             "read_only": false,
@@ -1119,7 +1119,7 @@
         {
             "action": "add comment",
             "description": "Add a comment to a record",
-            "verbose": "Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
+            "verbose": "Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run. For 'comment' parameter, users can provide New Line(\\n), Single Quote(\\'), Double Quote(\\\") and Backspace(\\b) as escape sequences.",
             "type": "generic",
             "identifier": "add_comment",
             "read_only": false,
