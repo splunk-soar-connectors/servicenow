@@ -3598,7 +3598,7 @@
                 "variables": {
                     "data_type": "string",
                     "order": 1,
-                    "description": "Variables of the item"
+                    "description": "JSON containing variables values"
                 },
                 "quantity": {
                     "data_type": "numeric",

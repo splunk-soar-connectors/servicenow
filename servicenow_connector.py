@@ -314,7 +314,7 @@ class ServicenowConnector(BaseConnector):
         except Exception as e:
             error_msg = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                            "Unable to parse response as JSON. Error: {}".format(error_msg)), None)
+                            "Unable to parse response as JSON. {}".format(error_msg)), None)
 
         # What's with the special case 201?
         if 200 <= r.status_code < 205:
@@ -516,7 +516,7 @@ class ServicenowConnector(BaseConnector):
                 self._state = {}
             error_msg = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                        "Unable to parse access token. Error: {}".format(error_msg)), None)
+                        "Unable to parse access token. {}".format(error_msg)), None)
 
     def _get_oauth_token(self, action_result, force_new=False):
         if self._state.get('oauth_token') and not force_new:
@@ -720,7 +720,7 @@ class ServicenowConnector(BaseConnector):
                 vault_process, response = self._add_attachment(action_result, table, created_ticket_id, vault_id)
             except Exception as e:
                 error_msg = self._get_error_message_from_exception(e)
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID. Error: {}".format(error_msg))
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID. {}".format(error_msg))
             if phantom.is_success(vault_process):
                 action_result.update_summary({'attachment_added': True, 'attachment_id': response['result']['sys_id']})
             else:
@@ -855,7 +855,7 @@ class ServicenowConnector(BaseConnector):
             except Exception as e:
                 error_msg = self._get_error_message_from_exception(e)
                 return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter \
-                                    valid Vault ID. Error: {}".format(error_msg))
+                                    valid Vault ID. {}".format(error_msg))
 
             if phantom.is_success(ret_val):
                 action_result.update_summary({'attachment_id': response['result']['sys_id']})
