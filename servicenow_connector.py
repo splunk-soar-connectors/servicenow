@@ -371,7 +371,8 @@ class ServicenowConnector(BaseConnector):
                     auth=auth,
                     data=data,
                     headers=headers,
-                    params=params)
+                    params=params,
+                    timeout=SERVICENOW_DEFAULT_TIMEOUT)
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR,
                             SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
@@ -385,9 +386,10 @@ class ServicenowConnector(BaseConnector):
 
         try:
             request_url = '{}{}'.format(self._base_url, '/oauth_token.do')
-            r = requests.post(  # nosemgrep
+            r = requests.post(
                     request_url,
-                    data=data  # Mostly this line
+                    data=data,
+                    timeout=SERVICENOW_DEFAULT_TIMEOUT
             )
         except Exception as e:
             return (action_result.set_status(phantom.APP_ERROR,
@@ -556,9 +558,10 @@ class ServicenowConnector(BaseConnector):
         filter = '&_filter_label='
         prefix = '&sort=create_time&order=asc'
         request_str = '{0}{1}"{2}"{3}"{4}"{5}'.format(self.get_phantom_base_url(), uri, sdi, filter, label, prefix)
+        config = self.get_config()
 
         try:
-            r = requests.get(request_str, verify=False)
+            r = requests.get(request_str, verify=config["verify_server_cert"], timeout=SERVICENOW_DEFAULT_TIMEOUT)
         except Exception as e:
             self.debug_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
             return 0, None, None, None
@@ -1823,7 +1826,8 @@ class ServicenowConnector(BaseConnector):
 
     def _find_default_severity(self, action_result):
         try:
-            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
+            config = self.get_config()
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=config["verify_server_cert"], timeout=SERVICENOW_DEFAULT_TIMEOUT)
             resp_json = r.json()
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
@@ -1849,7 +1853,8 @@ class ServicenowConnector(BaseConnector):
     def _validate_custom_severity(self, action_result, severity):
 
         try:
-            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
+            config = self.get_config()
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=config["verify_server_cert"], timeout=SERVICENOW_DEFAULT_TIMEOUT)
             resp_json = r.json()
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
@@ -1933,12 +1938,14 @@ if __name__ == '__main__':
     argparser.add_argument('input_test_json', help='Input Test JSON file')
     argparser.add_argument('-u', '--username', help='username', required=False)
     argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
 
     username = args.username
     password = args.password
+    verify = args.verify
 
     if username is not None and password is None:
 
@@ -1950,7 +1957,7 @@ if __name__ == '__main__':
         try:
             print("Accessing the Login page")
             login_url = '{}{}'.format(BaseConnector._get_phantom_base_url(), "login")
-            r = requests.get(login_url, verify=False)
+            r = requests.get(login_url, verify=verify, timeout=SERVICENOW_DEFAULT_TIMEOUT)
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -1963,7 +1970,7 @@ if __name__ == '__main__':
             headers['Referer'] = '{}{}'.format(BaseConnector._get_phantom_base_url(), 'login')
 
             print("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url, verify=verify, data=data, headers=headers, timeout=SERVICENOW_DEFAULT_TIMEOUT)
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platfrom. Error: {}".format(str(e)))
