@@ -1827,7 +1827,8 @@ class ServicenowConnector(BaseConnector):
     def _find_default_severity(self, action_result):
         try:
             config = self.get_config()
-            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=config["verify_server_cert"], timeout=SERVICENOW_DEFAULT_TIMEOUT)
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=config["verify_server_cert"],
+                timeout=SERVICENOW_DEFAULT_TIMEOUT)
             resp_json = r.json()
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
@@ -1854,7 +1855,8 @@ class ServicenowConnector(BaseConnector):
 
         try:
             config = self.get_config()
-            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=config["verify_server_cert"], timeout=SERVICENOW_DEFAULT_TIMEOUT)
+            r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=config["verify_server_cert"],
+                timeout=SERVICENOW_DEFAULT_TIMEOUT)
             resp_json = r.json()
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
