@@ -6,12 +6,13 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2021 Splunk Inc.",
+    "license": "Copyright (c) 2016-2022 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
     "app_version": "2.1.4",
     "min_phantom_version": "5.0.0",
     "python_version": "3",
+    "fips_compliant": true,
     "latest_tested_versions": [
         "Cloud, Build tag: glide-paris-06-24-2020__patch7a-03-29-2021"
     ],
