@@ -11,7 +11,7 @@
     "main_module": "servicenow_connector.py",
     "app_version": "2.2.1",
     "fips_compliant": true,
-    "min_phantom_version": "5.0.0",
+    "min_phantom_version": "5.1.0",
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, Build tag: glide-paris-06-24-2020__patch7a-03-29-2021"
