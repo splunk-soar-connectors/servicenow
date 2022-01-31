@@ -1,6 +1,6 @@
 # File: servicenow_connector.py
 #
-# Copyright (c) 2016-2021 Splunk Inc.
+# Copyright (c) 2016-2022 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ try:
     import phantom.rules as phrules
 except:
     pass
+import ast
 import json
 import re
 import sys
@@ -311,8 +312,9 @@ class ServicenowConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
+            error_msg = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                            "Unable to parse response as JSON", self._get_error_message_from_exception(e)), None)
+                            "Unable to parse response as JSON. {}".format(error_msg)), None)
 
         # What's with the special case 201?
         if 200 <= r.status_code < 205:
@@ -367,14 +369,16 @@ class ServicenowConnector(BaseConnector):
         resp_json = None
 
         try:
-            r = requests.post('{}{}{}'.format(self._base_url, self._api_uri, endpoint),
+            r = requests.post('{}{}{}'.format(self._base_url,     # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
+                    self._api_uri, endpoint),
                     auth=auth,
                     data=data,
                     headers=headers,
                     params=params)
         except Exception as e:
+            error_msg = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                            SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
+                            SERVICENOW_ERR_SERVER_CONNECTION.format(error_msg=error_msg)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -390,8 +394,9 @@ class ServicenowConnector(BaseConnector):
                     data=data  # Mostly this line
             )
         except Exception as e:
+            error_msg = self._get_error_message_from_exception(e)
             return (action_result.set_status(phantom.APP_ERROR,
-                        SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
+                        SERVICENOW_ERR_SERVER_CONNECTION.format(error_msg=error_msg)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -418,8 +423,9 @@ class ServicenowConnector(BaseConnector):
                     headers=headers,
                     params=params)
         except Exception as e:
+            error_msg = self._get_error_message_from_exception(e)
             return (action_result.set_status(phantom.APP_ERROR,
-                        SERVICENOW_ERR_SERVER_CONNECTION, self._get_error_message_from_exception(e)), resp_json)
+                        SERVICENOW_ERR_SERVER_CONNECTION.format(error_msg=error_msg)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -508,8 +514,9 @@ class ServicenowConnector(BaseConnector):
                     self._state = {'first_run': self._state.get('first_run')}
             else:
                 self._state = {}
+            error_msg = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                        "Unable to parse access token", self._get_error_message_from_exception(e)), None)
+                        "Unable to parse access token. {}".format(error_msg)), None)
 
     def _get_oauth_token(self, action_result, force_new=False):
         if self._state.get('oauth_token') and not force_new:
@@ -558,7 +565,7 @@ class ServicenowConnector(BaseConnector):
         request_str = '{0}{1}"{2}"{3}"{4}"{5}'.format(self.get_phantom_base_url(), uri, sdi, filter, label, prefix)
 
         try:
-            r = requests.get(request_str, verify=False)
+            r = requests.get(request_str, verify=False)   # nosemgrep
         except Exception as e:
             self.debug_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
             return 0, None, None, None
@@ -629,12 +636,15 @@ class ServicenowConnector(BaseConnector):
         if not fields:
             return RetVal(phantom.APP_SUCCESS, None)
 
-        # we take in as a dictionary string, first try to load it as is
         try:
-            fields = json.loads(fields)
+            fields = ast.literal_eval(fields)
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR,
-                            SERVICENOW_ERR_FIELDS_JSON_PARSE, self._get_error_message_from_exception(e)), None)
+            error_msg = self._get_error_message_from_exception(e)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error building fields dictionary: {0}. \
+                        Please ensure that provided input is in valid JSON format".format(error_msg)), None)
+
+        if not isinstance(fields, dict):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE), None)
 
         return RetVal(phantom.APP_SUCCESS, fields)
 
@@ -673,20 +683,22 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_ONE_PARAM_REQ)
 
         if short_desc:
-            data.update({'short_description': short_desc})
+            data.update({'short_description': short_desc.replace(
+                "\\n", "\n").replace("\\t", "\t").replace("\\'", "\'").replace('\\"', '\"').replace("\\a", "\a").replace(
+                "\\b", "\b")})
 
         if desc:
             json_description = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, ''))
-            data.update({'description': '{0}\n\n{1}{2}'.format(json_description, SERVICENOW_TICKET_FOOTNOTE,
-                    self.get_container_id())})
+            data.update({'description': '{0}\n\n{1}{2}'.format(
+                json_description.replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\'", "\'").replace(
+                    '\\"', '\"').replace("\\a", "\a").replace("\\b", "\b"), SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         elif fields and 'description' in fields:
             field_description = self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, ''))
-            data.update({'description': '{0}\n\n{1}{2}'.format(field_description, SERVICENOW_TICKET_FOOTNOTE,
-                    self.get_container_id())})
+            data.update({'description': '{0}\n\n{1}{2}'.format(
+                    field_description, SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         else:
             data.update({'description': '{0}\n\n{1}{2}'.format("", SERVICENOW_TICKET_FOOTNOTE,
                     self.get_container_id())})
-
         ret_val, response = self._make_rest_call_helper(action_result, endpoint,
                                     data=data, auth=auth, headers=headers, method="post")
 
@@ -707,8 +719,8 @@ class ServicenowConnector(BaseConnector):
             try:
                 vault_process, response = self._add_attachment(action_result, table, created_ticket_id, vault_id)
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID",
-                                    self._get_error_message_from_exception(e))
+                error_msg = self._get_error_message_from_exception(e)
+                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID. {}".format(error_msg))
             if phantom.is_success(vault_process):
                 action_result.update_summary({'attachment_added': True, 'attachment_id': response['result']['sys_id']})
             else:
@@ -841,8 +853,9 @@ class ServicenowConnector(BaseConnector):
                 ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
                 action_result.update_summary({'attachment_added': ret_val})
             except Exception as e:
+                error_msg = self._get_error_message_from_exception(e)
                 return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter \
-                                    valid Vault ID", self._get_error_message_from_exception(e))
+                                    valid Vault ID. {}".format(error_msg))
 
             if phantom.is_success(ret_val):
                 action_result.update_summary({'attachment_id': response['result']['sys_id']})
@@ -1244,7 +1257,7 @@ class ServicenowConnector(BaseConnector):
         work_note = param.get("work_note")
 
         endpoint = "/table/{}/{}".format(table_name, sys_id)
-        data = {"work_notes": work_note}
+        data = {"work_notes": work_note.replace("\\n", "\n").replace("\\'", "\'").replace('\\"', '\"').replace("\\b", "\b")}
 
         request_params = {}
         request_params["sysparm_display_value"] = True
@@ -1286,10 +1299,20 @@ class ServicenowConnector(BaseConnector):
 
         if variables_param:
             try:
-                variables_param = json.loads(self._handle_py_ver_compat_for_input_str(variables_param))
+                variables_param = self._handle_py_ver_compat_for_input_str(variables_param)
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR,
-                        "Error while parsing the JSON input", self._get_error_message_from_exception(e))
+                        "Please provide valid input parameters", self._get_error_message_from_exception(e))
+
+            try:
+                variables_param = ast.literal_eval(variables_param)
+            except Exception as e:
+                error_msg = self._get_error_message_from_exception(e)
+                return RetVal(action_result.set_status(phantom.APP_ERROR, "Error building fields dictionary: {0}. \
+                            Please ensure that provided input is in valid JSON format".format(error_msg)), None)
+
+            if not isinstance(variables_param, dict):
+                return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_VARIABLES_JSON_PARSE), None)
 
         endpoint = '/servicecatalog/items/{}'.format(sys_id)
 
@@ -1386,7 +1409,7 @@ class ServicenowConnector(BaseConnector):
 
         comment = param.get("comment")
         endpoint = "/table/{}/{}".format(table_name, sys_id)
-        data = {"comments": comment}
+        data = {"comments": comment.replace("\\n", "\n").replace("\\'", "\'").replace('\\"', '\"').replace("\\b", "\b")}
 
         request_params = {}
         request_params["sysparm_display_value"] = True
@@ -1933,12 +1956,14 @@ if __name__ == '__main__':
     argparser.add_argument('input_test_json', help='Input Test JSON file')
     argparser.add_argument('-u', '--username', help='username', required=False)
     argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
 
     username = args.username
     password = args.password
+    verify = args.verify
 
     if username is not None and password is None:
 
@@ -1950,7 +1975,7 @@ if __name__ == '__main__':
         try:
             print("Accessing the Login page")
             login_url = '{}{}'.format(BaseConnector._get_phantom_base_url(), "login")
-            r = requests.get(login_url, verify=False)
+            r = requests.get(login_url, verify=verify)    # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -1963,7 +1988,8 @@ if __name__ == '__main__':
             headers['Referer'] = '{}{}'.format(BaseConnector._get_phantom_base_url(), 'login')
 
             print("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url,    # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
+                                verify=verify, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platfrom. Error: {}".format(str(e)))

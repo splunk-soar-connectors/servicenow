@@ -1,6 +1,6 @@
 # File: servicenow_consts.py
 #
-# Copyright (c) 2016-2021 Splunk Inc.
+# Copyright (c) 2016-2022 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ SERVICENOW_JSON_EXTRACT_URLS = "extract_urls"
 
 SERVICENOW_ERR_CONNECTIVITY_TEST = "Test Connectivity Failed"
 SERVICENOW_SUCC_CONNECTIVITY_TEST = "Test Connectivity Passed"
-SERVICENOW_ERR_SERVER_CONNECTION = "Connection failed"
+SERVICENOW_ERR_SERVER_CONNECTION = "Connection failed. {error_msg}"
 SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {key} parameter"
 SERVICENOW_ERR_FETCH_VALUE = ('Error occurred while fetching variable value'
     'for the item_option_value: {item_opt_value} of the System ID: {sys_id}')
@@ -50,6 +50,7 @@ SERVICENOW_ERR_FETCH_QUESTION = ('Error occurred while fetching question for'
 SERVICENOW_ERR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}"
 SERVICENOW_MESSAGE_GET_INCIDENT_TEST = "Querying a single Incident to check credentials"
 SERVICENOW_ERR_FIELDS_JSON_PARSE = "Unable to parse the fields parameter into a dictionary"
+SERVICENOW_ERR_VARIABLES_JSON_PARSE = "Unable to parse the variables parameter into a dictionary"
 SERVICENOW_ERR_API_UNSUPPORTED_METHOD = "Unsupported method"
 SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = ('Provide username and password to generate'
     'OAuth token for running Test Connectivity for the first time')
