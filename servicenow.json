@@ -9,7 +9,7 @@
     "license": "Copyright (c) 2016-2022 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.2.0",
+    "app_version": "2.2.1",
     "fips_compliant": true,
     "min_phantom_version": "5.0.0",
     "python_version": "3",
@@ -19,7 +19,7 @@
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",
-    "utctime_updated": "2022-01-07T22:27:34.000000Z",
+    "utctime_updated": "2022-01-31T08:13:04.000000Z",
     "configuration": {
         "username": {
             "order": 2,
