@@ -521,7 +521,7 @@ class ServicenowConnector(BaseConnector):
         params = {}
         params['client_id'] = self._client_id
         params['client_secret'] = self._client_secret
-        if self._state.get(SERVICENOW_TOKEN_STRING).get(SERVICENOW_REFRESH_TOKEN_STRING):
+        if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING):
             params['refresh_token'] = self._refresh_token
             params['grant_type'] = "refresh_token"
         else:
