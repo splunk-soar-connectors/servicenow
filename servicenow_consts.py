@@ -62,6 +62,8 @@ SERVICENOW_ERROR_MESSAGE = "Unknown error occurred. Please check the asset confi
 TYPE_ERROR_MESSAGE = ("Error occurred while connecting to the ServiceNow server."
                       "Please check the asset configuration and|or the action parameters")
 PARSE_ERROR_MESSAGE = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
+SERVICENOW_STATE_FILE_CORRUPT_ERROR = "Error occurred while loading the state file due to its unexpected format. Resetting the state file with the default format. \
+Please try again."
 
 
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"

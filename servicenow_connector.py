@@ -96,9 +96,17 @@ class ServicenowConnector(BaseConnector):
 
     def initialize(self):
 
+        # Load all the asset configuration in global variables
         self._state = self.load_state()
         config = self.get_config()
         sn_sc_actions = ["describe_catalog_item", "request_catalog_item"]
+
+        # Check if state file is not corrupted, if it is reset the state file
+        if not isinstance(self._state, dict):
+            self.debug_print("Reseting the state file with the default format")
+            self._state = {
+                "app_version": self.get_app_json().get('app_version')
+            }
 
         # Fetching the Python major version
         try:
@@ -140,43 +148,43 @@ class ServicenowConnector(BaseConnector):
             except KeyError:
                 self.save_progress("Missing Client Secret")
                 return phantom.APP_ERROR
+        if self._use_token:
+            self._access_token = self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_ACCESS_TOKEN_STRING)
+            self._refresh_token = self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING)
+            if self._state.get(SERVICENOW_STATE_IS_ENCRYPTED):
+                try:
+                    if self._access_token:
+                        self._access_token = self.decrypt_state(self._access_token, "access")
+                except Exception as e:
+                    self.debug_print("{}: {}".format(SERVICENOW_DECRYPTION_ERR, self._get_error_message_from_exception(e)))
+                    return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
 
-        self._access_token = self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_ACCESS_TOKEN_STRING)
-        self._refresh_token = self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING)
-        if self._state.get(SERVICENOW_STATE_IS_ENCRYPTED):
-            try:
-                if self._access_token:
-                    self._access_token = self.decrypt_state(self._access_token, "access")
-            except Exception as e:
-                self.debug_print("{}: {}".format(SERVICENOW_DECRYPTION_ERR, self._get_error_message_from_exception(e)))
-                return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
-
-            try:
-                if self._refresh_token:
-                    self._refresh_token = self.decrypt_state(self._refresh_token, "refresh")
-            except Exception as e:
-                self.debug_print("{}: {}".format(SERVICENOW_DECRYPTION_ERR, self._get_error_message_from_exception(e)))
-                return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
+                try:
+                    if self._refresh_token:
+                        self._refresh_token = self.decrypt_state(self._refresh_token, "refresh")
+                except Exception as e:
+                    self.debug_print("{}: {}".format(SERVICENOW_DECRYPTION_ERR, self._get_error_message_from_exception(e)))
+                    return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
 
         return phantom.APP_SUCCESS
 
     def finalize(self):
+        if self._use_token:
+            try:
+                if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_ACCESS_TOKEN_STRING):
+                    self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_ACCESS_TOKEN_STRING] = self.encrypt_state(self._access_token, "access")
+            except Exception as e:
+                self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
+                return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
 
-        try:
-            if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_ACCESS_TOKEN_STRING):
-                self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_ACCESS_TOKEN_STRING] = self.encrypt_state(self._access_token, "access")
-        except Exception as e:
-            self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
-            return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
+            try:
+                if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING):
+                    self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_REFRESH_TOKEN_STRING] = self.encrypt_state(self._refresh_token, "refresh")
+            except Exception as e:
+                self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
+                return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
 
-        try:
-            if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING):
-                self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_REFRESH_TOKEN_STRING] = self.encrypt_state(self._refresh_token, "refresh")
-        except Exception as e:
-            self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
-            return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
-
-        self._state[SERVICENOW_STATE_IS_ENCRYPTED] = True
+            self._state[SERVICENOW_STATE_IS_ENCRYPTED] = True
         self.save_state(self._state)
         return phantom.APP_SUCCESS
 
@@ -517,11 +525,10 @@ class ServicenowConnector(BaseConnector):
     def _get_new_oauth_token(self, action_result):
         """Generate a new oauth token using the refresh token, if available
         """
-        self._state = self.load_state()
         params = {}
         params['client_id'] = self._client_id
         params['client_secret'] = self._client_secret
-        if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING):
+        if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING, ''):
             params['refresh_token'] = self._refresh_token
             params['grant_type'] = "refresh_token"
         else:
