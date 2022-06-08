@@ -14,7 +14,7 @@
     "min_phantom_version": "5.2.0",
     "python_version": "3",
     "latest_tested_versions": [
-        "Cloud, Build tag: glide-paris-06-24-2020__patch7a-03-29-2021"
+        "Cloud, Build tag: glide-quebec-12-09-2020__patch9-hotfix3-12-14-2021"
     ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",

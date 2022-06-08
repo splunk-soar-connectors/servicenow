@@ -528,7 +528,7 @@ class ServicenowConnector(BaseConnector):
         params = {}
         params['client_id'] = self._client_id
         params['client_secret'] = self._client_secret
-        if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING, ''):
+        if self._refresh_token:
             params['refresh_token'] = self._refresh_token
             params['grant_type'] = "refresh_token"
         else:
@@ -562,26 +562,8 @@ class ServicenowConnector(BaseConnector):
 
         self._access_token = response_json[SERVICENOW_ACCESS_TOKEN_STRING]
         self._refresh_token = response_json[SERVICENOW_REFRESH_TOKEN_STRING]
-
-        try:
-            encrypted_access_token = self.encrypt_state(response_json[SERVICENOW_ACCESS_TOKEN_STRING], "access")
-        except Exception as e:
-            self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(self._python_version, e, self)))
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
-
-        try:
-            encrypted_refresh_token = self.encrypt_state(response_json[SERVICENOW_REFRESH_TOKEN_STRING], "refresh")
-        except Exception as e:
-            self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(self._python_version, e, self)))
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
-
-        response_json[SERVICENOW_ACCESS_TOKEN_STRING] = encrypted_access_token
-        response_json[SERVICENOW_REFRESH_TOKEN_STRING] = encrypted_refresh_token
-
         self._state['oauth_token'] = response_json
         self._state['retrieval_time'] = datetime.now().strftime(DT_STR_FORMAT)
-        self._state[SERVICENOW_STATE_IS_ENCRYPTED] = True
-        self.save_state(self._state)
 
         try:
             return RetVal(phantom.APP_SUCCESS, response_json['access_token'])
@@ -605,16 +587,12 @@ class ServicenowConnector(BaseConnector):
                 self.debug_print(diff)
                 if diff < expires_in:
                     self.debug_print("Using old OAuth Token")
-                    self._access_token = self.decrypt_state(self._state.get(
-                        SERVICENOW_TOKEN_STRING).get(SERVICENOW_ACCESS_TOKEN_STRING), "access")
                     return RetVal(action_result.set_status(phantom.APP_SUCCESS), self._access_token)
             except KeyError:
                 self.debug_print("Key Error")
 
         self.debug_print("Generating new OAuth Token")
-        ret_val, oauth = self._get_new_oauth_token(action_result)
-        self._access_token = self.decrypt_state(oauth, "access")
-        return RetVal(ret_val, self._access_token)
+        return self._get_new_oauth_token(action_result)
 
     def _get_authorization_credentials(self, action_result, force_new=False):
         auth = None
