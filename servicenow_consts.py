@@ -47,7 +47,8 @@ SERVICENOW_ERR_FETCH_QUESTION_ID = ('Error occurred while fetching question ID f
                                     'the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FETCH_QUESTION = ('Error occurred while fetching question for'
                                  'the question ID: {question_id} and the item_option_value: {item_opt_value} of the System ID: {sys_id}')
-SERVICENOW_ERR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}"
+SERVICENOW_ERR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}.\
+Please check the asset configuration and rerun the test connectivity."
 SERVICENOW_MESSAGE_GET_INCIDENT_TEST = "Querying a single Incident to check credentials"
 SERVICENOW_ERR_FIELDS_JSON_PARSE = "Unable to parse the fields parameter into a dictionary"
 SERVICENOW_ERR_VARIABLES_JSON_PARSE = "Unable to parse the variables parameter into a dictionary"
