@@ -171,14 +171,14 @@ class ServicenowConnector(BaseConnector):
     def finalize(self):
         if self._use_token:
             try:
-                if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_ACCESS_TOKEN_STRING):
+                if self._access_token:
                     self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_ACCESS_TOKEN_STRING] = self.encrypt_state(self._access_token, "access")
             except Exception as e:
                 self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
                 return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
 
             try:
-                if self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING):
+                if self._refresh_token:
                     self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_REFRESH_TOKEN_STRING] = self.encrypt_state(self._refresh_token, "refresh")
             except Exception as e:
                 self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
@@ -522,7 +522,7 @@ class ServicenowConnector(BaseConnector):
                 )
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
 
-    def _get_new_oauth_token(self, action_result):
+    def _get_new_oauth_token(self, action_result, first_try=True):
         """Generate a new oauth token using the refresh token, if available
         """
         params = {}
@@ -543,7 +543,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, response_json = self._make_rest_call_oauth(action_result, data=params)
 
-        if phantom.is_fail(ret_val) and params['grant_type'] == 'refresh_token':
+        if phantom.is_fail(ret_val) and params['grant_type'] == 'refresh_token' and first_try:
             self.debug_print("Unable to generate new key with refresh token")
             if 'first_run' in self._state:
                 if 'last_time' in self._state:
@@ -552,11 +552,13 @@ class ServicenowConnector(BaseConnector):
                     self._state = {'first_run': self._state.get('first_run')}
             else:
                 self._state = {}
+
             # Try again, using a password
-            return self._get_new_oauth_token(action_result)
+            return self._get_new_oauth_token(action_result, first_try=False)
 
         if phantom.is_fail(ret_val):
             error_message = self._handle_py_ver_compat_for_input_str(action_result.get_message())
+            self._access_token, self._refresh_token = None, None
             return RetVal(action_result.set_status(phantom.APP_ERROR,
                                                    "Error in token request. Error: {}".format(error_message)), None)
 
@@ -1044,7 +1046,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            action_result.set_status("Unable to get authorization credentials")
+            action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
             return None
 
         items_list = list()
@@ -1672,7 +1674,7 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _on_poll(self, param):
+    def _on_poll(self, param):  # noqa
 
         URI_REGEX = '[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
         HASH_REGEX = '\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b'
@@ -1902,8 +1904,6 @@ class ServicenowConnector(BaseConnector):
 
         if failed:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FAILURES)
-
-        self.save_state(self._state)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
