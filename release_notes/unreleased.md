@@ -1,3 +1,1 @@
 **Unreleased**
-* Updated app documentation for 'update ticket' action flow [PAPP-25635]
-* Added encryption for sensitive values stored in the state file
