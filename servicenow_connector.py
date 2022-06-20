@@ -103,7 +103,7 @@ class ServicenowConnector(BaseConnector):
 
         # Check if state file is not corrupted, if it is reset the state file
         if not isinstance(self._state, dict):
-            self.debug_print("Reseting the state file with the default format")
+            self.debug_print("Resetting the state file with the default format")
             self._state = {
                 "app_version": self.get_app_json().get('app_version')
             }
