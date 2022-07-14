@@ -67,6 +67,7 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_GET_VARIABLES = "get_variables"
     ACTION_ID_ON_POLL = "on_poll"
     ACTION_ID_RUN_QUERY = "run_query"
+    ACTION_ID_QUERY_USERS = "query_users"
 
     def __init__(self):
 
@@ -1637,9 +1638,12 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _run_query(self, param):
+    def _run_query(self, param, action_result_param=None, summary_text=None, strip_props=[]):
 
-        action_result = self.add_action_result(ActionResult(dict(param)))
+        if action_result_param:
+            action_result = self.add_action_result(ActionResult(dict(action_result_param)))
+        else:
+            action_result = self.add_action_result(ActionResult(dict(param)))
 
         # Progress
         self.save_progress(SERVICENOW_BASE_QUERY_URI, base_url=self._base_url)
@@ -1668,13 +1672,36 @@ class ServicenowConnector(BaseConnector):
             return action_result.get_status()
 
         for ticket in tickets:
+            for prop_to_strip in strip_props:
+                ticket.pop(prop_to_strip, None)
             action_result.add_data(ticket)
 
-        action_result.update_summary({SERVICENOW_JSON_TOTAL_TICKETS: action_result.get_data_size()})
+        if not summary_text:
+            summary_text = SERVICENOW_JSON_TOTAL_TICKETS
+        action_result.update_summary({summary_text: action_result.get_data_size()})
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _on_poll(self, param):  # noqa
+    def _query_users(self, param):
+        action_result_param = param.copy()
+        query = param.get(SERVICENOW_JSON_QUERY, "")
+        param[SERVICENOW_JSON_QUERY] = query
+        if not query:
+            user_id = param.get(SERVICENOW_JSON_USER_ID)
+            if user_id:
+                param[SERVICENOW_JSON_QUERY] = SERVICENOW_JSON_SYSPARM_SYS_ID_QUERY.format(user_id)
+
+            username = param.get(SERVICENOW_JSON_USERNAME)
+            if username:
+                param[SERVICENOW_JSON_QUERY] = SERVICENOW_JSON_SYSPARM_USER_NAME_QUERY.format(username)
+
+        param[SERVICENOW_JSON_QUERY_TABLE] = SERVICENOW_JSON_SYS_USER_TABLE
+        result = self._run_query(param, action_result_param, SERVICENOW_JSON_TOTAL_USERS,
+                                 [SERVICENOW_JSON_USER_PASSWORD])
+
+        return result
+
+    def _on_poll(self, param):
 
         URI_REGEX = '[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
         HASH_REGEX = '\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b'
@@ -2003,6 +2030,8 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._test_connectivity(param)
         elif action == self.ACTION_ID_RUN_QUERY:
             ret_val = self._run_query(param)
+        elif action == self.ACTION_ID_QUERY_USERS:
+            ret_val = self._query_users(param)
         return ret_val
 
 
