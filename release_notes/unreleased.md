@@ -1,3 +1,1 @@
 **Unreleased**
-* Added action: 'query users'
-* Updated descriptions for actions that allow file attachments
