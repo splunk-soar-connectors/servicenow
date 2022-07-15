@@ -2,7 +2,7 @@
 # ServiceNow
 
 Publisher: Splunk  
-Connector Version: 2\.3\.0  
+Connector Version: 2\.3\.1  
 Product Vendor: ServiceNow  
 Product Name: ServiceNow  
 Product Version Supported (regex): "\.\*"  
@@ -216,6 +216,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [update ticket](#action-update-ticket) - Update ticket/record information  
 [get variables](#action-get-variables) - Get variables for a ticket/record  
 [run query](#action-run-query) - Gets object data according to the specified query  
+[query users](#action-query-users) - Gets user data according to the specified query, username, or system ID  
 [on poll](#action-on-poll) - Ingest tickets from SNOW  
 
 ## action: 'test connectivity'
@@ -1415,7 +1416,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **short\_description** |  optional  | Ticket short description | string | 
 **table** |  optional  | Table to add to | string |  `servicenow table` 
-**vault\_id** |  optional  | Vault ID of file to attach to ticket | string |  `vault id` 
+**vault\_id** |  optional  | To attach a file to a ticket, the file must first be in the vault\. When the Vault ID of a file is provided, it is uploaded and attached to the ticket | string |  `vault id` 
 **description** |  optional  | Ticket description | string | 
 **fields** |  optional  | JSON containing field values | string | 
 
@@ -1868,7 +1869,7 @@ Update an already existing ticket with the values that are specified in the <b>f
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **table** |  optional  | Ticket table | string |  `servicenow table` 
-**vault\_id** |  optional  | Vault ID of file to attach to ticket | string |  `vault id` 
+**vault\_id** |  optional  | To attach a file to a ticket, the file must first be in the vault\. When the vault ID of a file is provided, it is uploaded and attached to the ticket | string |  `vault id` 
 **id** |  required  | SYS ID or ticket number of a record | string |  `servicenow ticket sysid`  `servicenow ticket number` 
 **fields** |  optional  | JSON containing field values | string | 
 **is\_sys\_id** |  optional  | Whether the value provided in the ID parameter is SYS ID or ticket number | boolean | 
@@ -2267,6 +2268,92 @@ action\_result\.data\.\*\.work\_notes\_list | string |
 action\_result\.data\.\*\.work\_start | string | 
 action\_result\.summary\.total\_tickets | numeric | 
 action\_result\.message | string | 
+summary\.total\_objects | numeric | 
+summary\.total\_objects\_successful | numeric |   
+
+## action: 'query users'
+Gets user data according to the specified query, username, or system ID
+
+Type: **investigate**  
+Read only: **True**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**query** |  optional  | The query to run\. e\.g\. sysparm\_query=user\_name=admin | string | 
+**user\_id** |  optional  | Query by user system ID | string | 
+**username** |  optional  | Query by username | string | 
+**max\_results** |  optional  | Max number of records to return | numeric | 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS
+--------- | ---- | --------
+action\_result\.data\.\*\.vip | string | 
+action\_result\.data\.\*\.zip | string | 
+action\_result\.data\.\*\.city | string | 
+action\_result\.data\.\*\.name | string | 
+action\_result\.data\.\*\.email | string |  `email` 
+action\_result\.data\.\*\.phone | string | 
+action\_result\.data\.\*\.photo | string | 
+action\_result\.data\.\*\.roles | string | 
+action\_result\.data\.\*\.state | string | 
+action\_result\.data\.\*\.title | string | 
+action\_result\.data\.\*\.active | string | 
+action\_result\.data\.\*\.avatar | string |  `md5` 
+action\_result\.data\.\*\.gender | string | 
+action\_result\.data\.\*\.source | string | 
+action\_result\.data\.\*\.street | string | 
+action\_result\.data\.\*\.sys\_id | string |  `md5` 
+action\_result\.data\.\*\.company | string | 
+action\_result\.data\.\*\.country | string | 
+action\_result\.data\.\*\.manager | string | 
+action\_result\.data\.\*\.building | string | 
+action\_result\.data\.\*\.location | string | 
+action\_result\.data\.\*\.schedule | string | 
+action\_result\.data\.\*\.sys\_tags | string | 
+action\_result\.data\.\*\.last\_name | string | 
+action\_result\.data\.\*\.time\_zone | string | 
+action\_result\.data\.\*\.user\_name | string | 
+action\_result\.data\.\*\.department\.link | string |  `url` 
+action\_result\.data\.\*\.department\.value | string |  `md5` 
+action\_result\.data\.\*\.first\_name | string | 
+action\_result\.data\.\*\.home\_phone | string | 
+action\_result\.data\.\*\.last\_login | string | 
+action\_result\.data\.\*\.locked\_out | string | 
+action\_result\.data\.\*\.sys\_domain\.link | string |  `url` 
+action\_result\.data\.\*\.sys\_domain\.value | string | 
+action\_result\.data\.\*\.cost\_center | string | 
+action\_result\.data\.\*\.date\_format | string | 
+action\_result\.data\.\*\.ldap\_server | string | 
+action\_result\.data\.\*\.middle\_name | string | 
+action\_result\.data\.\*\.time\_format | string | 
+action\_result\.data\.\*\.introduction | string | 
+action\_result\.data\.\*\.mobile\_phone | string | 
+action\_result\.data\.\*\.notification | string | 
+action\_result\.data\.\*\.sys\_mod\_count | string | 
+action\_result\.data\.\*\.sys\_class\_name | string | 
+action\_result\.data\.\*\.sys\_created\_by | string | 
+action\_result\.data\.\*\.sys\_created\_on | string | 
+action\_result\.data\.\*\.sys\_updated\_by | string | 
+action\_result\.data\.\*\.sys\_updated\_on | string | 
+action\_result\.data\.\*\.employee\_number | string | 
+action\_result\.data\.\*\.failed\_attempts | string | 
+action\_result\.data\.\*\.last\_login\_time | string | 
+action\_result\.data\.\*\.sys\_domain\_path | string |  `domain` 
+action\_result\.data\.\*\.preferred\_language | string | 
+action\_result\.data\.\*\.default\_perspective | string | 
+action\_result\.data\.\*\.calendar\_integration | string | 
+action\_result\.data\.\*\.password\_needs\_reset | string | 
+action\_result\.data\.\*\.web\_service\_access\_only | string | 
+action\_result\.data\.\*\.enable\_multifactor\_authn | string | 
+action\_result\.data\.\*\.internal\_integration\_user | string | 
+action\_result\.status | string | 
+action\_result\.message | string | 
+action\_result\.summary\.total\_tickets | numeric | 
+action\_result\.parameter\.user\_id | string | 
+action\_result\.parameter\.username | string | 
+action\_result\.parameter\.query | string | 
+action\_result\.parameter\.max\_results | numeric | 
 summary\.total\_objects | numeric | 
 summary\.total\_objects\_successful | numeric |   
 

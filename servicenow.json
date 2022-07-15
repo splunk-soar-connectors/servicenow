@@ -9,7 +9,7 @@
     "license": "Copyright (c) 2016-2022 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.3.0",
+    "app_version": "2.3.1",
     "fips_compliant": true,
     "min_phantom_version": "5.2.0",
     "python_version": "3",
@@ -19,7 +19,7 @@
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
     "package_name": "phantom_servicenow",
-    "utctime_updated": "2022-01-31T08:42:19.000000Z",
+    "utctime_updated": "2022-07-14T15:36:27.000000Z",
     "configuration": {
         "username": {
             "order": 2,
@@ -6901,7 +6901,7 @@
                     "contains": [
                         "vault id"
                     ],
-                    "description": "Vault ID of file to attach to ticket",
+                    "description": "To attach a file to a ticket, the file must first be in the vault. When the Vault ID of a file is provided, it is uploaded and attached to the ticket",
                     "data_type": "string"
                 },
                 "description": {
@@ -9305,7 +9305,7 @@
                     "contains": [
                         "vault id"
                     ],
-                    "description": "Vault ID of file to attach to ticket",
+                    "description": "To attach a file to a ticket, the file must first be in the vault. When the vault ID of a file is provided, it is uploaded and attached to the ticket",
                     "data_type": "string"
                 },
                 "id": {
@@ -11611,6 +11611,557 @@
                 "title": "Run Query"
             },
             "versions": "EQ(*)"
+        },
+        {
+            "action": "query users",
+            "description": "Gets user data according to the specified query, username, or system ID",
+            "type": "investigate",
+            "identifier": "query_users",
+            "read_only": true,
+            "parameters": {
+                "query": {
+                    "required": false,
+                    "description": "The query to run. e.g. sysparm_query=user_name=admin",
+                    "data_type": "string",
+                    "order": 0
+                },
+                "user_id": {
+                    "required": false,
+                    "description": "Query by user system ID",
+                    "data_type": "string",
+                    "order": 1
+                },
+                "username": {
+                    "required": false,
+                    "description": "Query by username",
+                    "data_type": "string",
+                    "order": 2
+                },
+                "max_results": {
+                    "default": 100,
+                    "description": "Max number of records to return",
+                    "data_type": "numeric",
+                    "order": 3
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.data.*.vip",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.zip",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.city",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.name",
+                    "data_type": "string",
+                    "column_order": 1,
+                    "column_name": "Name",
+                    "example_values": [
+                        "System Administrator"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.email",
+                    "data_type": "string",
+                    "column_order": 3,
+                    "column_name": "Email",
+                    "example_values": [
+                        "herman@phantom.us"
+                    ],
+                    "contains": [
+                        "email"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.phone",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.photo",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.roles",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.state",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "System Administrator"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.active",
+                    "data_type": "string",
+                    "example_values": [
+                        "true"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.avatar",
+                    "data_type": "string",
+                    "example_values": [
+                        "c148e1d13741310042106710ce41f149"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.gender",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.source",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.street",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "column_order": 0,
+                    "column_name": "ID",
+                    "example_values": [
+                        "6816f79cc0a8016401c5a33be04be441"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.company",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.country",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.manager",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.building",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.schedule",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.last_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Administrator"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.time_zone",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.user_name",
+                    "data_type": "string",
+                    "column_order": 2,
+                    "column_name": "User Name",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.department.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev116432.service-now.com/api/now/table/cmn_department/a581ab703710200044e0bfc8bcbe5de8"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.department.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "a581ab703710200044e0bfc8bcbe5de8"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.first_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "System"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.home_phone",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.last_login",
+                    "data_type": "string",
+                    "example_values": [
+                        "2022-06-24"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.locked_out",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev116432.service-now.com/api/now/table/sys_user_group/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.cost_center",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.date_format",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.ldap_server",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.middle_name",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.time_format",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.introduction",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.mobile_phone",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.notification",
+                    "data_type": "string",
+                    "example_values": [
+                        "2"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "110"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "sys_user"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "fred.luddy"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_created_on",
+                    "data_type": "string",
+                    "column_order": 4,
+                    "column_name": "Created",
+                    "example_values": [
+                        "2007-07-03 18:48:47"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_by",
+                    "data_type": "string",
+                    "example_values": [
+                        "system"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_updated_on",
+                    "data_type": "string",
+                    "column_order": 5,
+                    "column_name": "Updated",
+                    "example_values": [
+                        "2022-06-24 22:32:28"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.employee_number",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.failed_attempts",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.last_login_time",
+                    "data_type": "string",
+                    "example_values": [
+                        "2022-06-24 22:32:15"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain_path",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ],
+                    "contains": [
+                        "domain"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.preferred_language",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.default_perspective",
+                    "data_type": "string",
+                    "example_values": [
+                        ""
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_integration",
+                    "data_type": "string",
+                    "example_values": [
+                        "1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.password_needs_reset",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.web_service_access_only",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.enable_multifactor_authn",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.internal_integration_user",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Total tickets: 1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.total_tickets",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.user_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "6816f79cc0a8016401c5a33be04be441"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.username",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.query",
+                    "data_type": "string",
+                    "example_values": [
+                        "sysparm_query=user_name=admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.max_results",
+                    "data_type": "numeric",
+                    "example_values": [
+                        100
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "versions": "EQ(*)",
+            "render": {
+                "type": "table",
+                "width": 12,
+                "height": 5,
+                "title": "Query Users"
+            }
         },
         {
             "action": "on poll",
