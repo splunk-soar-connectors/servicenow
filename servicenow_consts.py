@@ -14,7 +14,7 @@
 # and limitations under the License.
 SERVICENOW_JSON_DEVICE_URL = "url"
 SERVICENOW_JSON_USER_ID = "user_id"
-SERVICENOW_JSON_USER_PASSWORD = "user_password"
+SERVICENOW_JSON_USER_PASSWORD = "user_password"  # pragma: allowlist secret
 SERVICENOW_JSON_USERNAME = "username"
 SERVICENOW_JSON_PASSWORD = "password"  # pragma: allowlist secret
 SERVICENOW_JSON_CLIENT_ID = "client_id"

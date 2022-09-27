@@ -840,6 +840,7 @@ class ServicenowConnector(BaseConnector):
             return (action_result.get_status(), response)
 
         return (phantom.APP_SUCCESS, response)
+
     def _handle_multiple_attachements(self, action_result, table, ticket_id, vault_ids):
         attachment_count = 0
         vault_error = {}
@@ -1939,13 +1940,16 @@ class ServicenowConnector(BaseConnector):
             r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR,SERVICENOW_SEVIRITY_MESSAGE.format(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(e)), None)
 
         if r.status_code == 401:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Authentication Error'))), None)
+            return RetVal(action_result.set_status(
+                phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Authentication Error'))),
+                None)
 
         if r.status_code != 200:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Unknown Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get(
+                'message', 'Unknown Error'))), None)
 
         severity = None
 
@@ -1962,13 +1966,16 @@ class ServicenowConnector(BaseConnector):
             r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(e)),
+            None)
 
         if r.status_code == 401:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Authentication Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get(
+                'message', 'Authentication Error'))), None)
 
         if r.status_code != 200:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Unknown Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get(
+                'message', 'Unknown Error'))), None)
 
         severities = [s['name'] for s in resp_json['data']]
 
