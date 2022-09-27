@@ -71,7 +71,11 @@ TYPE_ERROR_MESSAGE = ("Error occurred while connecting to the ServiceNow server.
 PARSE_ERROR_MESSAGE = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
 SERVICENOW_STATE_FILE_CORRUPT_ERROR = "Error occurred while loading the state file due to its unexpected format. Resetting the state file with the default format. \
 Please try again."
-
+SERVICENOW_AUTH_ERROR_MESSAGE = "Unable to get authorization credentials"
+SERVICENOW_TICKET_ID_MESSAGE = "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' \
+                                parameter and provide a valid 'sys_id' in the 'id' parameter"
+SERVICENOW_INVALID_PARAMETER_MESSAGE = "Please provide valid input parameters"
+SERVICENOW_SEVIRITY_MESSAGE = "Could not get severities from platform: {}"
 
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"
 SERVICENOW_BASE_QUERY_URI = "/table/"
@@ -102,3 +106,14 @@ SERVICENOW_ENCRYPT_TOKEN = "Encrypting the {} token"
 SERVICENOW_DECRYPT_TOKEN = "Decrypting the {} token"
 SERVICENOW_ENCRYPTION_ERR = "Error occurred while encrypting the state file"
 SERVICENOW_DECRYPTION_ERR = "Error occurred while decrypting the state file"
+
+SERVICENOW_TEST_CONNECTIVITY_ENDPOINT = '/table/incident'
+SERVICENOW_TABLE_ENDPOINT = '/table/{0}'
+SERVICENOW_TICKET_ENDPOINT = '/table/{0}/{1}'
+SERVICENOW_SC_CATALOG_ENDPOINT = '/table/sc_catalog'
+SERVICENOW_SC_CATEGORY_ENDPOINT = '/table/sc_category'
+SERVICENOW_CATALOG_ITEMS_ENDPOINT = '/servicecatalog/items/{}'
+SERVICENOW_SYS_JOURNAL_FIELD_ENDPOINT = '/table/sys_journal_field'
+SERVICENOW_SC_CAT_ITEMS_ENDPOINT = '/table/sc_cat_item'
+SERVICENOW_CATALOG_OREDERNOW_ENDPOINT = '/servicecatalog/items/{}/order_now'
+SERVICENOW_API_ENDPOINT = '/api/now'

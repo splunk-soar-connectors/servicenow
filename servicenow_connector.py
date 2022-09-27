@@ -69,6 +69,12 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_RUN_QUERY = "run_query"
     ACTION_ID_QUERY_USERS = "query_users"
 
+    def csv_to_list(self, data):
+        """Comma separated values to list"""
+        data = [x.strip() for x in data.split(",")]
+        data = list(dict.fromkeys(filter(None, data)))
+        return data
+
     def __init__(self):
 
         # Call the BaseConnectors init first
@@ -670,14 +676,13 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        endpoint = '/table/incident'
         request_params = {'sysparm_limit': '1'}
 
         action_result = self.add_action_result(ActionResult(param))
 
         self.save_progress(SERVICENOW_MESSAGE_GET_INCIDENT_TEST)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+        ret_val, response = self._make_rest_call_helper(action_result, SERVICENOW_TEST_CONNECTIVITY_ENDPOINT,
                                                         params=request_params, headers=headers, auth=auth)
 
         if phantom.is_fail(ret_val):
@@ -726,9 +731,9 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
-        endpoint = '/table/{0}'.format(table)
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
 
         ret_val, fields = self._get_fields(param, action_result)
 
@@ -775,21 +780,11 @@ class ServicenowConnector(BaseConnector):
 
         action_result.update_summary({SERVICENOW_JSON_NEW_TICKET_ID: created_ticket_id})
 
-        vault_id = param.get(SERVICENOW_JSON_VAULT_ID)
-
-        if vault_id:
-            self.save_progress("Attaching file to the ticket")
-
-            try:
-                vault_process, response = self._add_attachment(action_result, table, created_ticket_id, vault_id)
-            except Exception as e:
-                error_msg = self._get_error_message_from_exception(e)
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter valid Vault ID. {}".format(error_msg))
-            if phantom.is_success(vault_process):
-                action_result.update_summary({'attachment_added': True, 'attachment_id': response['result']['sys_id']})
-            else:
-                action_result.update_summary({'attachment_added': False, 'attachment_error': action_result.get_message()})
-                self.debug_print(action_result.get_message())
+        vault_ids = param.get(SERVICENOW_JSON_VAULT_ID)
+        if vault_ids:
+            ret_val = self._handle_multiple_attachements(action_result, table, created_ticket_id, vault_ids)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
 
         ret_val = self._get_ticket_details(action_result,
                                            param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE), created_ticket_id)
@@ -806,7 +801,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         # Check for file in vault
         try:
@@ -845,6 +840,40 @@ class ServicenowConnector(BaseConnector):
             return (action_result.get_status(), response)
 
         return (phantom.APP_SUCCESS, response)
+    def _handle_multiple_attachements(self, action_result, table, ticket_id, vault_ids):
+        attachment_count = 0
+        vault_error = {}
+        vault_ids = self.csv_to_list(vault_ids)
+        for vault_id in vault_ids:
+            if vault_id:
+                self.save_progress("Attaching file to the ticket with vault id {}".format(vault_id))
+
+                try:
+                    ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
+                except Exception as e:
+                    error_msg = self._get_error_message_from_exception(e)
+                    return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter \
+                                        valid Vault ID. {}".format(error_msg))
+
+                if phantom.is_success(ret_val):
+                    attachment_count += 1
+                else:
+                    if vault_error.get(action_result.get_message()):
+                        values = vault_error.get(action_result.get_message())
+                        values.append(vault_id)
+                        vault_error.update({
+                                '{}'.format(action_result.get_message()):  values
+                            })
+                    else:
+                        vault_error[action_result.get_message()] = [vault_id]
+
+        action_result.update_summary({'successfully_added_attachments_count': attachment_count})
+        if vault_error:
+            action_result.update_summary({
+                'vault_failure_details': vault_error
+            })
+
+        return phantom.APP_SUCCESS
 
     def _update_ticket(self, param):
 
@@ -861,15 +890,15 @@ class ServicenowConnector(BaseConnector):
             ticket_id = self._handle_py_ver_compat_for_input_str(param[SERVICENOW_JSON_TICKET_ID])
             is_sys_id = param.get("is_sys_id", False)
         except:
-            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
             params = {'sysparm_query': 'number={0}'.format(ticket_id)}
-            endpoint = '/table/{0}'.format(table)
+            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
 
             if phantom.is_fail(ret_val):
@@ -884,20 +913,17 @@ class ServicenowConnector(BaseConnector):
 
                 ticket_id = sys_id
             else:
-                return action_result.set_status(phantom.APP_ERROR,
-                                                "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' \
-                                parameter and provide a valid 'sys_id' in the 'id' parameter")
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
-        endpoint = '/table/{0}/{1}'.format(table, ticket_id)
+        endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, ticket_id)
 
         ret_val, fields = self._get_fields(param, action_result)
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        vault_id = param.get(SERVICENOW_JSON_VAULT_ID)
-
-        if not fields and not vault_id:
+        vault_ids = param.get(SERVICENOW_JSON_VAULT_ID)
+        if not fields and not vault_ids:
             return action_result.set_status(phantom.APP_ERROR, "Please specify at-least one of fields or vault_id parameter")
 
         if fields:
@@ -910,21 +936,10 @@ class ServicenowConnector(BaseConnector):
 
             action_result.update_summary({'fields_updated': True})
 
-        if vault_id:
-            self.save_progress("Attaching file to the ticket")
-
-            try:
-                ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
-                action_result.update_summary({'attachment_added': ret_val})
-            except Exception as e:
-                error_msg = self._get_error_message_from_exception(e)
-                return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter \
-                                    valid Vault ID. {}".format(error_msg))
-
-            if phantom.is_success(ret_val):
-                action_result.update_summary({'attachment_id': response['result']['sys_id']})
-            else:
-                action_result.update_summary({'vault_failure_reason': action_result.get_message()})
+        if vault_ids:
+            ret_val = self._handle_multiple_attachements(action_result, table, ticket_id, vault_ids)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
 
         ret_val = self._get_ticket_details(action_result, table, ticket_id)
 
@@ -937,11 +952,11 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
             params = {'sysparm_query': 'number={0}'.format(sys_id)}
-            endpoint = '/table/{0}'.format(table)
+            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
 
             if phantom.is_fail(ret_val):
@@ -955,10 +970,9 @@ class ServicenowConnector(BaseConnector):
                                     for the provided ticket number: {0}".format(sys_id))
 
             else:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide a valid Ticket Number in the \
-                    'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
-        endpoint = '/table/{0}/{1}'.format(table, sys_id)
+        endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, sys_id)
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
@@ -986,12 +1000,10 @@ class ServicenowConnector(BaseConnector):
             except:
                 pass
 
-        endpoint = "/table/sys_journal_field"
-
         params = {}
         params["element_id"] = sys_id
         params["sysparm_query"] = "element=comments^ORelement=work_notes"
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+        ret_val, response = self._make_rest_call_helper(action_result, SERVICENOW_SYS_JOURNAL_FIELD_ENDPOINT,
                                                         auth=auth, headers=headers, params=params)
 
         if phantom.is_fail(ret_val):
@@ -1029,7 +1041,7 @@ class ServicenowConnector(BaseConnector):
             ticket_id = self._handle_py_ver_compat_for_input_str(param[SERVICENOW_JSON_TICKET_ID])
             is_sys_id = param.get("is_sys_id", False)
         except:
-            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         ret_val = self._get_ticket_details(action_result, table_name, ticket_id, is_sys_id=is_sys_id)
 
@@ -1047,7 +1059,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
             return None
 
         items_list = list()
@@ -1086,14 +1098,12 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
-
-        endpoint = '/table/sc_catalog'
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         request_params = dict()
         request_params["sysparm_query"] = "sys_id={}".format(catalog_sys_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+        ret_val, response = self._make_rest_call_helper(action_result, SERVICENOW_SC_CATALOG_ENDPOINT,
                                                         auth=auth, headers=headers, params=request_params)
 
         if phantom.is_fail(ret_val):
@@ -1105,12 +1115,10 @@ class ServicenowConnector(BaseConnector):
         final_data = dict()
         final_data.update(response.get("result")[0])
 
-        endpoint = '/table/sc_category'
-
         request_params = dict()
         request_params["sysparm_query"] = "sc_catalog={}".format(catalog_sys_id)
 
-        ret_val, response = self._make_rest_call_helper(action_result, endpoint,
+        ret_val, response = self._make_rest_call_helper(action_result, SERVICENOW_SC_CATEGORY_ENDPOINT,
                                                         auth=auth, headers=headers, params=request_params)
 
         if phantom.is_fail(ret_val):
@@ -1139,13 +1147,13 @@ class ServicenowConnector(BaseConnector):
         try:
             sys_id = self._handle_py_ver_compat_for_input_str(param["sys_id"])
         except:
-            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
-        endpoint = '/servicecatalog/items/{}'.format(sys_id)
+        endpoint = SERVICENOW_CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
@@ -1186,13 +1194,11 @@ class ServicenowConnector(BaseConnector):
             search_text = self._handle_py_ver_compat_for_input_str(search_text)
             query.append("nameLIKE{0}^ORdescriptionLIKE{0}^ORsys_nameLIKE{0}^ORshort_descriptionLIKE{0}".format(search_text))
 
-        endpoint = '/table/sc_cat_item'
-
         if query:
             search_query = '^'.join(query)
             payload["sysparm_query"] = search_query
 
-        services = self._paginator(endpoint, action_result, payload=payload, limit=limit)
+        services = self._paginator(SERVICENOW_SC_CAT_ITEMS_ENDPOINT, action_result, payload=payload, limit=limit)
 
         if services is None:
             return action_result.get_status(), None
@@ -1238,9 +1244,7 @@ class ServicenowConnector(BaseConnector):
         if limit is None:
             return action_result.get_status()
 
-        endpoint = '/table/sc_category'
-
-        service_categories = self._paginator(endpoint, action_result, limit=limit)
+        service_categories = self._paginator(SERVICENOW_SC_CATEGORY_ENDPOINT, action_result, limit=limit)
 
         if service_categories is None:
             return action_result.get_status()
@@ -1265,9 +1269,7 @@ class ServicenowConnector(BaseConnector):
         if limit is None:
             return action_result.get_status()
 
-        endpoint = '/table/sc_catalog'
-
-        service_catalogs = self._paginator(endpoint, action_result, limit=limit)
+        service_catalogs = self._paginator(SERVICENOW_SC_CATALOG_ENDPOINT, action_result, limit=limit)
 
         if service_catalogs is None:
             return action_result.get_status()
@@ -1289,18 +1291,18 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         try:
             sys_id = self._handle_py_ver_compat_for_input_str(param.get("id"))
             table_name = self._handle_py_ver_compat_for_input_str(param.get("table_name", "incident"))
             is_sys_id = param.get("is_sys_id", False)
         except:
-            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         if not is_sys_id:
             params = {'sysparm_query': 'number={0}'.format(sys_id)}
-            endpoint = '/table/{0}'.format(table_name)
+            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
 
             if phantom.is_fail(ret_val):
@@ -1315,12 +1317,11 @@ class ServicenowConnector(BaseConnector):
 
                 sys_id = new_sys_id
             else:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide a valid Ticket Number \
-                    in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         work_note = param.get("work_note")
 
-        endpoint = "/table/{}/{}".format(table_name, sys_id)
+        endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
         data = {"work_notes": work_note.replace("\\n", "\n").replace("\\'", "\'").replace('\\"', '\"').replace("\\b", "\b")}
 
         request_params = {}
@@ -1348,7 +1349,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         variables_param = param.get("variables")
 
@@ -1359,14 +1360,14 @@ class ServicenowConnector(BaseConnector):
         try:
             sys_id = self._handle_py_ver_compat_for_input_str(param["sys_id"])
         except:
-            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         if variables_param:
             try:
                 variables_param = self._handle_py_ver_compat_for_input_str(variables_param)
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR,
-                                                "Please provide valid input parameters", self._get_error_message_from_exception(e))
+                                                SERVICENOW_INVALID_PARAMETER_MESSAGE, self._get_error_message_from_exception(e))
 
             try:
                 variables_param = ast.literal_eval(variables_param)
@@ -1378,7 +1379,7 @@ class ServicenowConnector(BaseConnector):
             if not isinstance(variables_param, dict):
                 return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_VARIABLES_JSON_PARSE), None)
 
-        endpoint = '/servicecatalog/items/{}'.format(sys_id)
+        endpoint = SERVICENOW_CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
@@ -1405,7 +1406,7 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Please provide the mandatory variables to order this item.\
                 Mandatory variables: {}".format(', '.join(invalid_variables)))
 
-        endpoint = '/servicecatalog/items/{}/order_now'.format(sys_id)
+        endpoint = SERVICENOW_CATALOG_OREDERNOW_ENDPOINT.format(sys_id)
 
         data = dict()
         data["sysparm_quantity"] = quantity
@@ -1421,8 +1422,8 @@ class ServicenowConnector(BaseConnector):
         request_sys_id = response.get("result", {}).get("sys_id")
         table = response.get("result", {}).get("table")
 
-        self._api_uri = "/api/now"
-        endpoint = '/table/{}/{}'.format(table, request_sys_id)
+        self._api_uri = SERVICENOW_API_ENDPOINT
+        endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, request_sys_id)
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
@@ -1442,18 +1443,18 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         try:
             sys_id = self._handle_py_ver_compat_for_input_str(param.get("id"))
             table_name = self._handle_py_ver_compat_for_input_str(param.get("table_name", "incident"))
             is_sys_id = param.get("is_sys_id", False)
         except:
-            return action_result.set_status(phantom.APP_ERROR, "Please provide valid input parameters")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         if not is_sys_id:
             params = {'sysparm_query': 'number={0}'.format(sys_id)}
-            endpoint = '/table/{0}'.format(table_name)
+            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
 
             if phantom.is_fail(ret_val):
@@ -1468,11 +1469,10 @@ class ServicenowConnector(BaseConnector):
 
                 sys_id = new_sys_id
             else:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide a valid Ticket Number \
-                    in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid 'sys_id' in the 'id' parameter")
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         comment = param.get("comment")
-        endpoint = "/table/{}/{}".format(table_name, sys_id)
+        endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
         data = {"comments": comment.replace("\\n", "\n").replace("\\'", "\'").replace('\\"', '\"').replace("\\b", "\b")}
 
         request_params = {}
@@ -1501,7 +1501,7 @@ class ServicenowConnector(BaseConnector):
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
         table_name = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
-        endpoint = '/table/{0}'.format(table_name)
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
         request_params = {
             'sysparm_query': param.get(SERVICENOW_JSON_FILTER, "")
         }
@@ -1513,7 +1513,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         tickets = self._paginator(endpoint, action_result, payload=request_params, limit=limit)
 
@@ -1538,12 +1538,12 @@ class ServicenowConnector(BaseConnector):
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
-        endpoint = '/table/{0}'.format(SERVICENOW_ITEM_OPT_MTOM_TABLE)
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(SERVICENOW_ITEM_OPT_MTOM_TABLE)
         request_params = {'request_item': sys_id}
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth,
                                                         headers=headers, params=request_params)
@@ -1571,10 +1571,10 @@ class ServicenowConnector(BaseConnector):
                     (if any or if applicable) in the 'sc_item_option' value")
                 item_option_value = item['sc_item_option']['value']
 
-            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_TABLE, item_option_value)
+            endpoint = SERVICENOW_TICKET_ENDPOINT.format(SERVICENOW_ITEM_OPT_TABLE, item_option_value)
             ret_val, auth, headers = self._get_authorization_credentials(action_result)
             if phantom.is_fail(ret_val):
-                return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
@@ -1610,10 +1610,10 @@ class ServicenowConnector(BaseConnector):
                 self.debug_print("Error while handling Unicode characters (if any or if applicable) in the 'question_id' value")
                 question_id = response['result']['item_option_new']['value']
 
-            endpoint = '/table/{0}/{1}'.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
+            endpoint = SERVICENOW_TICKET_ENDPOINT.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
             ret_val, auth, headers = self._get_authorization_credentials(action_result)
             if phantom.is_fail(ret_val):
-                return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers)
 
@@ -1664,7 +1664,7 @@ class ServicenowConnector(BaseConnector):
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
 
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, "Unable to get authorization credentials")
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         tickets = self._paginator(endpoint, action_result, limit=limit)
 
@@ -1783,7 +1783,7 @@ class ServicenowConnector(BaseConnector):
         self.debug_print("Polling with this query: {0}".format(query))
 
         on_poll_table_name = config.get(SERVICENOW_JSON_ON_POLL_TABLE, SERVICENOW_DEFAULT_TABLE)
-        endpoint = '/table/{}'.format(on_poll_table_name.lower())
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(on_poll_table_name.lower())
         params = {
             'sysparm_query': query,
             'sysparm_exclude_reference_link': 'true'}
@@ -1939,16 +1939,13 @@ class ServicenowConnector(BaseConnector):
             r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
-                                from platform: {0}".format(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR,SERVICENOW_SEVIRITY_MESSAGE.format(e)), None)
 
         if r.status_code == 401:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
-                from platform: {0}".format(resp_json.get('message', 'Authentication Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Authentication Error'))), None)
 
         if r.status_code != 200:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
-                from platform: {0}".format(resp_json.get('message', 'Unknown Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Unknown Error'))), None)
 
         severity = None
 
@@ -1965,16 +1962,13 @@ class ServicenowConnector(BaseConnector):
             r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
-                            from platform: {0}".format(e)), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(e)), None)
 
         if r.status_code == 401:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
-                from platform: {0}".format(resp_json.get('message', 'Authentication Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Authentication Error'))), None)
 
         if r.status_code != 200:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, "Could not get severities \
-                from platform: {0}".format(resp_json.get('message', 'Unknown Error'))), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Unknown Error'))), None)
 
         severities = [s['name'] for s in resp_json['data']]
 
