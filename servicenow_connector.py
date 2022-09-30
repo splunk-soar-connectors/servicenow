@@ -126,13 +126,13 @@ class ServicenowConnector(BaseConnector):
         if self._base_url.endswith('/'):
             self._base_url = self._base_url[:-1]
 
-        self._first_run_container = self._validate_integers(self,
+        ret_val, self._first_run_container = self._validate_integers(self,
                                                             config.get('first_run_container', SERVICENOW_DEFAULT_LIMIT), 'first_run_container')
-        if self._first_run_container is None:
+        if phantom.is_fail(ret_val):
             return self.get_status()
 
-        self._max_container = self._validate_integers(self, config.get('max_container', DEFAULT_MAX_RESULTS), 'max_container')
-        if self._max_container is None:
+        ret_val, self._max_container = self._validate_integers(self, config.get('max_container', DEFAULT_MAX_RESULTS), 'max_container')
+        if phantom.is_fail(ret_val):
             return self.get_status()
 
         if config.get('severity'):
@@ -222,24 +222,20 @@ class ServicenowConnector(BaseConnector):
         if parameter is not None:
             try:
                 if not float(parameter).is_integer():
-                    action_result.set_status(phantom.APP_ERROR, SERVICENOW_VALIDATE_INTEGER_MESSAGE.format(key=key))
-                    return None
-                parameter = int(parameter)
+                    return action_result.set_status(phantom.APP_ERROR, SERVICENOW_VALIDATE_INTEGER_MESSAGE.format(param=key)), None
 
-            except:
-                action_result.set_status(phantom.APP_ERROR, SERVICENOW_VALIDATE_INTEGER_MESSAGE.format(key=key))
-                return None
+                parameter = int(parameter)
+            except Exception:
+                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_VALIDATE_INTEGER_MESSAGE.format(param=key)), None
 
             if parameter < 0:
-                action_result.set_status(phantom.APP_ERROR,
-                                         "Please provide a valid non-negative integer value in the {} parameter".format(key))
-                return None
+                return action_result.set_status(
+                    phantom.APP_ERROR, "Please provide a valid non-negative integer value in the {} parameter".format(key)), None
             if not allow_zero and parameter == 0:
-                action_result.set_status(phantom.APP_ERROR,
-                                         "Please provide a positive integer value in the {} parameter".format(key))
-                return None
+                return action_result.set_status(
+                    phantom.APP_ERROR, "Please provide a positive integer value in the {} parameter".format(key)), None
 
-        return parameter
+        return phantom.APP_SUCCESS, parameter
 
     def _get_error_message_from_exception(self, e):
         """ This method is used to get appropriate error message from the exception.
@@ -863,7 +859,7 @@ class ServicenowConnector(BaseConnector):
                         values = vault_error.get(action_result.get_message())
                         values.append(vault_id)
                         vault_error.update({
-                                '{}'.format(action_result.get_message()):  values
+                                '{}'.format(action_result.get_message()): values
                             })
                     else:
                         vault_error[action_result.get_message()] = [vault_id]
@@ -1170,9 +1166,9 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+        ret_val, limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
                                                                  SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
-        if limit is None:
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         payload = dict()
@@ -1240,9 +1236,9 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+        ret_val, limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
                                                                  SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
-        if limit is None:
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         service_categories = self._paginator(SERVICENOW_SC_CATEGORY_ENDPOINT, action_result, limit=limit)
@@ -1265,9 +1261,9 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+        ret_val, limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
                                                                  SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
-        if limit is None:
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         service_catalogs = self._paginator(SERVICENOW_SC_CATALOG_ENDPOINT, action_result, limit=limit)
@@ -1354,8 +1350,8 @@ class ServicenowConnector(BaseConnector):
 
         variables_param = param.get("variables")
 
-        quantity = self._validate_integers(action_result, param.get('quantity', 1), "quantity")
-        if quantity is None:
+        ret_val, quantity = self._validate_integers(action_result, param.get('quantity', 1), "quantity")
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         try:
@@ -1481,7 +1477,6 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, data=data,
                                                         headers=headers, params=request_params, method="put")
-
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
@@ -1507,9 +1502,9 @@ class ServicenowConnector(BaseConnector):
             'sysparm_query': param.get(SERVICENOW_JSON_FILTER, "")
         }
 
-        limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
+        ret_val, limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
                                                                  SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
-        if limit is None:
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
@@ -1657,9 +1652,9 @@ class ServicenowConnector(BaseConnector):
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
         endpoint = '{}{}?{}'.format(SERVICENOW_BASE_QUERY_URI, lookup_table, query)
-        limit = self._validate_integers(
+        ret_val, limit = self._validate_integers(
             action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
-        if limit is None:
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)

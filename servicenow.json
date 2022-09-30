@@ -7199,10 +7199,8 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 7,
                     "data_path": "action_result.data.*.closed_at",
-                    "data_type": "string",
-                    "column_name": "Closed On"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.closed_by",
@@ -7279,13 +7277,11 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 1,
                     "data_path": "action_result.data.*.description",
                     "example_values": [
                         "Investigative actions to check for the presence of phapp_servicenow\n\nAdded by Splunk for container id: 495"
                     ],
-                    "data_type": "string",
-                    "column_name": "Description"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.display_name",
@@ -7474,7 +7470,6 @@
                     "data_type": "string"
                 },
                 {
-                    "column_name": "Ticket Number",
                     "data_path": "action_result.data.*.number",
                     "example_values": [
                         "INC0000001"
@@ -7482,8 +7477,7 @@
                     "contains": [
                         "servicenow ticket number"
                     ],
-                    "data_type": "string",
-                    "column_order": 0
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.old_status",
@@ -7494,13 +7488,11 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 6,
                     "data_path": "action_result.data.*.opened_at",
                     "example_values": [
                         "2018-11-22 09:57:05"
                     ],
-                    "data_type": "string",
-                    "column_name": "Opened On"
+                    "data_type": "string"
                 },
                 {
                     "contains": [
@@ -7554,13 +7546,11 @@
                     ]
                 },
                 {
-                    "column_order": 5,
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
                         "5"
                     ],
-                    "data_type": "string",
-                    "column_name": "Priority"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
@@ -7665,22 +7655,18 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 4,
                     "data_path": "action_result.data.*.severity",
                     "example_values": [
                         "3"
                     ],
-                    "data_type": "string",
-                    "column_name": "Severity"
+                    "data_type": "string"
                 },
                 {
-                    "column_order": 2,
                     "data_path": "action_result.data.*.short_description",
                     "example_values": [
                         "phapp_servicenow, Multiple action need to be taken"
                     ],
-                    "data_type": "string",
-                    "column_name": "Short Description"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.skip_sync",
@@ -7777,9 +7763,7 @@
                     ],
                     "example_values": [
                         "e19eff67db716300134cd100cf961915"
-                    ],
-                    "column_order": 3,
-                    "column_name": "ID"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.sys_mod_count",
@@ -7914,8 +7898,9 @@
             "render": {
                 "width": 12,
                 "height": 5,
-                "type": "table",
-                "title": "Create Ticket"
+                "type": "custom",
+                "title": "Create Ticket",
+                "view": "servicenow_view.display_view"
             },
             "versions": "EQ(*)"
         },
@@ -9352,9 +9337,7 @@
                     "example_values": [
                         "9c573169c611228700193229fff72400",
                         "INC0000001"
-                    ],
-                    "column_order": 3,
-                    "column_name": "ID"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.is_sys_id",
@@ -10414,7 +10397,9 @@
                     "example_values": [
                         "9c573169c611228700193229fff72400"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Sys ID",
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.sys_mod_count",

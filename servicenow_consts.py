@@ -48,11 +48,11 @@ SERVICENOW_SUCC_CONNECTIVITY_TEST = "Test Connectivity Passed"
 SERVICENOW_ERR_SERVER_CONNECTION = "Connection failed. {error_msg}"
 SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {key} parameter"
 SERVICENOW_ERR_FETCH_VALUE = ('Error occurred while fetching variable value'
-                              'for the item_option_value: {item_opt_value} of the System ID: {sys_id}')
+                              ' for the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FETCH_QUESTION_ID = ('Error occurred while fetching question ID for'
-                                    'the item_option_value: {item_opt_value} of the System ID: {sys_id}')
+                                    ' the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FETCH_QUESTION = ('Error occurred while fetching question for'
-                                 'the question ID: {question_id} and the item_option_value: {item_opt_value} of the System ID: {sys_id}')
+                                 ' the question ID: {question_id} and the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}.\
 Please check the asset configuration and rerun the test connectivity."
 SERVICENOW_MESSAGE_GET_INCIDENT_TEST = "Querying a single Incident to check credentials"
@@ -62,12 +62,12 @@ SERVICENOW_ERR_API_UNSUPPORTED_METHOD = "Unsupported method"
 SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = ('Provide username and password to generate'
                                                   'OAuth token for running Test Connectivity for the first time')
 SERVICENOW_ERR_ONE_PARAM_REQ = ("Please specify at least one of the parameters"
-                                "short_description, description, or fields to create the ticket with")
+                                " short_description, description, or fields to create the ticket with")
 SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details"
 SERVICENOW_ERROR_CODE_MESSAGE = "Error code unavailable"
 SERVICENOW_ERROR_MESSAGE = "Unknown error occurred. Please check the asset configuration and|or action parameters"
 TYPE_ERROR_MESSAGE = ("Error occurred while connecting to the ServiceNow server."
-                      "Please check the asset configuration and|or the action parameters")
+                      " Please check the asset configuration and|or the action parameters")
 PARSE_ERROR_MESSAGE = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
 SERVICENOW_STATE_FILE_CORRUPT_ERROR = "Error occurred while loading the state file due to its unexpected format. Resetting the state file with the default format. \
 Please try again."
