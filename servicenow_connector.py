@@ -771,8 +771,9 @@ class ServicenowConnector(BaseConnector):
             self.debug_print(action_result.get_message())
             action_result.set_status(phantom.APP_ERROR, action_result.get_message())
             return phantom.APP_ERROR
-
-        created_ticket_id = response['result']['sys_id']
+        if not response.get('result'):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
+        created_ticket_id = response.get('result', {}).get('sys_id')
 
         action_result.update_summary({SERVICENOW_JSON_NEW_TICKET_ID: created_ticket_id})
 
@@ -978,9 +979,11 @@ class ServicenowConnector(BaseConnector):
             action_result.set_status(phantom.APP_ERROR, action_result.get_message())
             return phantom.APP_ERROR
 
-        ticket = response['result']
+        if not response.get('result'):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
+        ticket = response.get('result', {})
 
-        ticket_sys_id = ticket['sys_id']
+        ticket_sys_id = ticket.get('sys_id')
 
         params = {'sysparm_query': 'table_sys_id={0}'.format(ticket_sys_id)}
 
@@ -994,7 +997,7 @@ class ServicenowConnector(BaseConnector):
             try:
                 attach_details = attach_resp['result']
                 ticket['attachment_details'] = attach_details
-            except:
+            except Exception:
                 pass
 
         params = {}
@@ -1037,7 +1040,7 @@ class ServicenowConnector(BaseConnector):
             table_name = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
             ticket_id = self._handle_py_ver_compat_for_input_str(param[SERVICENOW_JSON_TICKET_ID])
             is_sys_id = param.get("is_sys_id", False)
-        except:
+        except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         ret_val = self._get_ticket_details(action_result, table_name, ticket_id, is_sys_id=is_sys_id)
@@ -1047,7 +1050,7 @@ class ServicenowConnector(BaseConnector):
 
         try:
             action_result.update_summary({SERVICENOW_JSON_GOT_TICKET_ID: action_result.get_data()[0]['sys_id']})
-        except:
+        except Exception:
             pass
 
         return action_result.set_status(phantom.APP_SUCCESS)
@@ -1072,6 +1075,8 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return None
 
+            if not items.get("result"):
+                return items_list
             items_list.extend(items.get("result"))
 
             if limit and len(items_list) >= limit:
@@ -1157,6 +1162,10 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
+        if not response.get('result'):
+            return action_result.set_status(
+                phantom.APP_ERROR, 'No data found for the requested item having System ID: {0}'.format(sys_id))
+
         action_result.add_data(response.get("result", {}))
 
         return action_result.set_status(phantom.APP_SUCCESS, "Details fetched successfully")
@@ -1169,7 +1178,7 @@ class ServicenowConnector(BaseConnector):
         ret_val, limit = self._validate_integers(action_result, param.get(SERVICENOW_JSON_MAX_RESULTS,
                                                                  SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS)
         if phantom.is_fail(ret_val):
-            return action_result.get_status()
+            return action_result.get_status(), None
 
         payload = dict()
         catalog_sys_id = param.get("catalog_sys_id")
@@ -1482,10 +1491,12 @@ class ServicenowConnector(BaseConnector):
 
         if response.get("result", {}).get("comments"):
             response["result"]["comments"] = response["result"]["comments"].replace("\n\n", "\n, ").strip(", ")
-
+        message = "Added the comment successfully"
+        if not response.get("result"):
+            message = "No tickets Found"
         action_result.add_data(response.get("result", {}))
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Added the comment successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, message)
 
     def _list_tickets(self, param):
 
@@ -1664,8 +1675,8 @@ class ServicenowConnector(BaseConnector):
 
         tickets = self._paginator(endpoint, action_result, limit=limit)
 
-        if tickets is None:
-            return action_result.get_status()
+        if not tickets:
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         for ticket in tickets:
             for prop_to_strip in strip_props:

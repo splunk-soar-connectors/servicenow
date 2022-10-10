@@ -46,7 +46,7 @@ SERVICENOW_JSON_EXTRACT_URLS = "extract_urls"
 SERVICENOW_ERR_CONNECTIVITY_TEST = "Test Connectivity Failed"
 SERVICENOW_SUCC_CONNECTIVITY_TEST = "Test Connectivity Passed"
 SERVICENOW_ERR_SERVER_CONNECTION = "Connection failed. {error_msg}"
-SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {key} parameter"
+SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {param} parameter"
 SERVICENOW_ERR_FETCH_VALUE = ('Error occurred while fetching variable value'
                               ' for the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FETCH_QUESTION_ID = ('Error occurred while fetching question ID for'
