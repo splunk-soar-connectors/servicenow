@@ -11,7 +11,7 @@
     "main_module": "servicenow_connector.py",
     "app_version": "2.4.0",
     "fips_compliant": true,
-    "min_phantom_version": "5.3.3",
+    "min_phantom_version": "5.3.4",
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, Build tag: glide-sandiego-12-22-2021__patch1-03-02-2022"
@@ -7864,13 +7864,16 @@
                 },
                 {
                     "data_path": "action_result.summary.successfully_added_attachments_count",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
                 },
                 {
                     "data_path": "action_result.summary.vault_failure_details",
                     "data_type": "string",
                     "example_values": [
-                        "File not found in Vault"
+                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
                     ]
                 },
                 {
@@ -10505,7 +10508,10 @@
                 },
                 {
                     "data_path": "action_result.summary.successfully_added_attachments_count",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
                 },
                 {
                     "data_path": "action_result.summary.total_tickets",
@@ -10515,7 +10521,7 @@
                     "data_path": "action_result.summary.vault_failure_details",
                     "data_type": "string",
                     "example_values": [
-                        "File not found in Vault"
+                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
                     ]
                 },
                 {
