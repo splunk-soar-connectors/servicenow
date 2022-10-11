@@ -66,8 +66,6 @@ SERVICENOW_ERR_ONE_PARAM_REQ = ("Please specify at least one of the parameters"
 SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details"
 SERVICENOW_ERROR_CODE_MESSAGE = "Error code unavailable"
 SERVICENOW_ERROR_MESSAGE = "Unknown error occurred. Please check the asset configuration and|or action parameters"
-TYPE_ERROR_MESSAGE = ("Error occurred while connecting to the ServiceNow server."
-                      " Please check the asset configuration and|or the action parameters")
 PARSE_ERROR_MESSAGE = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
 SERVICENOW_STATE_FILE_CORRUPT_ERROR = "Error occurred while loading the state file due to its unexpected format. Resetting the state file with the default format. \
 Please try again."
@@ -75,7 +73,7 @@ SERVICENOW_AUTH_ERROR_MESSAGE = "Unable to get authorization credentials"
 SERVICENOW_TICKET_ID_MESSAGE = "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' \
                                 parameter and provide a valid 'sys_id' in the 'id' parameter"
 SERVICENOW_INVALID_PARAMETER_MESSAGE = "Please provide valid input parameters"
-SERVICENOW_SEVIRITY_MESSAGE = "Could not get severities from platform: {}"
+SERVICENOW_SEVERITY_MESSAGE = "Could not get severities from platform: {}"
 
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"
 SERVICENOW_BASE_QUERY_URI = "/table/"

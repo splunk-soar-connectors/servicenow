@@ -31,7 +31,7 @@ import encryption_helper
 import magic
 import pytz
 import requests
-from bs4 import BeautifulSoup, UnicodeDammit
+from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
 from phantom.base_connector import BaseConnector
 
@@ -115,14 +115,8 @@ class ServicenowConnector(BaseConnector):
                 "app_version": self.get_app_json().get('app_version')
             }
 
-        # Fetching the Python major version
-        try:
-            self._python_version = int(sys.version_info[0])
-        except:
-            return self.set_status(phantom.APP_ERROR, "Error occurred while getting the Phantom server's Python major version.")
-
         # Base URL
-        self._base_url = self._handle_py_ver_compat_for_input_str(config[SERVICENOW_JSON_DEVICE_URL])
+        self._base_url = config[SERVICENOW_JSON_DEVICE_URL]
         if self._base_url.endswith('/'):
             self._base_url = self._base_url[:-1]
 
@@ -163,14 +157,14 @@ class ServicenowConnector(BaseConnector):
                     if self._access_token:
                         self._access_token = self.decrypt_state(self._access_token, "access")
                 except Exception as e:
-                    self.debug_print("{}: {}".format(SERVICENOW_DECRYPTION_ERR, self._get_error_message_from_exception(e)))
+                    self._dump_error_log(e, SERVICENOW_DECRYPTION_ERR)
                     return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
 
                 try:
                     if self._refresh_token:
                         self._refresh_token = self.decrypt_state(self._refresh_token, "refresh")
                 except Exception as e:
-                    self.debug_print("{}: {}".format(SERVICENOW_DECRYPTION_ERR, self._get_error_message_from_exception(e)))
+                    self._dump_error_log(e, SERVICENOW_DECRYPTION_ERR)
                     return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
 
         return phantom.APP_SUCCESS
@@ -181,35 +175,19 @@ class ServicenowConnector(BaseConnector):
                 if self._access_token:
                     self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_ACCESS_TOKEN_STRING] = self.encrypt_state(self._access_token, "access")
             except Exception as e:
-                self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
+                self._dump_error_log(e, SERVICENOW_ENCRYPTION_ERR)
                 return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
 
             try:
                 if self._refresh_token:
                     self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_REFRESH_TOKEN_STRING] = self.encrypt_state(self._refresh_token, "refresh")
             except Exception as e:
-                self.debug_print("{}: {}".format(SERVICENOW_ENCRYPTION_ERR, self._get_error_message_from_exception(e)))
+                self._dump_error_log(e, SERVICENOW_ENCRYPTION_ERR)
                 return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
 
             self._state[SERVICENOW_STATE_IS_ENCRYPTED] = True
         self.save_state(self._state)
         return phantom.APP_SUCCESS
-
-    def _handle_py_ver_compat_for_input_str(self, input_str):
-        """
-        This method returns the encoded|original string based on the Python version.
-        :param python_version: Information of the Python version
-        :param input_str: Input string to be processed
-        :return: input_str (Processed input string based on following logic 'input_str - Python 3; encoded input_str - Python 2')
-        """
-
-        try:
-            if input_str and self._python_version == 2:
-                input_str = UnicodeDammit(input_str).unicode_markup.encode('utf-8')
-        except:
-            self.debug_print("Error occurred while handling python 2to3 compatibility for the input string")
-
-        return input_str
 
     def _validate_integers(self, action_result, parameter, key, allow_zero=False):
         """ This method is to check if the provided input parameter value
@@ -245,6 +223,9 @@ class ServicenowConnector(BaseConnector):
 
         error_msg = SERVICENOW_ERROR_MESSAGE
         error_code = SERVICENOW_ERROR_CODE_MESSAGE
+
+        self._dump_error_log(e, "Traceback: ")
+
         try:
             if hasattr(e, "args"):
                 if len(e.args) > 1:
@@ -256,15 +237,8 @@ class ServicenowConnector(BaseConnector):
             else:
                 error_code = SERVICENOW_ERROR_CODE_MESSAGE
                 error_msg = SERVICENOW_ERROR_MESSAGE
-        except:
+        except Exception:
             error_code = SERVICENOW_ERROR_CODE_MESSAGE
-            error_msg = SERVICENOW_ERROR_MESSAGE
-
-        try:
-            error_msg = self._handle_py_ver_compat_for_input_str(error_msg)
-        except TypeError:
-            error_msg = TYPE_ERROR_MESSAGE
-        except:
             error_msg = SERVICENOW_ERROR_MESSAGE
 
         try:
@@ -272,11 +246,14 @@ class ServicenowConnector(BaseConnector):
                 error_text = "Error Message: {0}".format(error_msg)
             else:
                 error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
-        except:
-            self.debug_print("Error occurred while parsing error message")
+        except Exception as e:
+            self._dump_error_log(e, "Error occurred while parsing error message")
             error_text = PARSE_ERROR_MESSAGE
 
         return error_text
+
+    def _dump_error_log(self, error, message="Exception occurred."):
+        self.error_print(message, dump_object=error)
 
     def _get_error_details(self, resp_json):
 
@@ -297,9 +274,9 @@ class ServicenowConnector(BaseConnector):
                 error_details = error_info
             else:
                 if isinstance(resp_json, dict):
-                    error_details["message"] = self._handle_py_ver_compat_for_input_str(error_info) if error_info else "Not Found"
+                    error_details["message"] = error_info if error_info else "Not Found"
                     error_description = resp_json.get("error_description", "Not supplied")
-                    error_details["detail"] = self._handle_py_ver_compat_for_input_str(error_description)
+                    error_details["detail"] = error_description
                 return error_details
 
         # Handle the scenario of "message" and "detail" keys not in the required format
@@ -308,10 +285,6 @@ class ServicenowConnector(BaseConnector):
 
         if "detail" not in error_details:
             error_details["detail"] = "Not supplied"
-
-        # Handle the Unicode characters in the error information
-        error_details["message"] = self._handle_py_ver_compat_for_input_str(error_details["message"])
-        error_details["detail"] = self._handle_py_ver_compat_for_input_str(error_details["detail"])
 
         return error_details
 
@@ -334,7 +307,8 @@ class ServicenowConnector(BaseConnector):
             try:
                 sys_id = location.rsplit('/', 1)[-1]
                 resp_json = {'result': {'sys_id': sys_id}}
-            except:
+            except Exception as e:
+                self._dump_error_log(e, "Unable to process empty response for 'table'")
                 return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to process empty response for 'table'"), None)
 
             return RetVal(phantom.APP_SUCCESS, resp_json)
@@ -355,10 +329,8 @@ class ServicenowConnector(BaseConnector):
             split_lines = error_text.split('\n')
             split_lines = [x.strip() for x in split_lines if x.strip()]
             error_text = '\n'.join(split_lines)
-        except:
+        except Exception:
             error_text = "Cannot parse error details"
-
-        error_text = self._handle_py_ver_compat_for_input_str(error_text)
 
         message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code,
                                                                       error_text)
@@ -416,7 +388,7 @@ class ServicenowConnector(BaseConnector):
 
         # everything else is actually an error at this point
         message = "Can't process resonse from server. Status Code: {0} Data from server: {1}".format(
-            r.status_code, self._handle_py_ver_compat_for_input_str(r.text.replace('{', ' ').replace('}', ' ')))
+            r.status_code, r.text.replace('{', ' ').replace('}', ' '))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
@@ -560,7 +532,7 @@ class ServicenowConnector(BaseConnector):
             return self._get_new_oauth_token(action_result, first_try=False)
 
         if phantom.is_fail(ret_val):
-            error_message = self._handle_py_ver_compat_for_input_str(action_result.get_message())
+            error_message = action_result.get_message()
             self._access_token, self._refresh_token = None, None
             return RetVal(action_result.set_status(phantom.APP_ERROR,
                                                    "Error in token request. Error: {}".format(error_message)), None)
@@ -633,13 +605,13 @@ class ServicenowConnector(BaseConnector):
         try:
             r = requests.get(request_str, verify=False)   # nosemgrep
         except Exception as e:
-            self.debug_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
+            self.error_print("Error making local rest call: {0}".format(self._get_error_message_from_exception(e)))
             return 0, None, None, None
 
         try:
             resp_json = r.json()
         except Exception as e:
-            self.debug_print('Exception caught parsing JSON: {0}'.format(self._get_error_message_from_exception(e)))
+            self.error_print('Exception caught parsing JSON: {0}'.format(self._get_error_message_from_exception(e)))
             return 0, None, None, None
 
         if resp_json.get('failed'):
@@ -723,7 +695,7 @@ class ServicenowConnector(BaseConnector):
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
-        table = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
+        table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
@@ -753,12 +725,12 @@ class ServicenowConnector(BaseConnector):
                 "\\b", "\b")})
 
         if desc:
-            json_description = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_DESCRIPTION, ''))
+            json_description = param.get(SERVICENOW_JSON_DESCRIPTION, '')
             data.update({'description': '{0}\n\n{1}{2}'.format(
                 json_description.replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t").replace("\\'", "\'").replace(
                     '\\"', '\"').replace("\\a", "\a").replace("\\b", "\b"), SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         elif fields and 'description' in fields:
-            field_description = self._handle_py_ver_compat_for_input_str(fields.get(SERVICENOW_JSON_DESCRIPTION, ''))
+            field_description = fields.get(SERVICENOW_JSON_DESCRIPTION, '')
             data.update({'description': '{0}\n\n{1}{2}'.format(
                 field_description, SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         else:
@@ -798,7 +770,7 @@ class ServicenowConnector(BaseConnector):
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE), None
 
         # Check for file in vault
         try:
@@ -819,7 +791,7 @@ class ServicenowConnector(BaseConnector):
         try:
             data = open(filepath, 'rb').read()
         except Exception as e:
-            self.debug_print("Error reading the file", e)
+            self._dump_error_log(e, "Error reading the file")
             return (action_result.set_status(phantom.APP_ERROR, "Failed to read file from Vault"), None)
 
         # Was not detonated before
@@ -884,10 +856,10 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         try:
-            table = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
-            ticket_id = self._handle_py_ver_compat_for_input_str(param[SERVICENOW_JSON_TICKET_ID])
+            table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
+            ticket_id = param[SERVICENOW_JSON_TICKET_ID]
             is_sys_id = param.get("is_sys_id", False)
-        except:
+        except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
@@ -1037,8 +1009,8 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         try:
-            table_name = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
-            ticket_id = self._handle_py_ver_compat_for_input_str(param[SERVICENOW_JSON_TICKET_ID])
+            table_name = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
+            ticket_id = param[SERVICENOW_JSON_TICKET_ID]
             is_sys_id = param.get("is_sys_id", False)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
@@ -1096,7 +1068,7 @@ class ServicenowConnector(BaseConnector):
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
-        catalog_sys_id = self._handle_py_ver_compat_for_input_str(param["sys_id"])
+        catalog_sys_id = param["sys_id"]
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
@@ -1147,8 +1119,8 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
         try:
-            sys_id = self._handle_py_ver_compat_for_input_str(param["sys_id"])
-        except:
+            sys_id = param["sys_id"]
+        except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
@@ -1188,16 +1160,15 @@ class ServicenowConnector(BaseConnector):
 
         query = list()
         if catalog_sys_id:
-            query.append("sc_catalogsLIKE{}".format(self._handle_py_ver_compat_for_input_str(catalog_sys_id)))
+            query.append("sc_catalogsLIKE{}".format(catalog_sys_id))
 
         if sys_id:
-            query.append("sc_catalogsLIKE{}".format(self._handle_py_ver_compat_for_input_str(sys_id)))
+            query.append("sc_catalogsLIKE{}".format(sys_id))
 
         if category_sys_id:
-            query.append("category={}".format(self._handle_py_ver_compat_for_input_str(category_sys_id)))
+            query.append("category={}".format(category_sys_id))
 
         if search_text:
-            search_text = self._handle_py_ver_compat_for_input_str(search_text)
             query.append("nameLIKE{0}^ORdescriptionLIKE{0}^ORsys_nameLIKE{0}^ORshort_descriptionLIKE{0}".format(search_text))
 
         if query:
@@ -1300,10 +1271,10 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         try:
-            sys_id = self._handle_py_ver_compat_for_input_str(param.get("id"))
-            table_name = self._handle_py_ver_compat_for_input_str(param.get("table_name", "incident"))
+            sys_id = param.get("id")
+            table_name = param.get("table_name", "incident")
             is_sys_id = param.get("is_sys_id", False)
-        except:
+        except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         if not is_sys_id:
@@ -1364,17 +1335,11 @@ class ServicenowConnector(BaseConnector):
             return action_result.get_status()
 
         try:
-            sys_id = self._handle_py_ver_compat_for_input_str(param["sys_id"])
-        except:
+            sys_id = param["sys_id"]
+        except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         if variables_param:
-            try:
-                variables_param = self._handle_py_ver_compat_for_input_str(variables_param)
-            except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR,
-                                                SERVICENOW_INVALID_PARAMETER_MESSAGE, self._get_error_message_from_exception(e))
-
             try:
                 variables_param = ast.literal_eval(variables_param)
             except Exception as e:
@@ -1452,10 +1417,10 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         try:
-            sys_id = self._handle_py_ver_compat_for_input_str(param.get("id"))
-            table_name = self._handle_py_ver_compat_for_input_str(param.get("table_name", "incident"))
+            sys_id = param.get("id")
+            table_name = param.get("table_name", "incident")
             is_sys_id = param.get("is_sys_id", False)
-        except:
+        except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         if not is_sys_id:
@@ -1507,7 +1472,7 @@ class ServicenowConnector(BaseConnector):
 
         # Connectivity
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
-        table_name = self._handle_py_ver_compat_for_input_str(param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE))
+        table_name = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
         endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
         request_params = {
             'sysparm_query': param.get(SERVICENOW_JSON_FILTER, "")
@@ -1537,7 +1502,7 @@ class ServicenowConnector(BaseConnector):
     def _get_variables(self, param):
 
         action_result = self.add_action_result(ActionResult(dict(param)))
-        sys_id = self._handle_py_ver_compat_for_input_str(param[SERVICENOW_JSON_SYS_ID])
+        sys_id = param[SERVICENOW_JSON_SYS_ID]
 
         # Progress
         self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
@@ -1571,13 +1536,6 @@ class ServicenowConnector(BaseConnector):
 
             item_option_value = item['sc_item_option']['value']
 
-            try:
-                item_option_value = self._handle_py_ver_compat_for_input_str(item_option_value)
-            except:
-                self.debug_print("Error while handling Unicode characters \
-                    (if any or if applicable) in the 'sc_item_option' value")
-                item_option_value = item['sc_item_option']['value']
-
             endpoint = SERVICENOW_TICKET_ENDPOINT.format(SERVICENOW_ITEM_OPT_TABLE, item_option_value)
             ret_val, auth, headers = self._get_authorization_credentials(action_result)
             if phantom.is_fail(ret_val):
@@ -1610,12 +1568,6 @@ class ServicenowConnector(BaseConnector):
                 variables[response_question] = response_value
                 continue
             question_id = response['result']['item_option_new']['value']
-
-            try:
-                question_id = self._handle_py_ver_compat_for_input_str(question_id)
-            except:
-                self.debug_print("Error while handling Unicode characters (if any or if applicable) in the 'question_id' value")
-                question_id = response['result']['item_option_new']['value']
 
             endpoint = SERVICENOW_TICKET_ENDPOINT.format(SERVICENOW_ITEM_OPT_NEW_TABLE, question_id)
             ret_val, auth, headers = self._get_authorization_credentials(action_result)
@@ -1675,7 +1627,7 @@ class ServicenowConnector(BaseConnector):
 
         tickets = self._paginator(endpoint, action_result, limit=limit)
 
-        if not tickets:
+        if tickets is None:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
         for ticket in tickets:
@@ -1836,7 +1788,6 @@ class ServicenowConnector(BaseConnector):
             container_id, existing_label, existing_sd, existing_desc = self._check_for_existing_container(sdi, label)
             if not sd:
                 sd = 'Phantom added container name (short description of the ticket/record found empty)'
-            sd = self._handle_py_ver_compat_for_input_str(sd)
 
             if not container_id or existing_label != label:
 
@@ -1854,16 +1805,6 @@ class ServicenowConnector(BaseConnector):
                 if phantom.is_fail(ret_val):
                     failed += 1
                     continue
-
-            # In case of Python version 2, if container already exists for the same label but
-            # the data fetched is updated, it would update the container accordingly
-            elif (existing_sd != sd or existing_desc != desc) and self._python_version == 2:
-                data = dict(
-                    data=issue,
-                    description=desc,
-                    name='{}'.format(sd)
-                )
-                status, message = phrules.update({"id": container_id}, data)
 
             artifacts = []
             artifact_dict = dict(
@@ -1946,15 +1887,16 @@ class ServicenowConnector(BaseConnector):
             r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(e)), None)
+            self._dump_error_log(e, "Error occurred while finding default severity")
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVERITY_MESSAGE.format(e)), None)
 
         if r.status_code == 401:
             return RetVal(action_result.set_status(
-                phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get('message', 'Authentication Error'))),
+                phantom.APP_ERROR, SERVICENOW_SEVERITY_MESSAGE.format(resp_json.get('message', 'Authentication Error'))),
                 None)
 
         if r.status_code != 200:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get(
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVERITY_MESSAGE.format(resp_json.get(
                 'message', 'Unknown Error'))), None)
 
         severity = None
@@ -1972,15 +1914,16 @@ class ServicenowConnector(BaseConnector):
             r = requests.get('{0}rest/severity'.format(self._get_phantom_base_url()), verify=False)  # nosemgrep
             resp_json = r.json()
         except Exception as e:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(e)),
+            self._dump_error_log(e, "Error occurred while finding custom severity")
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVERITY_MESSAGE.format(e)),
             None)
 
         if r.status_code == 401:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get(
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVERITY_MESSAGE.format(resp_json.get(
                 'message', 'Authentication Error'))), None)
 
         if r.status_code != 200:
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVIRITY_MESSAGE.format(resp_json.get(
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_SEVERITY_MESSAGE.format(resp_json.get(
                 'message', 'Unknown Error'))), None)
 
         severities = [s['name'] for s in resp_json['data']]
