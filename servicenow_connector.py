@@ -222,9 +222,9 @@ class ServicenowConnector(BaseConnector):
         """
 
         error_msg = SERVICENOW_ERROR_MESSAGE
-        error_code = SERVICENOW_ERROR_CODE_MESSAGE
+        error_code = None
 
-        self._dump_error_log(e, "Traceback: ")
+        self._dump_error_log(e, "Error occurred.")
 
         try:
             if hasattr(e, "args"):
@@ -234,21 +234,13 @@ class ServicenowConnector(BaseConnector):
                 elif len(e.args) == 1:
                     error_code = SERVICENOW_ERROR_CODE_MESSAGE
                     error_msg = e.args[0]
-            else:
-                error_code = SERVICENOW_ERROR_CODE_MESSAGE
-                error_msg = SERVICENOW_ERROR_MESSAGE
-        except Exception:
-            error_code = SERVICENOW_ERROR_CODE_MESSAGE
-            error_msg = SERVICENOW_ERROR_MESSAGE
-
-        try:
-            if error_code in SERVICENOW_ERROR_CODE_MESSAGE:
-                error_text = "Error Message: {0}".format(error_msg)
-            else:
-                error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
         except Exception as e:
-            self._dump_error_log(e, "Error occurred while parsing error message")
-            error_text = PARSE_ERROR_MESSAGE
+            self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
+
+        if not error_code:
+            error_text = "Error Message: {}".format(error_msg)
+        else:
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_msg)
 
         return error_text
 
