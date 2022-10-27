@@ -14,7 +14,7 @@
 # and limitations under the License.
 SERVICENOW_JSON_DEVICE_URL = "url"
 SERVICENOW_JSON_USER_ID = "user_id"
-SERVICENOW_JSON_USER_PASSWORD = "user_password"
+SERVICENOW_JSON_USER_PASSWORD = "user_password"  # pragma: allowlist secret
 SERVICENOW_JSON_USERNAME = "username"
 SERVICENOW_JSON_PASSWORD = "password"  # pragma: allowlist secret
 SERVICENOW_JSON_CLIENT_ID = "client_id"
@@ -46,13 +46,13 @@ SERVICENOW_JSON_EXTRACT_URLS = "extract_urls"
 SERVICENOW_ERR_CONNECTIVITY_TEST = "Test Connectivity Failed"
 SERVICENOW_SUCC_CONNECTIVITY_TEST = "Test Connectivity Passed"
 SERVICENOW_ERR_SERVER_CONNECTION = "Connection failed. {error_msg}"
-SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {key} parameter"
+SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {param} parameter"
 SERVICENOW_ERR_FETCH_VALUE = ('Error occurred while fetching variable value'
-                              'for the item_option_value: {item_opt_value} of the System ID: {sys_id}')
+                              ' for the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FETCH_QUESTION_ID = ('Error occurred while fetching question ID for'
-                                    'the item_option_value: {item_opt_value} of the System ID: {sys_id}')
+                                    ' the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FETCH_QUESTION = ('Error occurred while fetching question for'
-                                 'the question ID: {question_id} and the item_option_value: {item_opt_value} of the System ID: {sys_id}')
+                                 ' the question ID: {question_id} and the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}.\
 Please check the asset configuration and rerun the test connectivity."
 SERVICENOW_MESSAGE_GET_INCIDENT_TEST = "Querying a single Incident to check credentials"
@@ -62,16 +62,18 @@ SERVICENOW_ERR_API_UNSUPPORTED_METHOD = "Unsupported method"
 SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = ('Provide username and password to generate'
                                                   'OAuth token for running Test Connectivity for the first time')
 SERVICENOW_ERR_ONE_PARAM_REQ = ("Please specify at least one of the parameters"
-                                "short_description, description, or fields to create the ticket with")
+                                " short_description, description, or fields to create the ticket with")
 SERVICENOW_ERR_FAILURES = "Some tickets had issues during ingestion, see logs for details"
 SERVICENOW_ERROR_CODE_MESSAGE = "Error code unavailable"
 SERVICENOW_ERROR_MESSAGE = "Unknown error occurred. Please check the asset configuration and|or action parameters"
-TYPE_ERROR_MESSAGE = ("Error occurred while connecting to the ServiceNow server."
-                      "Please check the asset configuration and|or the action parameters")
 PARSE_ERROR_MESSAGE = "Unable to parse the error message. Please check the asset configuration and|or action parameters"
 SERVICENOW_STATE_FILE_CORRUPT_ERROR = "Error occurred while loading the state file due to its unexpected format. Resetting the state file with the default format. \
 Please try again."
-
+SERVICENOW_AUTH_ERROR_MESSAGE = "Unable to get authorization credentials"
+SERVICENOW_TICKET_ID_MESSAGE = "Please provide a valid Ticket Number in the 'id' parameter or check the 'is_sys_id' \
+                                parameter and provide a valid 'sys_id' in the 'id' parameter"
+SERVICENOW_INVALID_PARAMETER_MESSAGE = "Please provide valid input parameters"
+SERVICENOW_SEVERITY_MESSAGE = "Could not get severities from platform: {}"
 
 SERVICENOW_USING_BASE_URL = "Using url: {base_url}"
 SERVICENOW_BASE_QUERY_URI = "/table/"
@@ -102,3 +104,14 @@ SERVICENOW_ENCRYPT_TOKEN = "Encrypting the {} token"
 SERVICENOW_DECRYPT_TOKEN = "Decrypting the {} token"
 SERVICENOW_ENCRYPTION_ERR = "Error occurred while encrypting the state file"
 SERVICENOW_DECRYPTION_ERR = "Error occurred while decrypting the state file"
+
+SERVICENOW_TEST_CONNECTIVITY_ENDPOINT = '/table/incident'
+SERVICENOW_TABLE_ENDPOINT = '/table/{0}'
+SERVICENOW_TICKET_ENDPOINT = '/table/{0}/{1}'
+SERVICENOW_SC_CATALOG_ENDPOINT = '/table/sc_catalog'
+SERVICENOW_SC_CATEGORY_ENDPOINT = '/table/sc_category'
+SERVICENOW_CATALOG_ITEMS_ENDPOINT = '/servicecatalog/items/{}'
+SERVICENOW_SYS_JOURNAL_FIELD_ENDPOINT = '/table/sys_journal_field'
+SERVICENOW_SC_CAT_ITEMS_ENDPOINT = '/table/sc_cat_item'
+SERVICENOW_CATALOG_OREDERNOW_ENDPOINT = '/servicecatalog/items/{}/order_now'
+SERVICENOW_API_ENDPOINT = '/api/now'

@@ -55,3 +55,6 @@ def display_view(provides, all_app_runs, context):
 
     if provides == 'describe service catalog':
         return 'servicenow_describe_service_catalog.html'
+
+    if provides == 'create ticket':
+        return 'servicenow_create_ticket.html'

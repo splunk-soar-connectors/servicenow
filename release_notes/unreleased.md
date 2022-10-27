@@ -1,1 +1,2 @@
 **Unreleased**
+* Multi-attachment compatibility added to 'create ticket' and 'update ticket' actions [PAPP-27549]
