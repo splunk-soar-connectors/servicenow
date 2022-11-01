@@ -2,11 +2,11 @@
 # ServiceNow
 
 Publisher: Splunk  
-Connector Version: 2\.3\.1  
+Connector Version: 2\.4\.0  
 Product Vendor: ServiceNow  
 Product Name: ServiceNow  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.2\.0  
+Minimum Product Version: 5\.3\.4  
 
 This app integrates with ServiceNow to perform investigative and generic actions
 
@@ -1409,14 +1409,14 @@ Create a new ticket/record
 Type: **generic**  
 Read only: **False**
 
-Create a new ticket with the given <b>short\_description</b> and <b>description</b> \(the values provided in the <b>short\_description</b> and <b>description</b> action parameters will override the values provided for these keys in the <b>fields</b> action parameter\)\. Additional values can be specified in the <b>fields</b> parameter\. By default, the action appends the 'Added by Phantom for container id\: <container\_id\_of\_action\_run>' footnote after the value of description provided either in the <b>description</b> or <b>fields</b> action parameters\. If the value for <b>description</b> is not provided in any of the above\-mentioned two action parameters, then, the default footnote will be added in the description of the created ticket\. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added\. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double\-quotes string format, except in the case of boolean values, which should be either <i>True</i> or <i>False</i> \(without any single quote\) for example\: \{"short\_description"\: "Zeus, multiple actions need to be taken", "made\_sla"\: False\}\.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary \(e\.g\: <i>my\_fields\_value\_dict</i>\) and then pass the return value of <i>json\.dumps\(my\_fields\_value\_dict\)</i> as the value of <b>fields</b>\. Please see the servicenow\_app playbook for an example\.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in\. Do note that the fields for user\-generated tables, usually are named with <i>u\_</i> prefix\. In such cases, it is better to use the <b>fields</b> parameter to set values\.<br><br>To set a parent\-child relationship between two tickets, specify the parent ticket's ID in a <b>parent\_incident</b> field in the <b>fields</b> parameter while creating the child ticket\.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail\. These values can be configured by an admin on the ServiceNow device\. As of this writing, please go to <a href="https\://docs\.servicenow\.com/bundle/helsinki\-servicenow\-platform/page/integrate/inbound\-rest/concept/c\_AttachmentAPIHandlingLgAttchmnts\.html" target="\_blank">this link</a> on the ServiceNow Website for more information\.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>\.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner \(e\.g\: updating the <i>caller\_id</i> dictionary with your dictionary\)\. For the best results, please check the results of the action in the JSON view to verify the changes\.<br><br>For <b>short\_description</b> action parameter, users can provide new line\(\\n\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) as escape sequences and for <b>description</b> action parameter, new line\(\\n, \\r\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) can be provided as escape sequences\.
+Create a new ticket with the given <b>short\_description</b> and <b>description</b> \(the values provided in the <b>short\_description</b> and <b>description</b> action parameters will override the values provided for these keys in the <b>fields</b> action parameter\)\. Additional values can be specified in the <b>fields</b> parameter\. By default, the action appends the 'Added by Phantom for container id\: <container\_id\_of\_action\_run>' footnote after the value of description provided either in the <b>description</b> or <b>fields</b> action parameters\. If the value for <b>description</b> is not provided in any of the above\-mentioned two action parameters, then, the default footnote will be added in the description of the created ticket\. Study the results of the <b>get ticket</b> action to get more information about all the properties that can be added\. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double\-quotes string format, except in the case of boolean values, which should be either <i>True</i> or <i>False</i> \(without any single quotes\); for example\: \{"short\_description"\: "Zeus, multiple actions need to be taken", "made\_sla"\: False\}\.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary \(e\.g\: <i>my\_fields\_value\_dict</i>\) and then pass the return value of <i>json\.dumps\(my\_fields\_value\_dict\)</i> as the value of <b>fields</b>\. Please see the servicenow\_app playbook for an example\.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in\. Do note that the fields for user\-generated tables, usually are named with <i>u\_</i> prefix\. In such cases, it is better to use the <b>fields</b> parameter to set values\.<br><br>To set a parent\-child relationship between two tickets, specify the parent ticket's ID in a <b>parent\_incident</b> field in the <b>fields</b> parameter while creating the child ticket\.<br><br>ServiceNow restricts the upload time and the file size of attached files, which may cause file uploads to fail\. These values can be configured by an admin on the ServiceNow device\. As of this writing, please go to <a href="https\://support\.servicenow\.com/kb?id=kb\_article\_view&sysparm\_article=KB0718101" target="\_blank">this link</a> on the ServiceNow Website for more information\.<br><br>For updating the timeout for attaching the file please go to <b>System Definition</b>\-><b>Transaction Quota Rules</b>\. Update the <b>maximum duration</b> field as per your requirement in <b>REST Attachment API request timeout</b> or/and <b>REST and JSON Catch ALL</b> rule\. The <b>REST Attachment API request timeout</b> rule applies to all incoming attachment requests\. Any request exceeding the maximum duration set here will be cancelled and the <b>REST and JSON Catch All</b> rule will be used for all REST transactions\.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>\.<br><br>ServiceNow does not return an error if an invalid field is updated or if a valid field is updated in an invalid manner \(e\.g\: updating the <i>caller\_id</i> dictionary with your dictionary\)\. For the best results, please check the results of the action in the JSON view to verify the changes\.<br><br>For the <b>short\_description</b> action parameter, users can provide new line\(\\n\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) as escape sequences and for the <b>description</b> action parameter, new line\(\\n, \\r\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) can be provided as escape sequences\.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **short\_description** |  optional  | Ticket short description | string | 
 **table** |  optional  | Table to add to | string |  `servicenow table` 
-**vault\_id** |  optional  | To attach a file to a ticket, the file must first be in the vault\. When the Vault ID of a file is provided, it is uploaded and attached to the ticket | string |  `vault id` 
+**vault\_id** |  optional  | To attach a file to a ticket, the file must first be in the vault\. When the Vault ID of a file is provided, it is uploaded and attached to the ticket \(Comma\-delimited\) | string |  `vault id` 
 **description** |  optional  | Ticket description | string | 
 **fields** |  optional  | JSON containing field values | string | 
 
@@ -1603,10 +1603,9 @@ action\_result\.data\.\*\.work\_end | string |
 action\_result\.data\.\*\.work\_notes | string | 
 action\_result\.data\.\*\.work\_notes\_list | string | 
 action\_result\.data\.\*\.work\_start | string | 
-action\_result\.summary\.attachment\_added | boolean | 
-action\_result\.summary\.attachment\_error | string | 
-action\_result\.summary\.attachment\_id | string | 
 action\_result\.summary\.created\_ticket\_id | string |  `servicenow ticket sysid`  `md5` 
+action\_result\.summary\.successfully\_added\_attachments\_count | numeric | 
+action\_result\.summary\.vault\_failure\_details | string | 
 action\_result\.message | string | 
 summary\.total\_objects | numeric | 
 summary\.total\_objects\_successful | numeric |   
@@ -1863,13 +1862,13 @@ Update ticket/record information
 Type: **generic**  
 Read only: **False**
 
-Update an already existing ticket with the values that are specified in the <b>fields</b> parameter\. The user has to know the key names to set in this parameter\. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated\. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double\-quotes string format, except in case of boolean values, which should be either 'True' or 'False' \(without the single quotes\) for example\: \{"short\_description"\: "Zeus, multiple actions need to be taken", "made\_sla"\: False\}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>\. If this call is successful, it continues to attach the file specified in <b>vault\_id</b>\. These are two separate calls made to ServiceNow\.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads \(of attachments\) might fail\. These values can be configured by an admin on the ServiceNow device\. As of this writing, please go to <a href="https\://docs\.servicenow\.com/bundle/helsinki\-servicenow\-platform/page/integrate/inbound\-rest/concept/c\_AttachmentAPIHandlingLgAttchmnts\.html" target="\_blank">this link</a> on the ServiceNow Website for more information\.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>\.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner \(e\.g\: updating the <i>caller\_id</i> dictionary with your dictionary\)\. For the best results, please check the results of the action in the JSON view to verify the changes\. Users can provide a valid ticket number in the 'id' parameter or check the 'is\_sys\_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter\. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run\.<br><br>If <b>short\_description</b> action parameter is added as key in <b>fields</b> parameter then users can provide new line\(\\n\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) as escape sequences in the value\. Similarly if <b>description</b> action parameter is added as key in <b>fields</b> parameter then, new line\(\\n, \\r\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) can be provided as escape sequences\.
+Update an already existing ticket with the values that are specified in the <b>fields</b> parameter\. The user has to know the key names to set in this parameter\. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated\. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double\-quotes string format, except in case of boolean values, which should be either <i>True</i> or <i>False</i> \(without any single quotes\); for example\: \{"short\_description"\: "Zeus, multiple actions need to be taken", "made\_sla"\: False\}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>\. If this call is successful, it continues to attach the file specified in <b>vault\_id</b>\. These are two separate calls made to ServiceNow\.<br><br>ServiceNow restricts the upload time and the file size of attached files, which may cause file uploads \(of attachments\) to fail\. These values can be configured by an admin on the ServiceNow device\. As of this writing, please go to <a href="https\://support\.servicenow\.com/kb?id=kb\_article\_view&sysparm\_article=KB0718101" target="\_blank">this link</a> on the ServiceNow Website for more information\.<br><br>For updating the timeout for attaching the file please go to <b>System Definition</b>\-><b>Transaction Quota Rules</b>\. Update the <b>maximum duration</b> field as per your requirement in <b>REST Attachment API request timeout</b> or/and <b>REST and JSON Catch ALL</b> rule\. The <b>REST Attachment API request timeout</b> rule applies to all incoming attachment requests\. Any request exceeding the maximum duration set here will be cancelled and the <b>REST and JSON Catch All</b> rule will be used for all REST transactions\.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>\.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner \(e\.g\: updating the <i>caller\_id</i> dictionary with your dictionary\)\. For the best results, please check the results of the action in the JSON view to verify the changes\. Users can provide a valid ticket number in the 'id' parameter or check the 'is\_sys\_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter\. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run\.<br><br>If the <b>short\_description</b> action parameter is added as a key in the <b>fields</b> parameter then users can provide new line\(\\n\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) as escape sequences in the value\. Similarly if the <b>description</b> action parameter is added as a key in <b>fields</b> parameter, then new line\(\\n, \\r\), tab\(\\t\), single quote\(\\'\), double quote\(\\"\), alarm or beep\(\\a\) and backspace\(\\b\) can be provided as escape sequences\.
 
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **table** |  optional  | Ticket table | string |  `servicenow table` 
-**vault\_id** |  optional  | To attach a file to a ticket, the file must first be in the vault\. When the vault ID of a file is provided, it is uploaded and attached to the ticket | string |  `vault id` 
+**vault\_id** |  optional  | To attach a file to a ticket, the file must first be in the vault\. When the vault ID of a file is provided, it is uploaded and attached to the ticket \(Comma\-delimited\) | string |  `vault id` 
 **id** |  required  | SYS ID or ticket number of a record | string |  `servicenow ticket sysid`  `servicenow ticket number` 
 **fields** |  optional  | JSON containing field values | string | 
 **is\_sys\_id** |  optional  | Whether the value provided in the ID parameter is SYS ID or ticket number | boolean | 
@@ -2079,11 +2078,10 @@ action\_result\.data\.\*\.work\_end | string |
 action\_result\.data\.\*\.work\_notes | string | 
 action\_result\.data\.\*\.work\_notes\_list | string | 
 action\_result\.data\.\*\.work\_start | string | 
-action\_result\.summary\.attachment\_added | boolean | 
-action\_result\.summary\.attachment\_id | string | 
 action\_result\.summary\.fields\_updated | boolean | 
+action\_result\.summary\.successfully\_added\_attachments\_count | numeric | 
 action\_result\.summary\.total\_tickets | numeric | 
-action\_result\.summary\.vault\_failure\_reason | string | 
+action\_result\.summary\.vault\_failure\_details | string | 
 action\_result\.message | string | 
 summary\.total\_objects | numeric | 
 summary\.total\_objects\_successful | numeric |   
@@ -2288,72 +2286,72 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 #### Action Output
 DATA PATH | TYPE | CONTAINS
 --------- | ---- | --------
-action\_result\.data\.\*\.vip | string | 
-action\_result\.data\.\*\.zip | string | 
-action\_result\.data\.\*\.city | string | 
-action\_result\.data\.\*\.name | string | 
-action\_result\.data\.\*\.email | string |  `email` 
-action\_result\.data\.\*\.phone | string | 
-action\_result\.data\.\*\.photo | string | 
-action\_result\.data\.\*\.roles | string | 
-action\_result\.data\.\*\.state | string | 
-action\_result\.data\.\*\.title | string | 
+action\_result\.status | string | 
+action\_result\.parameter\.max\_results | numeric | 
+action\_result\.parameter\.query | string | 
+action\_result\.parameter\.user\_id | string | 
+action\_result\.parameter\.username | string | 
 action\_result\.data\.\*\.active | string | 
 action\_result\.data\.\*\.avatar | string |  `md5` 
-action\_result\.data\.\*\.gender | string | 
-action\_result\.data\.\*\.source | string | 
-action\_result\.data\.\*\.street | string | 
-action\_result\.data\.\*\.sys\_id | string |  `md5` 
-action\_result\.data\.\*\.company | string | 
-action\_result\.data\.\*\.country | string | 
-action\_result\.data\.\*\.manager | string | 
 action\_result\.data\.\*\.building | string | 
-action\_result\.data\.\*\.location | string | 
-action\_result\.data\.\*\.schedule | string | 
-action\_result\.data\.\*\.sys\_tags | string | 
-action\_result\.data\.\*\.last\_name | string | 
-action\_result\.data\.\*\.time\_zone | string | 
-action\_result\.data\.\*\.user\_name | string | 
+action\_result\.data\.\*\.calendar\_integration | string | 
+action\_result\.data\.\*\.city | string | 
+action\_result\.data\.\*\.company | string | 
+action\_result\.data\.\*\.cost\_center | string | 
+action\_result\.data\.\*\.country | string | 
+action\_result\.data\.\*\.date\_format | string | 
+action\_result\.data\.\*\.default\_perspective | string | 
 action\_result\.data\.\*\.department\.link | string |  `url` 
 action\_result\.data\.\*\.department\.value | string |  `md5` 
+action\_result\.data\.\*\.email | string |  `email` 
+action\_result\.data\.\*\.employee\_number | string | 
+action\_result\.data\.\*\.enable\_multifactor\_authn | string | 
+action\_result\.data\.\*\.failed\_attempts | string | 
 action\_result\.data\.\*\.first\_name | string | 
+action\_result\.data\.\*\.gender | string | 
 action\_result\.data\.\*\.home\_phone | string | 
-action\_result\.data\.\*\.last\_login | string | 
-action\_result\.data\.\*\.locked\_out | string | 
-action\_result\.data\.\*\.sys\_domain\.link | string |  `url` 
-action\_result\.data\.\*\.sys\_domain\.value | string | 
-action\_result\.data\.\*\.cost\_center | string | 
-action\_result\.data\.\*\.date\_format | string | 
-action\_result\.data\.\*\.ldap\_server | string | 
-action\_result\.data\.\*\.middle\_name | string | 
-action\_result\.data\.\*\.time\_format | string | 
+action\_result\.data\.\*\.internal\_integration\_user | string | 
 action\_result\.data\.\*\.introduction | string | 
+action\_result\.data\.\*\.last\_login | string | 
+action\_result\.data\.\*\.last\_login\_time | string | 
+action\_result\.data\.\*\.last\_name | string | 
+action\_result\.data\.\*\.ldap\_server | string | 
+action\_result\.data\.\*\.location | string | 
+action\_result\.data\.\*\.locked\_out | string | 
+action\_result\.data\.\*\.manager | string | 
+action\_result\.data\.\*\.middle\_name | string | 
 action\_result\.data\.\*\.mobile\_phone | string | 
+action\_result\.data\.\*\.name | string | 
 action\_result\.data\.\*\.notification | string | 
-action\_result\.data\.\*\.sys\_mod\_count | string | 
+action\_result\.data\.\*\.password\_needs\_reset | string | 
+action\_result\.data\.\*\.phone | string | 
+action\_result\.data\.\*\.photo | string | 
+action\_result\.data\.\*\.preferred\_language | string | 
+action\_result\.data\.\*\.roles | string | 
+action\_result\.data\.\*\.schedule | string | 
+action\_result\.data\.\*\.source | string | 
+action\_result\.data\.\*\.state | string | 
+action\_result\.data\.\*\.street | string | 
 action\_result\.data\.\*\.sys\_class\_name | string | 
 action\_result\.data\.\*\.sys\_created\_by | string | 
 action\_result\.data\.\*\.sys\_created\_on | string | 
+action\_result\.data\.\*\.sys\_domain\.link | string |  `url` 
+action\_result\.data\.\*\.sys\_domain\.value | string | 
+action\_result\.data\.\*\.sys\_domain\_path | string |  `domain` 
+action\_result\.data\.\*\.sys\_id | string |  `md5` 
+action\_result\.data\.\*\.sys\_mod\_count | string | 
+action\_result\.data\.\*\.sys\_tags | string | 
 action\_result\.data\.\*\.sys\_updated\_by | string | 
 action\_result\.data\.\*\.sys\_updated\_on | string | 
-action\_result\.data\.\*\.employee\_number | string | 
-action\_result\.data\.\*\.failed\_attempts | string | 
-action\_result\.data\.\*\.last\_login\_time | string | 
-action\_result\.data\.\*\.sys\_domain\_path | string |  `domain` 
-action\_result\.data\.\*\.preferred\_language | string | 
-action\_result\.data\.\*\.default\_perspective | string | 
-action\_result\.data\.\*\.calendar\_integration | string | 
-action\_result\.data\.\*\.password\_needs\_reset | string | 
+action\_result\.data\.\*\.time\_format | string | 
+action\_result\.data\.\*\.time\_zone | string | 
+action\_result\.data\.\*\.title | string | 
+action\_result\.data\.\*\.user\_name | string | 
+action\_result\.data\.\*\.vip | string | 
 action\_result\.data\.\*\.web\_service\_access\_only | string | 
-action\_result\.data\.\*\.enable\_multifactor\_authn | string | 
-action\_result\.data\.\*\.internal\_integration\_user | string | 
-action\_result\.status | string | 
-action\_result\.message | string | 
+action\_result\.data\.\*\.zip | string | 
 action\_result\.summary\.total\_tickets | numeric | 
-action\_result\.parameter\.user\_id | string | 
-action\_result\.parameter\.username | string | 
-action\_result\.parameter\.query | string | 
-action\_result\.parameter\.max\_results | numeric | 
+action\_result\.message | string | 
 summary\.total\_objects | numeric | 
 summary\.total\_objects\_successful | numeric |   
 

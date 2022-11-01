@@ -9,12 +9,12 @@
     "license": "Copyright (c) 2016-2022 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.3.1",
+    "app_version": "2.4.0",
     "fips_compliant": true,
-    "min_phantom_version": "5.2.0",
+    "min_phantom_version": "5.3.4",
     "python_version": "3",
     "latest_tested_versions": [
-        "Cloud, Build tag: glide-quebec-12-09-2020__patch9-hotfix3-12-14-2021"
+        "Cloud, Build tag: glide-tokyo-07-08-2022__patch1-09-01-2022"
     ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
@@ -6877,7 +6877,7 @@
             "description": "Create a new ticket/record",
             "type": "generic",
             "identifier": "create_ticket",
-            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b> (the values provided in the <b>short_description</b> and <b>description</b> action parameters will override the values provided for these keys in the <b>fields</b> action parameter). Additional values can be specified in the <b>fields</b> parameter. By default, the action appends the 'Added by Phantom for container id: <container_id_of_action_run>' footnote after the value of description provided either in the <b>description</b> or <b>fields</b> action parameters. If the value for <b>description</b> is not provided in any of the above-mentioned two action parameters, then, the default footnote will be added in the description of the created ticket. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in the case of boolean values, which should be either <i>True</i> or <i>False</i> (without any single quote) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": False}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes.<br><br>For <b>short_description</b> action parameter, users can provide new line(\\n), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) as escape sequences and for <b>description</b> action parameter, new line(\\n, \\r), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) can be provided as escape sequences.",
+            "verbose": "Create a new ticket with the given <b>short_description</b> and <b>description</b> (the values provided in the <b>short_description</b> and <b>description</b> action parameters will override the values provided for these keys in the <b>fields</b> action parameter). Additional values can be specified in the <b>fields</b> parameter. By default, the action appends the 'Added by Phantom for container id: <container_id_of_action_run>' footnote after the value of description provided either in the <b>description</b> or <b>fields</b> action parameters. If the value for <b>description</b> is not provided in any of the above-mentioned two action parameters, then, the default footnote will be added in the description of the created ticket. Study the results of the <b>get ticket</b> action to get more information about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in the case of boolean values, which should be either <i>True</i> or <i>False</i> (without any single quotes); for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": False}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with <i>u_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the upload time and the file size of attached files, which may cause file uploads to fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0718101\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>For updating the timeout for attaching the file please go to <b>System Definition</b>-><b>Transaction Quota Rules</b>. Update the <b>maximum duration</b> field as per your requirement in <b>REST Attachment API request timeout</b> or/and <b>REST and JSON Catch ALL</b> rule. The <b>REST Attachment API request timeout</b> rule applies to all incoming attachment requests. Any request exceeding the maximum duration set here will be cancelled and the <b>REST and JSON Catch All</b> rule will be used for all REST transactions.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes.<br><br>For the <b>short_description</b> action parameter, users can provide new line(\\n), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) as escape sequences and for the <b>description</b> action parameter, new line(\\n, \\r), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) can be provided as escape sequences.",
             "read_only": false,
             "parameters": {
                 "short_description": {
@@ -6901,7 +6901,7 @@
                     "contains": [
                         "vault id"
                     ],
-                    "description": "To attach a file to a ticket, the file must first be in the vault. When the Vault ID of a file is provided, it is uploaded and attached to the ticket",
+                    "description": "To attach a file to a ticket, the file must first be in the vault. When the Vault ID of a file is provided, it is uploaded and attached to the ticket (Comma-delimited)",
                     "data_type": "string"
                 },
                 "description": {
@@ -7199,10 +7199,8 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 7,
                     "data_path": "action_result.data.*.closed_at",
-                    "data_type": "string",
-                    "column_name": "Closed On"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.closed_by",
@@ -7279,13 +7277,11 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 1,
                     "data_path": "action_result.data.*.description",
                     "example_values": [
                         "Investigative actions to check for the presence of phapp_servicenow\n\nAdded by Splunk for container id: 495"
                     ],
-                    "data_type": "string",
-                    "column_name": "Description"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.display_name",
@@ -7474,7 +7470,6 @@
                     "data_type": "string"
                 },
                 {
-                    "column_name": "Ticket Number",
                     "data_path": "action_result.data.*.number",
                     "example_values": [
                         "INC0000001"
@@ -7482,8 +7477,7 @@
                     "contains": [
                         "servicenow ticket number"
                     ],
-                    "data_type": "string",
-                    "column_order": 0
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.old_status",
@@ -7494,13 +7488,11 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 6,
                     "data_path": "action_result.data.*.opened_at",
                     "example_values": [
                         "2018-11-22 09:57:05"
                     ],
-                    "data_type": "string",
-                    "column_name": "Opened On"
+                    "data_type": "string"
                 },
                 {
                     "contains": [
@@ -7554,13 +7546,11 @@
                     ]
                 },
                 {
-                    "column_order": 5,
                     "data_path": "action_result.data.*.priority",
                     "example_values": [
                         "5"
                     ],
-                    "data_type": "string",
-                    "column_name": "Priority"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.problem_id",
@@ -7665,22 +7655,18 @@
                     "data_type": "string"
                 },
                 {
-                    "column_order": 4,
                     "data_path": "action_result.data.*.severity",
                     "example_values": [
                         "3"
                     ],
-                    "data_type": "string",
-                    "column_name": "Severity"
+                    "data_type": "string"
                 },
                 {
-                    "column_order": 2,
                     "data_path": "action_result.data.*.short_description",
                     "example_values": [
                         "phapp_servicenow, Multiple action need to be taken"
                     ],
-                    "data_type": "string",
-                    "column_name": "Short Description"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.skip_sync",
@@ -7777,9 +7763,7 @@
                     ],
                     "example_values": [
                         "e19eff67db716300134cd100cf961915"
-                    ],
-                    "column_order": 3,
-                    "column_name": "ID"
+                    ]
                 },
                 {
                     "data_path": "action_result.data.*.sys_mod_count",
@@ -7868,21 +7852,6 @@
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.summary.attachment_added",
-                    "data_type": "boolean"
-                },
-                {
-                    "data_path": "action_result.summary.attachment_error",
-                    "example_values": [
-                        "File not found in Vault"
-                    ],
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.summary.attachment_id",
-                    "data_type": "string"
-                },
-                {
                     "contains": [
                         "servicenow ticket sysid",
                         "md5"
@@ -7892,6 +7861,20 @@
                         "e19eff67db716300134cd100cf961915"
                     ],
                     "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.successfully_added_attachments_count",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.vault_failure_details",
+                    "data_type": "string",
+                    "example_values": [
+                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
+                    ]
                 },
                 {
                     "data_path": "action_result.message",
@@ -7918,8 +7901,9 @@
             "render": {
                 "width": 12,
                 "height": 5,
-                "type": "table",
-                "title": "Create Ticket"
+                "type": "custom",
+                "title": "Create Ticket",
+                "view": "servicenow_view.display_view"
             },
             "versions": "EQ(*)"
         },
@@ -9286,7 +9270,7 @@
             "description": "Update ticket/record information",
             "type": "generic",
             "identifier": "update_ticket",
-            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either 'True' or 'False' (without the single quotes) for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": False}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the time taken and the file size of attached files, because of which file uploads (of attachments) might fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://docs.servicenow.com/bundle/helsinki-servicenow-platform/page/integrate/inbound-rest/concept/c_AttachmentAPIHandlingLgAttchmnts.html\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes. Users can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.<br><br>If <b>short_description</b> action parameter is added as key in <b>fields</b> parameter then users can provide new line(\\n), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) as escape sequences in the value. Similarly if <b>description</b> action parameter is added as key in <b>fields</b> parameter then, new line(\\n, \\r), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) can be provided as escape sequences.",
+            "verbose": "Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either <i>True</i> or <i>False</i> (without any single quotes); for example: {\"short_description\": \"Zeus, multiple actions need to be taken\", \"made_sla\": False}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the upload time and the file size of attached files, which may cause file uploads (of attachments) to fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href=\"https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0718101\" target=\"_blank\">this link</a> on the ServiceNow Website for more information.<br><br>For updating the timeout for attaching the file please go to <b>System Definition</b>-><b>Transaction Quota Rules</b>. Update the <b>maximum duration</b> field as per your requirement in <b>REST Attachment API request timeout</b> or/and <b>REST and JSON Catch ALL</b> rule. The <b>REST Attachment API request timeout</b> rule applies to all incoming attachment requests. Any request exceeding the maximum duration set here will be cancelled and the <b>REST and JSON Catch All</b> rule will be used for all REST transactions.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes. Users can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.<br><br>If the <b>short_description</b> action parameter is added as a key in the <b>fields</b> parameter then users can provide new line(\\n), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) as escape sequences in the value. Similarly if the <b>description</b> action parameter is added as a key in <b>fields</b> parameter, then new line(\\n, \\r), tab(\\t), single quote(\\'), double quote(\\\"), alarm or beep(\\a) and backspace(\\b) can be provided as escape sequences.",
             "read_only": false,
             "parameters": {
                 "table": {
@@ -9305,7 +9289,7 @@
                     "contains": [
                         "vault id"
                     ],
-                    "description": "To attach a file to a ticket, the file must first be in the vault. When the vault ID of a file is provided, it is uploaded and attached to the ticket",
+                    "description": "To attach a file to a ticket, the file must first be in the vault. When the vault ID of a file is provided, it is uploaded and attached to the ticket (Comma-delimited)",
                     "data_type": "string"
                 },
                 "id": {
@@ -9356,9 +9340,7 @@
                     "example_values": [
                         "9c573169c611228700193229fff72400",
                         "INC0000001"
-                    ],
-                    "column_order": 3,
-                    "column_name": "ID"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.is_sys_id",
@@ -10418,7 +10400,9 @@
                     "example_values": [
                         "9c573169c611228700193229fff72400"
                     ],
-                    "data_type": "string"
+                    "data_type": "string",
+                    "column_name": "Sys ID",
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.sys_mod_count",
@@ -10515,14 +10499,6 @@
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.summary.attachment_added",
-                    "data_type": "boolean"
-                },
-                {
-                    "data_path": "action_result.summary.attachment_id",
-                    "data_type": "string"
-                },
-                {
                     "data_path": "action_result.summary.fields_updated",
                     "example_values": [
                         false,
@@ -10531,14 +10507,21 @@
                     "data_type": "boolean"
                 },
                 {
+                    "data_path": "action_result.summary.successfully_added_attachments_count",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
                     "data_path": "action_result.summary.total_tickets",
                     "data_type": "numeric"
                 },
                 {
-                    "data_path": "action_result.summary.vault_failure_reason",
+                    "data_path": "action_result.summary.vault_failure_details",
                     "data_type": "string",
                     "example_values": [
-                        "File not found in Vault"
+                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
                     ]
                 },
                 {
@@ -11620,19 +11603,16 @@
             "read_only": true,
             "parameters": {
                 "query": {
-                    "required": false,
                     "description": "The query to run. e.g. sysparm_query=user_name=admin",
                     "data_type": "string",
                     "order": 0
                 },
                 "user_id": {
-                    "required": false,
                     "description": "Query by user system ID",
                     "data_type": "string",
                     "order": 1
                 },
                 "username": {
-                    "required": false,
                     "description": "Query by username",
                     "data_type": "string",
                     "order": 2
@@ -11646,80 +11626,39 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.data.*.vip",
+                    "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "false"
+                        "success",
+                        "failed"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.zip",
-                    "data_type": "string",
+                    "data_path": "action_result.parameter.max_results",
+                    "data_type": "numeric",
                     "example_values": [
-                        ""
+                        100
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.city",
+                    "data_path": "action_result.parameter.query",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "sysparm_query=user_name=admin"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.name",
+                    "data_path": "action_result.parameter.user_id",
                     "data_type": "string",
-                    "column_order": 1,
-                    "column_name": "Name",
                     "example_values": [
-                        "System Administrator"
+                        "6816f79cc0a8016401c5a33be04be441"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.email",
-                    "data_type": "string",
-                    "column_order": 3,
-                    "column_name": "Email",
-                    "example_values": [
-                        "herman@phantom.us"
-                    ],
-                    "contains": [
-                        "email"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.phone",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.photo",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.roles",
+                    "data_path": "action_result.parameter.username",
                     "data_type": "string",
                     "example_values": [
                         "admin"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.state",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.title",
-                    "data_type": "string",
-                    "example_values": [
-                        "System Administrator"
                     ]
                 },
                 {
@@ -11740,109 +11679,39 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.gender",
+                    "data_path": "action_result.data.*.building",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.calendar_integration",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "1"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.source",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.street",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.sys_id",
-                    "data_type": "string",
-                    "column_order": 0,
-                    "column_name": "ID",
-                    "example_values": [
-                        "6816f79cc0a8016401c5a33be04be441"
-                    ],
-                    "contains": [
-                        "md5"
-                    ]
+                    "data_path": "action_result.data.*.city",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.company",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.cost_center",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.country",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.manager",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_path": "action_result.data.*.date_format",
+                    "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.building",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.location",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.schedule",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.sys_tags",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.last_name",
-                    "data_type": "string",
-                    "example_values": [
-                        "Administrator"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.time_zone",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.user_name",
-                    "data_type": "string",
-                    "column_order": 2,
-                    "column_name": "User Name",
-                    "example_values": [
-                        "admin"
-                    ]
+                    "data_path": "action_result.data.*.default_perspective",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.department.link",
@@ -11865,6 +11734,36 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.email",
+                    "data_type": "string",
+                    "column_order": 3,
+                    "column_name": "Email",
+                    "example_values": [
+                        "herman@phantom.us"
+                    ],
+                    "contains": [
+                        "email"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.employee_number",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.enable_multifactor_authn",
+                    "data_type": "string",
+                    "example_values": [
+                        "false"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.failed_attempts",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
                     "data_path": "action_result.data.*.first_name",
                     "data_type": "string",
                     "example_values": [
@@ -11872,11 +11771,23 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.gender",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.home_phone",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.internal_integration_user",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "false"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.introduction",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.last_login",
@@ -11886,6 +11797,28 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.last_login_time",
+                    "data_type": "string",
+                    "example_values": [
+                        "2022-06-24 22:32:15"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.last_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "Administrator"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.ldap_server",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.location",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.locked_out",
                     "data_type": "string",
                     "example_values": [
@@ -11893,69 +11826,24 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.sys_domain.link",
-                    "data_type": "string",
-                    "example_values": [
-                        "https://dev116432.service-now.com/api/now/table/sys_user_group/global"
-                    ],
-                    "contains": [
-                        "url"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.sys_domain.value",
-                    "data_type": "string",
-                    "example_values": [
-                        "global"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.cost_center",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.date_format",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.ldap_server",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_path": "action_result.data.*.manager",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.middle_name",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.time_format",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.introduction",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.mobile_phone",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.name",
                     "data_type": "string",
+                    "column_order": 1,
+                    "column_name": "Name",
                     "example_values": [
-                        ""
+                        "System Administrator"
                     ]
                 },
                 {
@@ -11966,11 +11854,46 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_path": "action_result.data.*.password_needs_reset",
                     "data_type": "string",
                     "example_values": [
-                        "110"
+                        "false"
                     ]
+                },
+                {
+                    "data_path": "action_result.data.*.phone",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.photo",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.preferred_language",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.roles",
+                    "data_type": "string",
+                    "example_values": [
+                        "admin"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.schedule",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.source",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.state",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.street",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.sys_class_name",
@@ -11996,6 +11919,53 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.data.*.sys_domain.link",
+                    "data_type": "string",
+                    "example_values": [
+                        "https://dev116432.service-now.com/api/now/table/sys_user_group/global"
+                    ],
+                    "contains": [
+                        "url"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "global"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_domain_path",
+                    "data_type": "string",
+                    "contains": [
+                        "domain"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_id",
+                    "data_type": "string",
+                    "column_order": 0,
+                    "column_name": "ID",
+                    "example_values": [
+                        "6816f79cc0a8016401c5a33be04be441"
+                    ],
+                    "contains": [
+                        "md5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_mod_count",
+                    "data_type": "string",
+                    "example_values": [
+                        "110"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sys_tags",
+                    "data_type": "string"
+                },
+                {
                     "data_path": "action_result.data.*.sys_updated_by",
                     "data_type": "string",
                     "example_values": [
@@ -12012,59 +11982,31 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.employee_number",
+                    "data_path": "action_result.data.*.time_format",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.time_zone",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.title",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "System Administrator"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.failed_attempts",
+                    "data_path": "action_result.data.*.user_name",
                     "data_type": "string",
+                    "column_order": 2,
+                    "column_name": "User Name",
                     "example_values": [
-                        "0"
+                        "admin"
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.last_login_time",
-                    "data_type": "string",
-                    "example_values": [
-                        "2022-06-24 22:32:15"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.sys_domain_path",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ],
-                    "contains": [
-                        "domain"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.preferred_language",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.default_perspective",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.calendar_integration",
-                    "data_type": "string",
-                    "example_values": [
-                        "1"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.password_needs_reset",
+                    "data_path": "action_result.data.*.vip",
                     "data_type": "string",
                     "example_values": [
                         "false"
@@ -12078,32 +12020,8 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.data.*.enable_multifactor_authn",
-                    "data_type": "string",
-                    "example_values": [
-                        "false"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.internal_integration_user",
-                    "data_type": "string",
-                    "example_values": [
-                        "false"
-                    ]
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "example_values": [
-                        "success"
-                    ]
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        "Total tickets: 1"
-                    ]
+                    "data_path": "action_result.data.*.zip",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary.total_tickets",
@@ -12113,31 +12031,10 @@
                     ]
                 },
                 {
-                    "data_path": "action_result.parameter.user_id",
+                    "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "6816f79cc0a8016401c5a33be04be441"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.username",
-                    "data_type": "string",
-                    "example_values": [
-                        "admin"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.query",
-                    "data_type": "string",
-                    "example_values": [
-                        "sysparm_query=user_name=admin"
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.max_results",
-                    "data_type": "numeric",
-                    "example_values": [
-                        100
+                        "Total tickets: 1"
                     ]
                 },
                 {
@@ -12215,7 +12112,7 @@
             },
             {
                 "module": "certifi",
-                "input_file": "wheels/py3/certifi-2022.5.18.1-py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.9.24-py3-none-any.whl"
             },
             {
                 "module": "chardet",
@@ -12243,7 +12140,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.9-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.12-py2.py3-none-any.whl"
             }
         ]
     }
