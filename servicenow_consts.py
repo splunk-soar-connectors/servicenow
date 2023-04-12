@@ -42,9 +42,6 @@ SERVICENOW_JSON_QUERY = "query"
 SERVICENOW_JSON_EXTRACT_IPS = "extract_ips"
 SERVICENOW_JSON_EXTRACT_HASHES = "extract_hashes"
 SERVICENOW_JSON_EXTRACT_URLS = "extract_urls"
-SERVICENOW_JSON_SYSPARM_TERM = "sysparm_term"
-SERVICENOW_JSON_SYSPARM_SEARCH_SOURCES = "sysparm_search_sources"
-SERVICENOW_JSON_TOTAL_RECORDS = "total_records"
 
 SERVICENOW_ERR_CONNECTIVITY_TEST = "Test Connectivity Failed"
 SERVICENOW_SUCC_CONNECTIVITY_TEST = "Test Connectivity Passed"
@@ -118,4 +115,3 @@ SERVICENOW_SYS_JOURNAL_FIELD_ENDPOINT = '/table/sys_journal_field'
 SERVICENOW_SC_CAT_ITEMS_ENDPOINT = '/table/sc_cat_item'
 SERVICENOW_CATALOG_OREDERNOW_ENDPOINT = '/servicecatalog/items/{}/order_now'
 SERVICENOW_API_ENDPOINT = '/api/now'
-SERVICENOW_SEARCH_SOURCE_ENDPOINT = "/search/sources/textsearch"
