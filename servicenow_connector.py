@@ -1,6 +1,6 @@
 # File: servicenow_connector.py
 #
-# Copyright (c) 2016-2022 Splunk Inc.
+# Copyright (c) 2016-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_ON_POLL = "on_poll"
     ACTION_ID_RUN_QUERY = "run_query"
     ACTION_ID_QUERY_USERS = "query_users"
+    ACTION_ID_SEARCH_SOURCES = "search_sources"
 
     def csv_to_list(self, data):
         """Comma separated values to list"""
@@ -1652,6 +1653,53 @@ class ServicenowConnector(BaseConnector):
 
         return result
 
+    def _search_sources_details(self, action_result, sysparm_term, sysparm_search_sources):
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if phantom.is_fail(ret_val):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
+
+        params = {"sysparm_term": sysparm_term, "sysparm_search_sources": sysparm_search_sources}
+
+        ret_val, response = self._make_rest_call_helper(
+            action_result, SERVICENOW_SEARCH_SOURCE_ENDPOINT, auth=auth, headers=headers, params=params
+        )
+        if phantom.is_fail(ret_val):
+            self.debug_print(action_result.get_message())
+            return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
+
+        result = response.get('result', {})
+        action_result.add_data(result)
+        action_result.update_summary({SERVICENOW_JSON_TOTAL_RECORDS: result.get('result_count', 0)})
+        return phantom.APP_SUCCESS
+
+    def _search_sources(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        sysparm_term = param[SERVICENOW_JSON_SYSPARM_TERM]
+        sysparm_search_sources = param[SERVICENOW_JSON_SYSPARM_SEARCH_SOURCES]
+
+        search_sources = [x.strip() for x in sysparm_search_sources.split(",")]
+        search_sources = list(set(filter(None, search_sources)))
+
+        if not search_sources:
+            return action_result.set_status(phantom.APP_ERROR, "Please provide valid inputs for sysparm_search_sources"), None
+
+        sysparm_search_sources = ",".join(search_sources)
+        ret_val = self._search_sources_details(action_result, sysparm_term, sysparm_search_sources)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def _on_poll(self, param):
 
         URI_REGEX = '[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
@@ -1966,6 +2014,8 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._update_ticket(param)
         elif action == self.ACTION_ID_GET_VARIABLES:
             ret_val = self._get_variables(param)
+        elif action == self.ACTION_ID_SEARCH_SOURCES:
+            ret_val = self._search_sources(param)
         elif action == self.ACTION_ID_ON_POLL:
             ret_val = self._on_poll(param)
         elif action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY:
