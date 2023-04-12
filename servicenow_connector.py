@@ -1,6 +1,6 @@
 # File: servicenow_connector.py
 #
-# Copyright (c) 2016-2023 Splunk Inc.
+# Copyright (c) 2016-2022 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1661,6 +1661,7 @@ class ServicenowConnector(BaseConnector):
 
         params = {"sysparm_term": sysparm_term, "sysparm_search_sources": sysparm_search_sources}
 
+        # endpoint = SERVICENOW_SEARCH_SOURCE_ENDPOINT.format(sysparm_term, sysparm_search_sources)
         ret_val, response = self._make_rest_call_helper(
             action_result, SERVICENOW_SEARCH_SOURCE_ENDPOINT, auth=auth, headers=headers, params=params
         )
