@@ -158,15 +158,15 @@ class ServicenowConnector(BaseConnector):
                     if self._access_token:
                         self._access_token = self.decrypt_state(self._access_token, "access")
                 except Exception as e:
-                    self._dump_error_log(e, SERVICENOW_DECRYPTION_ERR)
-                    return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
+                    self._dump_error_log(e, SERVICENOW_DECRYPTION_ERROR)
+                    return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERROR)
 
                 try:
                     if self._refresh_token:
                         self._refresh_token = self.decrypt_state(self._refresh_token, "refresh")
                 except Exception as e:
-                    self._dump_error_log(e, SERVICENOW_DECRYPTION_ERR)
-                    return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERR)
+                    self._dump_error_log(e, SERVICENOW_DECRYPTION_ERROR)
+                    return self.set_status(phantom.APP_ERROR, SERVICENOW_DECRYPTION_ERROR)
 
         return phantom.APP_SUCCESS
 
@@ -176,15 +176,15 @@ class ServicenowConnector(BaseConnector):
                 if self._access_token:
                     self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_ACCESS_TOKEN_STRING] = self.encrypt_state(self._access_token, "access")
             except Exception as e:
-                self._dump_error_log(e, SERVICENOW_ENCRYPTION_ERR)
-                return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
+                self._dump_error_log(e, SERVICENOW_ENCRYPTION_ERROR)
+                return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERROR)
 
             try:
                 if self._refresh_token:
                     self._state[SERVICENOW_TOKEN_STRING][SERVICENOW_REFRESH_TOKEN_STRING] = self.encrypt_state(self._refresh_token, "refresh")
             except Exception as e:
-                self._dump_error_log(e, SERVICENOW_ENCRYPTION_ERR)
-                return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERR)
+                self._dump_error_log(e, SERVICENOW_ENCRYPTION_ERROR)
+                return self.set_status(phantom.APP_ERROR, SERVICENOW_ENCRYPTION_ERROR)
 
             self._state[SERVICENOW_STATE_IS_ENCRYPTED] = True
         self.save_state(self._state)
@@ -222,7 +222,7 @@ class ServicenowConnector(BaseConnector):
         :return: error message
         """
 
-        error_msg = SERVICENOW_ERROR_MESSAGE
+        error_message = SERVICENOW_ERROR_MESSAGE
         error_code = None
 
         self._dump_error_log(e, "Error occurred.")
@@ -231,17 +231,17 @@ class ServicenowConnector(BaseConnector):
             if hasattr(e, "args"):
                 if len(e.args) > 1:
                     error_code = e.args[0]
-                    error_msg = e.args[1]
+                    error_message = e.args[1]
                 elif len(e.args) == 1:
                     error_code = SERVICENOW_ERROR_CODE_MESSAGE
-                    error_msg = e.args[0]
+                    error_message = e.args[0]
         except Exception as e:
             self.error_print("Error occurred while fetching exception information. Details: {}".format(str(e)))
 
         if not error_code:
-            error_text = "Error Message: {}".format(error_msg)
+            error_text = "Error Message: {}".format(error_message)
         else:
-            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_msg)
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
 
         return error_text
 
@@ -338,9 +338,9 @@ class ServicenowConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
+            error_message = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                                                   "Unable to parse response as JSON. {}".format(error_msg)), None)
+                                                   "Unable to parse response as JSON. {}".format(error_message)), None)
 
         # What's with the special case 201?
         if 200 <= r.status_code < 205:
@@ -353,7 +353,7 @@ class ServicenowConnector(BaseConnector):
         if r.status_code != requests.codes.ok:  # pylint: disable=E1101
             error_details = self._get_error_details(resp_json)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                                                   SERVICENOW_ERR_FROM_SERVER.format(status=r.status_code, **error_details)), resp_json)
+                                                   SERVICENOW_ERROR_FROM_SERVER.format(status=r.status_code, **error_details)), resp_json)
 
         return RetVal(phantom.APP_SUCCESS, resp_json)
 
@@ -402,9 +402,9 @@ class ServicenowConnector(BaseConnector):
                               headers=headers,
                               params=params)
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
+            error_message = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                                                   SERVICENOW_ERR_SERVER_CONNECTION.format(error_msg=error_msg)), resp_json)
+                                                   SERVICENOW_ERROR_SERVER_CONNECTION.format(error_message=error_message)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -420,9 +420,9 @@ class ServicenowConnector(BaseConnector):
                 data=data  # Mostly this line
             )
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
+            error_message = self._get_error_message_from_exception(e)
             return (action_result.set_status(phantom.APP_ERROR,
-                                             SERVICENOW_ERR_SERVER_CONNECTION.format(error_msg=error_msg)), resp_json)
+                                             SERVICENOW_ERROR_SERVER_CONNECTION.format(error_message=error_message)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -440,7 +440,7 @@ class ServicenowConnector(BaseConnector):
         request_func = getattr(requests, method)
 
         if not request_func:
-            action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_API_UNSUPPORTED_METHOD, method=method)
+            action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_API_UNSUPPORTED_METHOD, method=method)
 
         try:
             r = request_func('{}{}{}'.format(self._base_url, self._api_uri, endpoint),
@@ -449,9 +449,9 @@ class ServicenowConnector(BaseConnector):
                              headers=headers,
                              params=params)
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
+            error_message = self._get_error_message_from_exception(e)
             return (action_result.set_status(phantom.APP_ERROR,
-                                             SERVICENOW_ERR_SERVER_CONNECTION.format(error_msg=error_msg)), resp_json)
+                                             SERVICENOW_ERROR_SERVER_CONNECTION.format(error_message=error_message)), resp_json)
 
         return self._process_response(r, action_result)
 
@@ -507,7 +507,7 @@ class ServicenowConnector(BaseConnector):
                 params['password'] = config[SERVICENOW_JSON_PASSWORD]
                 params['grant_type'] = "password"
             else:
-                return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME), None)
+                return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME), None)
 
         ret_val, response_json = self._make_rest_call_oauth(action_result, data=params)
 
@@ -545,9 +545,9 @@ class ServicenowConnector(BaseConnector):
                     self._state = {'first_run': self._state.get('first_run')}
             else:
                 self._state = {}
-            error_msg = self._get_error_message_from_exception(e)
+            error_message = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR,
-                                                   "Unable to parse access token. {}".format(error_msg)), None)
+                                                   "Unable to parse access token. {}".format(error_message)), None)
 
     def _get_oauth_token(self, action_result, force_new=False):
         if self._state.get('oauth_token') and not force_new:
@@ -652,11 +652,11 @@ class ServicenowConnector(BaseConnector):
             if message:
                 message = message.strip().rstrip('.')
             self.save_progress(message)
-            self.save_progress(SERVICENOW_ERR_CONNECTIVITY_TEST)
+            self.save_progress(SERVICENOW_ERROR_CONNECTIVITY_TEST)
             return action_result.set_status(phantom.APP_ERROR)
 
-        self.save_progress(SERVICENOW_SUCC_CONNECTIVITY_TEST)
-        return action_result.set_status(phantom.APP_SUCCESS, SERVICENOW_SUCC_CONNECTIVITY_TEST)
+        self.save_progress(SERVICENOW_SUCCESS_CONNECTIVITY_TEST)
+        return action_result.set_status(phantom.APP_SUCCESS, SERVICENOW_SUCCESS_CONNECTIVITY_TEST)
 
     def _get_fields(self, param, action_result):
 
@@ -669,12 +669,12 @@ class ServicenowConnector(BaseConnector):
         try:
             fields = ast.literal_eval(fields)
         except Exception as e:
-            error_msg = self._get_error_message_from_exception(e)
+            error_message = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Error building fields dictionary: {0}. \
-                        Please ensure that provided input is in valid JSON format".format(error_msg)), None)
+                        Please ensure that provided input is in valid JSON format".format(error_message)), None)
 
         if not isinstance(fields, dict):
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FIELDS_JSON_PARSE), None)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
 
         return RetVal(phantom.APP_SUCCESS, fields)
 
@@ -710,7 +710,7 @@ class ServicenowConnector(BaseConnector):
         desc = param.get(SERVICENOW_JSON_DESCRIPTION)
 
         if (not fields) and (not short_desc) and (SERVICENOW_JSON_DESCRIPTION not in param):
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_ONE_PARAM_REQ)
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_ONE_PARAM_REQ)
 
         if short_desc:
             data.update({'short_description': short_desc.replace(
@@ -814,9 +814,9 @@ class ServicenowConnector(BaseConnector):
                 try:
                     ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
                 except Exception as e:
-                    error_msg = self._get_error_message_from_exception(e)
+                    error_message = self._get_error_message_from_exception(e)
                     return action_result.set_status(phantom.APP_ERROR, "Invalid Vault ID, please enter \
-                                        valid Vault ID. {}".format(error_msg))
+                                        valid Vault ID. {}".format(error_message))
 
                 if phantom.is_success(ret_val):
                     attachment_count += 1
@@ -1336,12 +1336,12 @@ class ServicenowConnector(BaseConnector):
             try:
                 variables_param = ast.literal_eval(variables_param)
             except Exception as e:
-                error_msg = self._get_error_message_from_exception(e)
+                error_message = self._get_error_message_from_exception(e)
                 return RetVal(action_result.set_status(phantom.APP_ERROR, "Error building fields dictionary: {0}. \
-                            Please ensure that provided input is in valid JSON format".format(error_msg)), None)
+                            Please ensure that provided input is in valid JSON format".format(error_message)), None)
 
             if not isinstance(variables_param, dict):
-                return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_VARIABLES_JSON_PARSE), None)
+                return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_VARIABLES_JSON_PARSE), None)
 
         endpoint = SERVICENOW_CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
@@ -1542,7 +1542,7 @@ class ServicenowConnector(BaseConnector):
             # If no result found or no key for value found, throw error
             if not response.get('result') or response['result'].get('value') is None:
                 return action_result.set_status(phantom.APP_ERROR,
-                                                SERVICENOW_ERR_FETCH_VALUE.format(item_opt_value=item_option_value, sys_id=sys_id))
+                                                SERVICENOW_ERROR_FETCH_VALUE.format(item_opt_value=item_option_value, sys_id=sys_id))
 
             response_value = response['result']['value']
 
@@ -1552,7 +1552,7 @@ class ServicenowConnector(BaseConnector):
             if not response.get('result') or response['result'].get(new_option) is None or \
                     (isinstance(response['result'][new_option], dict) and not response['result'][new_option].get('value')):
                 return action_result.set_status(phantom.APP_ERROR,
-                                                SERVICENOW_ERR_FETCH_QUESTION_ID.format(item_opt_value=item_option_value, sys_id=sys_id))
+                                                SERVICENOW_ERROR_FETCH_QUESTION_ID.format(item_opt_value=item_option_value, sys_id=sys_id))
 
             # The dictionary for item_option_new can be empty if no question is available
             # for a given variable which is a valid scenario
@@ -1576,7 +1576,7 @@ class ServicenowConnector(BaseConnector):
             if not response.get('result') or response['result'].get('question_text') is None:
                 return action_result.set_status(
                     phantom.APP_ERROR,
-                    SERVICENOW_ERR_FETCH_QUESTION.format(question_id=question_id, item_opt_value=item_option_value, sys_id=sys_id)
+                    SERVICENOW_ERROR_FETCH_QUESTION.format(question_id=question_id, item_opt_value=item_option_value, sys_id=sys_id)
                 )
 
             response_question = response['result']['question_text']
@@ -1918,7 +1918,7 @@ class ServicenowConnector(BaseConnector):
                 self._state['first_run'] = False
 
         if failed:
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_FAILURES)
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FAILURES)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
