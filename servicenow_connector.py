@@ -1,13 +1,13 @@
 # File: servicenow_connector.py
 #
-# Copyright (c) 2016-2022 Splunk Inc.
+# Copyright (c) 2016-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
-#
+
 # Unless required by applicable law or agreed to in writing, software distributed under
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied. See the License for the specific language governing permissions
@@ -1031,7 +1031,7 @@ class ServicenowConnector(BaseConnector):
             payload = dict()
 
         payload['sysparm_offset'] = SERVICENOW_DEFAULT_OFFSET
-        payload['sysparm_limit'] = SERVICENOW_DEFAULT_LIMIT
+        payload['sysparm_limit'] = min(limit, SERVICENOW_DEFAULT_LIMIT)
 
         while True:
             ret_val, items = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=payload)
@@ -1049,7 +1049,7 @@ class ServicenowConnector(BaseConnector):
             if len(items.get("result")) < SERVICENOW_DEFAULT_LIMIT:
                 break
 
-            payload['sysparm_offset'] = '{}{}'.format(payload['sysparm_offset'], SERVICENOW_DEFAULT_LIMIT)
+            payload['sysparm_offset'] = payload['sysparm_offset'] + SERVICENOW_DEFAULT_LIMIT
 
         return items_list
 
