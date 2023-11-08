@@ -289,41 +289,8 @@ action_result.data.\*.closed_by | string |  |
 action_result.data.\*.closed_by.display_value | string |  |   System Administrator 
 action_result.data.\*.closed_by.link | string |  `url`  |   https://devtest.service-now.com/api/now/table/sys_user/6816f79cc0a8016401c5a33be04be441 
 action_result.data.\*.cmdb_ci | string |  |  
-action_result.data.\*.comments | string |  |   2019-10-15 03:31:23 - System Administrator (Additional comments)
-test12345 comment
-
-2019-10-15 02:25:50 - System Administrator (Additional comments)
-This is a test123 comment
-
-2019-10-10 06:00:48 - System Administrator (Additional comments)
-This is a test comment
-
-2019-10-10 05:45:58 - System Administrator (Additional comments)
-This is a test comment
-
- 
-action_result.data.\*.comments_and_work_notes | string |  |   2019-10-15 03:56:58 - System Administrator (Work notes)
-check work note
-
-2019-10-15 03:31:23 - System Administrator (Additional comments)
-test12345 comment
-
-2019-10-15 02:27:07 - System Administrator (Work notes)
-This is a test123 work note
-
-2019-10-15 02:25:50 - System Administrator (Additional comments)
-This is a test123 comment
-
-2019-10-10 06:00:48 - System Administrator (Additional comments)
-This is a test comment
-
-2019-10-10 05:54:52 - System Administrator (Work notes)
-This is a test work note
-
-2019-10-10 05:45:58 - System Administrator (Additional comments)
-This is a test comment
-
- 
+action_result.data.\*.comments | string |  |   2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br> 
+action_result.data.\*.comments_and_work_notes | string |  |   2019-10-15 03:56:58 - System Administrator (Work notes)<br>check work note<br><br>2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br> 
 action_result.data.\*.company | string |  |  
 action_result.data.\*.company.display_value | string |  |   ACME Corporation 
 action_result.data.\*.company.link | string |  |   https://dev78070.service-now.com/api/now/table/core_company/e7c1f3d53790200044e0bfc8bcbe5deb 
@@ -445,16 +412,7 @@ action_result.data.\*.vendor.link | string |  `url`  |   https://dev78070.servic
 action_result.data.\*.warranty_expiration | string |  |  
 action_result.data.\*.watch_list | string |  |  
 action_result.data.\*.work_end | string |  |  
-action_result.data.\*.work_notes | string |  |   2019-10-15 03:56:58 - System Administrator (Work notes)
-check work note
-
-2019-10-15 02:27:07 - System Administrator (Work notes)
-This is a test123 work note
-
-2019-10-10 05:54:52 - System Administrator (Work notes)
-This is a test work note
-
- 
+action_result.data.\*.work_notes | string |  |   2019-10-15 03:56:58 - System Administrator (Work notes)<br>check work note<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br> 
 action_result.data.\*.work_notes_list | string |  |  
 action_result.data.\*.work_start | string |  |  
 action_result.summary | string |  |  
@@ -530,38 +488,8 @@ action_result.data.\*.closed_by.link | string |  `url`  |   https://devtest.serv
 action_result.data.\*.cmdb_ci | string |  |  
 action_result.data.\*.cmdb_ci_class | string |  |  
 action_result.data.\*.cmdb_model_category | string |  |   Computer 
-action_result.data.\*.comments | string |  |   2019-10-15 03:31:23 - System Administrator (Additional comments)
-test12345 comment
-
-2019-10-15 02:25:50 - System Administrator (Additional comments)
-This is a test123 comment
-
-2019-10-10 06:00:48 - System Administrator (Additional comments)
-This is a test comment
-
-2019-10-10 05:45:58 - System Administrator (Additional comments)
-This is a test comment
-
- 
-action_result.data.\*.comments_and_work_notes | string |  |   2019-10-15 03:31:23 - System Administrator (Additional comments)
-test12345 comment
-
-2019-10-15 02:27:07 - System Administrator (Work notes)
-This is a test123 work note
-
-2019-10-15 02:25:50 - System Administrator (Additional comments)
-This is a test123 comment
-
-2019-10-10 06:00:48 - System Administrator (Additional comments)
-This is a test comment
-
-2019-10-10 05:54:52 - System Administrator (Work notes)
-This is a test work note
-
-2019-10-10 05:45:58 - System Administrator (Additional comments)
-This is a test comment
-
- 
+action_result.data.\*.comments | string |  |   2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br> 
+action_result.data.\*.comments_and_work_notes | string |  |   2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br> 
 action_result.data.\*.company | string |  |  
 action_result.data.\*.company.display_value | string |  |   ACME China 
 action_result.data.\*.company.link | string |  |   https://dev78070.service-now.com/api/now/table/core_company/81fdf9ebac1d55eb4cb89f136a082555 
@@ -707,13 +635,7 @@ action_result.data.\*.warranty_expiration | string |  |   2021-02-27
 action_result.data.\*.watch_list | string |  |  
 action_result.data.\*.weight | string |  |  
 action_result.data.\*.work_end | string |  |  
-action_result.data.\*.work_notes | string |  |   2019-10-15 02:27:07 - System Administrator (Work notes)
-This is a test123 work note
-
-2019-10-10 05:54:52 - System Administrator (Work notes)
-This is a test work note
-
- 
+action_result.data.\*.work_notes | string |  |   2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br> 
 action_result.data.\*.work_notes_list | string |  |  
 action_result.data.\*.work_start | string |  |  
 action_result.summary | string |  |  
@@ -1044,24 +966,7 @@ action_result.data.\*.category.title | string |  |   Can We Help You?
 action_result.data.\*.client_script.onLoad.\*.appliesTo | string |  |   item 
 action_result.data.\*.client_script.onLoad.\*.condition | string |  |  
 action_result.data.\*.client_script.onLoad.\*.fieldName | string |  |  
-action_result.data.\*.client_script.onLoad.\*.script | string |  |   function onLoad() {
-	var stdChangeProducerSysId = getParmVal('std_change_producer');
-	if (stdChangeProducerSysId) {
-		g_form.setValue('variables.std_change_producer', stdChangeProducerSysId);
-	}
-}
-function getParmVal(name) {
-name = name.replace(/[\\[]/, "\\\\\\[").replace(/[\\]]/, "\\\\\\]");
-	var regexS = "[\\\\?&]" + name + "=([^&#]\*)";
-	var regex = new RegExp(regexS);
-	var results = regex.exec(window.location.href);
-	if (results) {
-		return unescape(results[1]);
-	} else {
-		return '';
-	}
-}
- 
+action_result.data.\*.client_script.onLoad.\*.script | string |  |   function onLoad() {<br>	var stdChangeProducerSysId = getParmVal('std_change_producer');<br>	if (stdChangeProducerSysId) {<br>		g_form.setValue('variables.std_change_producer', stdChangeProducerSysId);<br>	}<br>}<br>function getParmVal(name) {<br>name = name.replace(/[\\[]/, "\\\\\\[").replace(/[\\]]/, "\\\\\\]");<br>	var regexS = "[\\\\?&]" + name + "=([^&#]\*)";<br>	var regex = new RegExp(regexS);<br>	var results = regex.exec(window.location.href);<br>	if (results) {<br>		return unescape(results[1]);<br>	} else {<br>		return '';<br>	}<br>}<br> 
 action_result.data.\*.client_script.onLoad.\*.sys_id | string |  |   9b30f0529f8102002920bde8132e7013 
 action_result.data.\*.client_script.onLoad.\*.type | string |  |   onLoad 
 action_result.data.\*.client_script.onLoad.\*.ui_type | string |  |   Desktop 
@@ -1405,8 +1310,7 @@ action_result.data.\*.category | string |  |   network
 action_result.data.\*.caused_by | string |  |  
 action_result.data.\*.child_incidents | string |  |  
 action_result.data.\*.close_code | string |  |   Closed/Resolved by Caller 
-action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory
-		 
+action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory<br>		 
 action_result.data.\*.closed_at | string |  |   2018-02-08 23:10:06 
 action_result.data.\*.closed_by | string |  |  
 action_result.data.\*.closed_by.link | string |  `url`  |   https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0 
@@ -1424,8 +1328,7 @@ action_result.data.\*.correlation_display | string |  |
 action_result.data.\*.correlation_id | string |  |  
 action_result.data.\*.delivery_plan | string |  |  
 action_result.data.\*.delivery_task | string |  |  
-action_result.data.\*.description | string |  |   User can't access email on mail.company.com.
-		 
+action_result.data.\*.description | string |  |   User can't access email on mail.company.com.<br>		 
 action_result.data.\*.due_date | string |  |  
 action_result.data.\*.escalation | string |  |   0 
 action_result.data.\*.expected_start | string |  |  
@@ -1594,9 +1497,7 @@ action_result.data.\*.department | string |  |
 action_result.data.\*.depreciated_amount | string |  |   0 
 action_result.data.\*.depreciation | string |  |  
 action_result.data.\*.depreciation_date | string |  |  
-action_result.data.\*.description | string |  |   Investigative actions to check for the presence of phapp_servicenow
-
-Added by Splunk for container id: 495 
+action_result.data.\*.description | string |  |   Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 495 
 action_result.data.\*.display_name | string |  |  
 action_result.data.\*.disposal_reason | string |  |  
 action_result.data.\*.due | string |  |  
@@ -1790,8 +1691,7 @@ action_result.data.\*.checked_out | string |  |
 action_result.data.\*.child_incidents | string |  |  
 action_result.data.\*.ci | string |  |  
 action_result.data.\*.close_code | string |  |   Closed/Resolved by Caller 
-action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory
-		 
+action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory<br>		 
 action_result.data.\*.closed_at | string |  |   2018-02-08 23:10:06 
 action_result.data.\*.closed_by | string |  |  
 action_result.data.\*.closed_by.link | string |  `url`  |   https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0 
@@ -1818,8 +1718,7 @@ action_result.data.\*.department | string |  |
 action_result.data.\*.depreciated_amount | string |  |   0 
 action_result.data.\*.depreciation | string |  |  
 action_result.data.\*.depreciation_date | string |  |  
-action_result.data.\*.description | string |  |   User can't access email on mail.company.com.
-		 
+action_result.data.\*.description | string |  |   User can't access email on mail.company.com.<br>		 
 action_result.data.\*.display_name | string |  |  
 action_result.data.\*.disposal_reason | string |  |  
 action_result.data.\*.due | string |  |  
@@ -2039,8 +1938,7 @@ action_result.data.\*.ci | string |  |
 action_result.data.\*.ci.link | string |  |   https://dev78070.service-now.com/api/now/table/cmdb_ci/0ca96c0d3790200044e0bfc8bcbe5dc3 
 action_result.data.\*.ci.value | string |  |   0ca96c0d3790200044e0bfc8bcbe5dc3 
 action_result.data.\*.close_code | string |  |   Closed/Resolved by Caller 
-action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory
-		 
+action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory<br>		 
 action_result.data.\*.closed_at | string |  |   2018-02-08 23:10:06 
 action_result.data.\*.closed_by | string |  |  
 action_result.data.\*.closed_by.link | string |  `url`  |   https://devtest.service-now.com/api/now/table/sys_user/9ee1b13dc6112271007f9d0efdb69cd0 
@@ -2071,8 +1969,7 @@ action_result.data.\*.depreciation | string |  |
 action_result.data.\*.depreciation.link | string |  |   https://dev78070.service-now.com/api/now/table/cmdb_depreciation/0f21351437b03000158bbfc8bcbe5da8 
 action_result.data.\*.depreciation.value | string |  |   0f21351437b03000158bbfc8bcbe5da8 
 action_result.data.\*.depreciation_date | string |  |  
-action_result.data.\*.description | string |  |   User can't access email on mail.company.com.
-		 
+action_result.data.\*.description | string |  |   User can't access email on mail.company.com.<br>		 
 action_result.data.\*.display_name | string |  |  
 action_result.data.\*.disposal_reason | string |  |  
 action_result.data.\*.due | string |  |  
@@ -2267,8 +2164,7 @@ action_result.data.\*.category | string |  |   inquiry
 action_result.data.\*.caused_by | string |  |  
 action_result.data.\*.child_incidents | string |  |   0 
 action_result.data.\*.close_code | string |  |   Closed/Resolved by Caller 
-action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory
-		 
+action_result.data.\*.close_notes | string |  |   Closed before close notes were made mandatory<br>		 
 action_result.data.\*.closed_at | string |  |   2018-02-08 23:10:06 
 action_result.data.\*.closed_by | string |  |  
 action_result.data.\*.closed_by.link | string |  `url`  |   https://devtest.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7 
