@@ -280,7 +280,7 @@ class ServicenowConnector(BaseConnector):
 
         return error_details
 
-    def _process_empty_reponse(self, response, action_result):
+    def _process_empty_response(self, response, action_result):
 
         # this function will parse the header and create the response that the callers
         # of the app expect
@@ -374,12 +374,12 @@ class ServicenowConnector(BaseConnector):
         if 'html' in r.headers.get('Content-Type', ''):
             return self._process_html_response(r, action_result)
 
-        # it's not an html or json, handle if it is a successfull empty reponse
+        # it's not an html or json, handle if it is a successfull empty response
         if (200 <= r.status_code < 205) and (not r.text):
-            return self._process_empty_reponse(r, action_result)
+            return self._process_empty_response(r, action_result)
 
         # everything else is actually an error at this point
-        message = "Can't process resonse from server. Status Code: {0} Data from server: {1}".format(
+        message = "Can't process response from server. Status Code: {0} Data from server: {1}".format(
             r.status_code, r.text.replace('{', ' ').replace('}', ' '))
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
@@ -709,7 +709,7 @@ class ServicenowConnector(BaseConnector):
         desc = param.get(SERVICENOW_JSON_DESCRIPTION)
 
         if (not fields) and (not short_desc) and (SERVICENOW_JSON_DESCRIPTION not in param):
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERR_ONE_PARAM_REQ)
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_ONE_PARAM_REQ)
 
         if short_desc:
             data.update({'short_description': short_desc.replace(
@@ -2026,7 +2026,7 @@ if __name__ == '__main__':
                                verify=verify, data=data, headers=headers)
             session_id = r2.cookies['sessionid']
         except Exception as e:
-            print("Unable to get session id from the platfrom. Error: {}".format(str(e)))
+            print("Unable to get session id from the platform. Error: {}".format(str(e)))
             sys.exit(1)
 
     with open(args.input_test_json) as f:
