@@ -1049,7 +1049,8 @@ class ServicenowConnector(BaseConnector):
             if len(items.get("result")) < SERVICENOW_DEFAULT_LIMIT:
                 break
 
-            payload['sysparm_offset'] = payload['sysparm_offset'] + SERVICENOW_DEFAULT_LIMIT
+            payload['sysparm_offset'] += SERVICENOW_DEFAULT_LIMIT
+            payload['sysparm_limit'] = min(limit - len(items_list), SERVICENOW_DEFAULT_LIMIT)
 
         return items_list
 
