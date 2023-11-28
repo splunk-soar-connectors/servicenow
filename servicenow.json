@@ -6,12 +6,12 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2022 Splunk Inc.",
+    "license": "Copyright (c) 2016-2023 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.4.0",
+    "app_version": "2.5.0",
     "fips_compliant": true,
-    "min_phantom_version": "5.3.4",
+    "min_phantom_version": "6.1.0",
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, Build tag: glide-tokyo-07-08-2022__patch1-09-01-2022"
@@ -375,14 +375,14 @@
                     "data_path": "action_result.data.*.comments",
                     "data_type": "string",
                     "example_values": [
-                        "2019-10-15 03:31:23 - System Administrator (Additional comments)\ntest12345 comment\n\n2019-10-15 02:25:50 - System Administrator (Additional comments)\nThis is a test123 comment\n\n2019-10-10 06:00:48 - System Administrator (Additional comments)\nThis is a test comment\n\n2019-10-10 05:45:58 - System Administrator (Additional comments)\nThis is a test comment\n\n"
+                        "2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br>"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.comments_and_work_notes",
                     "data_type": "string",
                     "example_values": [
-                        "2019-10-15 03:56:58 - System Administrator (Work notes)\ncheck work note\n\n2019-10-15 03:31:23 - System Administrator (Additional comments)\ntest12345 comment\n\n2019-10-15 02:27:07 - System Administrator (Work notes)\nThis is a test123 work note\n\n2019-10-15 02:25:50 - System Administrator (Additional comments)\nThis is a test123 comment\n\n2019-10-10 06:00:48 - System Administrator (Additional comments)\nThis is a test comment\n\n2019-10-10 05:54:52 - System Administrator (Work notes)\nThis is a test work note\n\n2019-10-10 05:45:58 - System Administrator (Additional comments)\nThis is a test comment\n\n"
+                        "2019-10-15 03:56:58 - System Administrator (Work notes)<br>check work note<br><br>2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br>"
                     ]
                 },
                 {
@@ -1069,7 +1069,7 @@
                     "data_path": "action_result.data.*.work_notes",
                     "data_type": "string",
                     "example_values": [
-                        "2019-10-15 03:56:58 - System Administrator (Work notes)\ncheck work note\n\n2019-10-15 02:27:07 - System Administrator (Work notes)\nThis is a test123 work note\n\n2019-10-10 05:54:52 - System Administrator (Work notes)\nThis is a test work note\n\n"
+                        "2019-10-15 03:56:58 - System Administrator (Work notes)<br>check work note<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br>"
                     ],
                     "column_name": "Work Notes",
                     "column_order": 3
@@ -1471,7 +1471,7 @@
                     "data_path": "action_result.data.*.comments",
                     "data_type": "string",
                     "example_values": [
-                        "2019-10-15 03:31:23 - System Administrator (Additional comments)\ntest12345 comment\n\n2019-10-15 02:25:50 - System Administrator (Additional comments)\nThis is a test123 comment\n\n2019-10-10 06:00:48 - System Administrator (Additional comments)\nThis is a test comment\n\n2019-10-10 05:45:58 - System Administrator (Additional comments)\nThis is a test comment\n\n"
+                        "2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br>"
                     ],
                     "column_name": "Comments",
                     "column_order": 3
@@ -1480,7 +1480,7 @@
                     "data_path": "action_result.data.*.comments_and_work_notes",
                     "data_type": "string",
                     "example_values": [
-                        "2019-10-15 03:31:23 - System Administrator (Additional comments)\ntest12345 comment\n\n2019-10-15 02:27:07 - System Administrator (Work notes)\nThis is a test123 work note\n\n2019-10-15 02:25:50 - System Administrator (Additional comments)\nThis is a test123 comment\n\n2019-10-10 06:00:48 - System Administrator (Additional comments)\nThis is a test comment\n\n2019-10-10 05:54:52 - System Administrator (Work notes)\nThis is a test work note\n\n2019-10-10 05:45:58 - System Administrator (Additional comments)\nThis is a test comment\n\n"
+                        "2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br>"
                     ]
                 },
                 {
@@ -2338,7 +2338,7 @@
                     "data_path": "action_result.data.*.work_notes",
                     "data_type": "string",
                     "example_values": [
-                        "2019-10-15 02:27:07 - System Administrator (Work notes)\nThis is a test123 work note\n\n2019-10-10 05:54:52 - System Administrator (Work notes)\nThis is a test work note\n\n"
+                        "2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br>"
                     ]
                 },
                 {
@@ -4262,7 +4262,7 @@
                     "data_path": "action_result.data.*.client_script.onLoad.*.script",
                     "data_type": "string",
                     "example_values": [
-                        "function onLoad() {\n\tvar stdChangeProducerSysId = getParmVal('std_change_producer');\n\tif (stdChangeProducerSysId) {\n\t\tg_form.setValue('variables.std_change_producer', stdChangeProducerSysId);\n\t}\n}\nfunction getParmVal(name) {\nname = name.replace(/[\\[]/, \"\\\\\\[\").replace(/[\\]]/, \"\\\\\\]\");\n\tvar regexS = \"[\\\\?&]\" + name + \"=([^&#]*)\";\n\tvar regex = new RegExp(regexS);\n\tvar results = regex.exec(window.location.href);\n\tif (results) {\n\t\treturn unescape(results[1]);\n\t} else {\n\t\treturn '';\n\t}\n}\n"
+                        "function onLoad() {<br>\tvar stdChangeProducerSysId = getParmVal('std_change_producer');<br>\tif (stdChangeProducerSysId) {<br>\t\tg_form.setValue('variables.std_change_producer', stdChangeProducerSysId);<br>\t}<br>}<br>function getParmVal(name) {<br>name = name.replace(/[\\[]/, \"\\\\\\[\").replace(/[\\]]/, \"\\\\\\]\");<br>\tvar regexS = \"[\\\\?&]\" + name + \"=([^&#]*)\";<br>\tvar regex = new RegExp(regexS);<br>\tvar results = regex.exec(window.location.href);<br>\tif (results) {<br>\t\treturn unescape(results[1]);<br>\t} else {<br>\t\treturn '';<br>\t}<br>}<br>"
                     ]
                 },
                 {
@@ -6265,7 +6265,7 @@
                 {
                     "data_path": "action_result.data.*.close_notes",
                     "example_values": [
-                        "Closed before close notes were made mandatory\n\t\t"
+                        "Closed before close notes were made mandatory<br>\t\t"
                     ],
                     "data_type": "string"
                 },
@@ -6382,7 +6382,7 @@
                     "column_order": 1,
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "User can't access email on mail.company.com.\n\t\t"
+                        "User can't access email on mail.company.com.<br>\t\t"
                     ],
                     "data_type": "string",
                     "column_name": "Description"
@@ -7279,7 +7279,7 @@
                 {
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "Investigative actions to check for the presence of phapp_servicenow\n\nAdded by Splunk for container id: 495"
+                        "Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 495"
                     ],
                     "data_type": "string"
                 },
@@ -8304,7 +8304,7 @@
                 {
                     "data_path": "action_result.data.*.close_notes",
                     "example_values": [
-                        "Closed before close notes were made mandatory\n\t\t"
+                        "Closed before close notes were made mandatory<br>\t\t"
                     ],
                     "data_type": "string"
                 },
@@ -8466,7 +8466,7 @@
                     "column_order": 1,
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "User can't access email on mail.company.com.\n\t\t"
+                        "User can't access email on mail.company.com.<br>\t\t"
                     ],
                     "data_type": "string",
                     "column_name": "Description"
@@ -9675,7 +9675,7 @@
                 {
                     "data_path": "action_result.data.*.close_notes",
                     "example_values": [
-                        "Closed before close notes were made mandatory\n\t\t"
+                        "Closed before close notes were made mandatory<br>\t\t"
                     ],
                     "data_type": "string"
                 },
@@ -9868,7 +9868,7 @@
                     "column_order": 1,
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "User can't access email on mail.company.com.\n\t\t"
+                        "User can't access email on mail.company.com.<br>\t\t"
                     ],
                     "data_type": "string",
                     "column_name": "Description"
@@ -10922,7 +10922,7 @@
                 {
                     "data_path": "action_result.data.*.close_notes",
                     "example_values": [
-                        "Closed before close notes were made mandatory\n\t\t"
+                        "Closed before close notes were made mandatory<br>\t\t"
                     ],
                     "data_type": "string"
                 },
@@ -12111,16 +12111,24 @@
                 "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
             },
             {
-                "module": "certifi",
-                "input_file": "wheels/py3/certifi-2022.9.24-py3-none-any.whl"
+                "module": "python_magic",
+                "input_file": "wheels/shared/python_magic-0.4.18-py2.py3-none-any.whl"
             },
             {
-                "module": "chardet",
-                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
+                "module": "pytz",
+                "input_file": "wheels/shared/pytz-2021.1-py2.py3-none-any.whl"
             },
             {
-                "module": "idna",
-                "input_file": "wheels/shared/idna-2.10-py2.py3-none-any.whl"
+                "module": "soupsieve",
+                "input_file": "wheels/py3/soupsieve-2.3.2.post1-py3-none-any.whl"
+            }
+        ]
+    },
+    "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "beautifulsoup4",
+                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
             },
             {
                 "module": "python_magic",
@@ -12131,16 +12139,8 @@
                 "input_file": "wheels/shared/pytz-2021.1-py2.py3-none-any.whl"
             },
             {
-                "module": "requests",
-                "input_file": "wheels/shared/requests-2.25.0-py2.py3-none-any.whl"
-            },
-            {
                 "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.3.2.post1-py3-none-any.whl"
-            },
-            {
-                "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.12-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/soupsieve-2.5-py3-none-any.whl"
             }
         ]
     }

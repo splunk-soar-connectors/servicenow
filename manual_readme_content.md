@@ -108,12 +108,6 @@
 
       
 
-    -   When the app is installed with Python version 2 and if the data is ingested using On Poll
-        with query A and label B, it will list down the containers accordingly. If the ticket that
-        is already ingested is updated, and then if the On Poll is executed again with the same
-        label i.e. label B and with the same query A, it will add details of the updated ticket as
-        an artifact in the already created container and update the container properties
-        accordingly.
     -   When the app is installed with Python version 3 and if the data is ingested using On Poll
         with query A and label B, it will list down the containers accordingly. If the ticket that
         is already ingested is updated, and then if the On Poll is executed again with the same
