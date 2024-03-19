@@ -1,6 +1,6 @@
 # File: servicenow_connector.py
 #
-# Copyright (c) 2016-2023 Splunk Inc.
+# Copyright (c) 2016-2024 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -1048,7 +1048,7 @@ class ServicenowConnector(BaseConnector):
             # if no result is found
             if items.get("result"):
                 items_list.extend(items.get("result"))
-            
+
             # extend item list if data is present on that page
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
