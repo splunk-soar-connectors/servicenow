@@ -2,7 +2,7 @@
 # ServiceNow
 
 Publisher: Splunk  
-Connector Version: 2.5.0  
+Connector Version: 2.6.0  
 Product Vendor: ServiceNow  
 Product Name: ServiceNow  
 Product Version Supported (regex): ".\*"  
