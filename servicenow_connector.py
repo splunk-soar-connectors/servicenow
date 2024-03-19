@@ -84,6 +84,7 @@ class ServicenowConnector(BaseConnector):
         self._try_oauth = False
         self._use_token = False
         self._state = {}
+        self._response_headers = {}
 
     def encrypt_state(self, encrypt_var, token_name):
         """ Handle encryption of token.
@@ -452,6 +453,7 @@ class ServicenowConnector(BaseConnector):
             return (action_result.set_status(phantom.APP_ERROR,
                                              SERVICENOW_ERROR_SERVER_CONNECTION.format(error_message=error_message)), resp_json)
 
+        self._response_headers = r.headers
         return self._process_response(r, action_result)
 
     def _make_rest_call_helper(self, action_result, endpoint, params={}, data={}, headers={}, method="get", auth=None):
@@ -1039,18 +1041,24 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return None
 
-            if not items.get("result"):
-                return items_list
-            items_list.extend(items.get("result"))
+            # get total record count from headers
+            if self._response_headers:
+                total_item_count = int(self._response_headers.get("X-Total-Count"))
 
+            # if no result is found
+            if items.get("result"):
+                items_list.extend(items.get("result"))
+            
+            # extend item list if data is present on that page
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
 
-            if len(items.get("result")) < SERVICENOW_DEFAULT_LIMIT:
-                break
+            # exit if the total number of records are less than limit or else it has fetched all the pages
+            if total_item_count <= limit or (payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count:
+                return items_list
 
-            payload['sysparm_offset'] += SERVICENOW_DEFAULT_LIMIT
-            payload['sysparm_limit'] = min(limit - len(items_list), SERVICENOW_DEFAULT_LIMIT)
+            payload['sysparm_offset'] += payload['sysparm_limit']
+            payload['sysparm_limit'] = min(total_item_count - payload["sysparm_offset"], SERVICENOW_DEFAULT_LIMIT)
 
         return items_list
 
