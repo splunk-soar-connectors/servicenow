@@ -1599,7 +1599,7 @@ action_result.data.\*.work_notes_list | string |  |
 action_result.data.\*.work_start | string |  |  
 action_result.summary.created_ticket_id | string |  `servicenow ticket sysid`  `md5`  |   e19eff67db716300134cd100cf961915 
 action_result.summary.successfully_added_attachments_count | numeric |  |   2 
-action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']} 
+action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}  # pragma: allowlist secret
 action_result.message | string |  |   Created ticket id: e19eff67db716300134cd100cf961915 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1   
@@ -2075,7 +2075,7 @@ action_result.data.\*.work_start | string |  |
 action_result.summary.fields_updated | boolean |  |   False  True 
 action_result.summary.successfully_added_attachments_count | numeric |  |   2 
 action_result.summary.total_tickets | numeric |  |  
-action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']} 
+action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}  # pragma: allowlist secret
 action_result.message | string |  |   Fields updated: True 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1   
