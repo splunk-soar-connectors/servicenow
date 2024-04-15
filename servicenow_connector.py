@@ -1054,13 +1054,11 @@ class ServicenowConnector(BaseConnector):
                 return items_list[:limit]
 
             # exit if the total number of records are less than limit or else it has fetched all the pages
-            if total_item_count <= limit or (payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count:
+            if (total_item_count <= limit <= SERVICENOW_DEFAULT_LIMIT) or ((payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count):
                 return items_list
 
             payload['sysparm_offset'] += payload['sysparm_limit']
             payload['sysparm_limit'] = min(total_item_count - payload["sysparm_offset"], SERVICENOW_DEFAULT_LIMIT)
-
-        return items_list
 
     def _describe_service_catalog(self, param):
 
