@@ -1419,7 +1419,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 --------- | ---- | -------- | --------------
 action_result.status | string |  |   success  failed 
-action_result.parameter.description | string |  |   Investigative actions to check for the presence of phapp_servicenow 
+action_result.parameter.description | string |  |   Switch occasionally drops connections 
 action_result.parameter.fields | string |  |   {"made_sla":true,"severity":3,"description":"This is testing description"} 
 action_result.parameter.short_description | string |  |   phapp_servicenow, Multiple action need to be taken 
 action_result.parameter.table | string |  `servicenow table`  |   incident 
@@ -1492,7 +1492,7 @@ action_result.data.\*.department | string |  |
 action_result.data.\*.depreciated_amount | string |  |   0 
 action_result.data.\*.depreciation | string |  |  
 action_result.data.\*.depreciation_date | string |  |  
-action_result.data.\*.description | string |  |   Customer didn't receive eFax 
+action_result.data.\*.description | string |  |   Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 495 
 action_result.data.\*.display_name | string |  |  
 action_result.data.\*.disposal_reason | string |  |  
 action_result.data.\*.due | string |  |  
@@ -1600,7 +1600,7 @@ action_result.data.\*.work_notes_list | string |  |
 action_result.data.\*.work_start | string |  |  
 action_result.summary.created_ticket_id | string |  `servicenow ticket sysid`  `md5`  |   e19eff67db716300134cd100cf961915 
 action_result.summary.successfully_added_attachments_count | numeric |  |   2 
-action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}  # pragma: allowlist secret
+action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']} 
 action_result.message | string |  |   Created ticket id: e19eff67db716300134cd100cf961915 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1   
@@ -2076,7 +2076,7 @@ action_result.data.\*.work_start | string |  |
 action_result.summary.fields_updated | boolean |  |   False  True 
 action_result.summary.successfully_added_attachments_count | numeric |  |   2 
 action_result.summary.total_tickets | numeric |  |  
-action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}  # pragma: allowlist secret
+action_result.summary.vault_failure_details | string |  |   {'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']} 
 action_result.message | string |  |   Fields updated: True 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1   
@@ -2259,9 +2259,9 @@ action_result.data.\*.work_end | string |  |
 action_result.data.\*.work_notes | string |  |  
 action_result.data.\*.work_notes_list | string |  |  
 action_result.data.\*.work_start | string |  |  
-action_result.summary.total_tickets | numeric |  |   2  68 
+action_result.summary.total_tickets | numeric |  |   2 
 action_result.message | string |  |   Important data: value 
-summary.total_objects | numeric |  |   1  2 
+summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1   
 
 ## action: 'query users'
