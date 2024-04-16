@@ -211,6 +211,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [get variables](#action-get-variables) - Get variables for a ticket/record  
 [run query](#action-run-query) - Gets object data according to the specified query  
 [query users](#action-query-users) - Gets user data according to the specified query, username, or system ID  
+[search sources](#action-search-sources) - Search for records across multiple tables  
 [on poll](#action-on-poll) - Ingest tickets from SNOW  
 
 ## action: 'test connectivity'
@@ -302,7 +303,7 @@ action_result.data.\*.depreciated_amount | string |  |   $0.00
 action_result.data.\*.depreciation | string |  |  
 action_result.data.\*.depreciation_date | string |  |  
 action_result.data.\*.description | string |  |   My computer is not detecting the headphone device. It could be an issue with the USB port. 
-action_result.data.\*.display_name | string |  |   SW000077 - Microsoft ASP.NET 2011 
+action_result.data.\*.display_name | string |  |   SW000077 Test 
 action_result.data.\*.disposal_reason | string |  |  
 action_result.data.\*.due | string |  |  
 action_result.data.\*.due_date | string |  |  
@@ -329,7 +330,7 @@ action_result.data.\*.location | string |  |
 action_result.data.\*.made_sla | string |  |   true 
 action_result.data.\*.managed_by | string |  |  
 action_result.data.\*.merged_into | string |  |  
-action_result.data.\*.model.display_value | string |  |   Microsoft ASP.NET 2011 
+action_result.data.\*.model.display_value | string |  |   ASP.NET 2011 
 action_result.data.\*.model.link | string |  |   https://dev78070.service-now.com/api/now/table/cmdb_model/81bfae3f37601000deeabfc8bcbe5d2d 
 action_result.data.\*.model_category.display_value | string |  |   Software License 
 action_result.data.\*.model_category.link | string |  |   https://dev78070.service-now.com/api/now/table/cmdb_model_category/35bf2d4137101000deeabfc8bcbe5dbd 
@@ -401,7 +402,7 @@ action_result.data.\*.upon_approval | string |  |   Proceed to Next Task
 action_result.data.\*.upon_reject | string |  |   Cancel all future Tasks 
 action_result.data.\*.urgency | string |  |   2 - Medium 
 action_result.data.\*.user_input | string |  |  
-action_result.data.\*.vendor.display_value | string |  |   Microsoft 
+action_result.data.\*.vendor.display_value | string |  |   PRB000050 Test 
 action_result.data.\*.vendor.link | string |  `url`  |   https://dev78070.service-now.com/api/now/table/core_company/0e8b8e650a0a0b3b004f285ffbb1a4fc 
 action_result.data.\*.warranty_expiration | string |  |  
 action_result.data.\*.watch_list | string |  |  
@@ -1491,7 +1492,7 @@ action_result.data.\*.department | string |  |
 action_result.data.\*.depreciated_amount | string |  |   0 
 action_result.data.\*.depreciation | string |  |  
 action_result.data.\*.depreciation_date | string |  |  
-action_result.data.\*.description | string |  |   Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 495 
+action_result.data.\*.description | string |  |   Customer didn't receive eFax 
 action_result.data.\*.display_name | string |  |  
 action_result.data.\*.disposal_reason | string |  |  
 action_result.data.\*.due | string |  |  
@@ -2297,7 +2298,7 @@ action_result.data.\*.date_format | string |  |
 action_result.data.\*.default_perspective | string |  |  
 action_result.data.\*.department.link | string |  `url`  |   https://dev116432.service-now.com/api/now/table/cmn_department/a581ab703710200044e0bfc8bcbe5de8 
 action_result.data.\*.department.value | string |  `md5`  |   a581ab703710200044e0bfc8bcbe5de8 
-action_result.data.\*.email | string |  `email`  |   herman@phantom.us 
+action_result.data.\*.email | string |  `email`  |   abc@pqr.us 
 action_result.data.\*.employee_number | string |  |  
 action_result.data.\*.enable_multifactor_authn | string |  |   false 
 action_result.data.\*.failed_attempts | string |  |   0 
@@ -2346,6 +2347,79 @@ action_result.data.\*.web_service_access_only | string |  |   false
 action_result.data.\*.zip | string |  |  
 action_result.summary.total_tickets | numeric |  |   1 
 action_result.message | string |  |   Total tickets: 1 
+summary.total_objects | numeric |  |   1 
+summary.total_objects_successful | numeric |  |   1   
+
+## action: 'search sources'
+Search for records across multiple tables
+
+Type: **investigate**  
+Read only: **True**
+
+#### Action Parameters
+PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
+--------- | -------- | ----------- | ---- | --------
+**sysparm_term** |  required  | Search record for the given term | string | 
+**sysparm_search_sources** |  required  | SYS ID of search sources, Comma-separated list allowed | string |  `servicenow ticket sysid` 
+
+#### Action Output
+DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
+--------- | ---- | -------- | --------------
+action_result.status | string |  |   success  failed 
+action_result.parameter.sysparm_search_sources | string |  `servicenow ticket sysid`  |   2b6cc681c7713010fedf0bcbe2c2606c 
+action_result.parameter.sysparm_term | string |  |   Resolved 
+action_result.data.\*.result_count | numeric |  |  
+action_result.data.\*.search_results.\*.fields.\*.label | string |  |   Number 
+action_result.data.\*.search_results.\*.fields.\*.label_plural | string |  |   Numbers 
+action_result.data.\*.search_results.\*.fields.\*.max_length | numeric |  |   40 
+action_result.data.\*.search_results.\*.fields.\*.name | string |  |   number 
+action_result.data.\*.search_results.\*.fields.\*.reference | string |  |   sys_user_group 
+action_result.data.\*.search_results.\*.fields.\*.type | string |  |   string 
+action_result.data.\*.search_results.\*.label | string |  |   Problem 
+action_result.data.\*.search_results.\*.limit | numeric |  |   20 
+action_result.data.\*.search_results.\*.page | numeric |  |   1 
+action_result.data.\*.search_results.\*.query | string |  |   123TEXTQUERY321=Fix Applied 
+action_result.data.\*.search_results.\*.record_count | numeric |  |  
+action_result.data.\*.search_results.\*.records.\*.data.assignment_group.display | string |  |  
+action_result.data.\*.search_results.\*.records.\*.data.assignment_group.value | string |  |  
+action_result.data.\*.search_results.\*.records.\*.data.caller_id.display | string |  |   System Administrator 
+action_result.data.\*.search_results.\*.records.\*.data.caller_id.value | string |  |   6816f79cc0a8016401c5a33be04be441 
+action_result.data.\*.search_results.\*.records.\*.data.category.display | string |  |   Inquiry / Help 
+action_result.data.\*.search_results.\*.records.\*.data.category.value | string |  |   inquiry 
+action_result.data.\*.search_results.\*.records.\*.data.cmdb_ci.display | string |  |  
+action_result.data.\*.search_results.\*.records.\*.data.cmdb_ci.value | string |  |  
+action_result.data.\*.search_results.\*.records.\*.data.number.display | string |  |   INC0010228 
+action_result.data.\*.search_results.\*.records.\*.data.number.value | string |  |   INC0010228 
+action_result.data.\*.search_results.\*.records.\*.data.opened_at.display | string |  |   2023-04-05 00:59:28 
+action_result.data.\*.search_results.\*.records.\*.data.opened_at.value | string |  |   2023-04-05 07:59:28 
+action_result.data.\*.search_results.\*.records.\*.data.priority.display | string |  |   5 - Planning 
+action_result.data.\*.search_results.\*.records.\*.data.priority.value | string |  |   5 
+action_result.data.\*.search_results.\*.records.\*.data.related_incidents.display | string |  |   0 
+action_result.data.\*.search_results.\*.records.\*.data.related_incidents.value | string |  |   0 
+action_result.data.\*.search_results.\*.records.\*.data.resolution_code.value | string |  |  
+action_result.data.\*.search_results.\*.records.\*.data.state.display | string |  |   New 
+action_result.data.\*.search_results.\*.records.\*.data.state.value | string |  |   1 
+action_result.data.\*.search_results.\*.records.\*.data.sys_id.display | string |  |   c673edc5978221106401f1e3f153af11 
+action_result.data.\*.search_results.\*.records.\*.data.sys_id.value | string |  |   c673edc5978221106401f1e3f153af11 
+action_result.data.\*.search_results.\*.records.\*.metadata.description | string |  |  
+action_result.data.\*.search_results.\*.records.\*.metadata.thumbnail_url | string |  |  
+action_result.data.\*.search_results.\*.records.\*.metadata.title | string |  |   hello 
+action_result.data.\*.search_results.\*.records.\*.record_class_name | string |  |   incident 
+action_result.data.\*.search_results.\*.records.\*.record_url | string |  |   /incident.do?sys_id=c673edc5978221106401f1e3f153af11&sysparm_view=text_search 
+action_result.data.\*.search_results.\*.records.\*.sys_id | string |  |   c673edc5978221106401f1e3f153af11 
+action_result.data.\*.search_results.\*.records.\*.table | string |  |   incident 
+action_result.data.\*.search_results.\*.sys_id | string |  |   fb4610e8978621106401f1e3f153af0e 
+action_result.data.\*.search_results.\*.term | string |  |   Resolved 
+action_result.data.\*.sources.\*.condition.display | string |  |  
+action_result.data.\*.sources.\*.condition.value | string |  |  
+action_result.data.\*.sources.\*.name.display | string |  |   Tasks-Tickets     
+action_result.data.\*.sources.\*.name.value | string |  |   Tasks-Tickets 
+action_result.data.\*.sources.\*.source_table | string |  |   Problem 
+action_result.data.\*.sources.\*.sys_id | string |  `servicenow ticket sysid`  |   fb4610e8978621106401f1e3f153af0e 
+action_result.data.\*.term | string |  |   Resolved 
+action_result.summary | string |  |  
+action_result.summary.total_records | numeric |  |   1 
+action_result.message | string |  |   Total records: 0 
 summary.total_objects | numeric |  |   1 
 summary.total_objects_successful | numeric |  |   1   
 
