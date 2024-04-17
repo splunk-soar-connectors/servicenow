@@ -1054,9 +1054,12 @@ class ServicenowConnector(BaseConnector):
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
 
+            if total_item_count <= limit:
+                if total_item_count <= SERVICENOW_DEFAULT_LIMIT:
+                    return items_list
+
             # exit if the total number of records are less than limit or else it has fetched all the pages
-            if (total_item_count <= limit <= SERVICENOW_DEFAULT_LIMIT) or \
-                    ((payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count):
+            if ((payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count):
                 return items_list
 
             payload['sysparm_offset'] += payload['sysparm_limit']
