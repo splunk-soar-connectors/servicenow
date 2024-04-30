@@ -418,7 +418,7 @@ class ServicenowConnector(BaseConnector):
             request_url = '{}{}'.format(self._base_url, '/oauth_token.do')
             r = requests.post(  # nosemgrep
                 request_url,
-                data=data  # Mostly this line
+                data=data
             )
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
@@ -1671,17 +1671,45 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         params = {"sysparm_term": sysparm_term, "sysparm_search_sources": sysparm_search_sources}
+        params['sysparm_page'] = SERVICENOW_DEFAULT_PAGE
+        params['sysparm_limit'] = SERVICENOW_MAX_LIMIT
 
-        ret_val, response = self._make_rest_call_helper(
-            action_result, SERVICENOW_SEARCH_SOURCE_ENDPOINT, auth=auth, headers=headers, params=params
-        )
-        if phantom.is_fail(ret_val):
-            self.debug_print(action_result.get_message())
-            return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
+        items_list = []
+        result_length = 0
+        first_call = True
 
-        result = response.get('result', {})
-        action_result.add_data(result)
-        action_result.update_summary({SERVICENOW_JSON_TOTAL_RECORDS: result.get('result_count', 0)})
+        while True:
+            ret_val, response = self._make_rest_call_helper(
+                action_result, SERVICENOW_SEARCH_SOURCE_ENDPOINT, auth=auth, headers=headers, params=params
+            )
+            if phantom.is_fail(ret_val):
+                self.debug_print(action_result.get_message())
+                return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
+
+            total_item_count = int(response.get("result", {}).get("result_count", 0))
+            search_results_len = len(response.get("result").get("search_results", []))
+            for i in range(search_results_len):
+                result_length += len(response.get("result").get("search_results", [])[i].get("records", []))
+
+            # In first call I want to get response['result'] and in other calls I am extending records into result
+            if result_length != 0:
+                if first_call:
+                    items_list.append(response['result'])
+                    first_call = False
+                else:
+                    for i in range(search_results_len):
+                        data = response.get("result").get("search_results", [])[i].get("records", [])
+                        items_list[0].get('search_results', [])[i].get("records", []).extend(data)
+            else:
+                break
+
+            # If we got all the results
+            if total_item_count <= result_length:
+                break
+            params['sysparm_page'] = params['sysparm_page'] + 1
+
+        action_result.add_data(items_list)
+        action_result.update_summary({SERVICENOW_JSON_TOTAL_RECORDS: total_item_count})
         return phantom.APP_SUCCESS
 
     def _search_sources(self, param):
