@@ -1689,19 +1689,18 @@ class ServicenowConnector(BaseConnector):
             total_item_count = int(response.get("result", {}).get("result_count", 0))
             search_results_len = len(response.get("result").get("search_results", []))
             for i in range(search_results_len):
+                response.get("result").get("search_results", [])[i].pop("limit")
+                response.get("result").get("search_results", [])[i].pop("page")
                 result_length += len(response.get("result").get("search_results", [])[i].get("records", []))
 
             # In first call I want to get response['result'] and in other calls I am extending records into result
-            if result_length != 0:
-                if first_call:
-                    items_list.append(response['result'])
-                    first_call = False
-                else:
-                    for i in range(search_results_len):
-                        data = response.get("result").get("search_results", [])[i].get("records", [])
-                        items_list[0].get('search_results', [])[i].get("records", []).extend(data)
+            if first_call:
+                items_list.append(response['result'])
+                first_call = False
             else:
-                break
+                for i in range(search_results_len):
+                    data = response.get("result").get("search_results", [])[i].get("records", [])
+                    items_list[0].get('search_results', [])[i].get("records", []).extend(data)
 
             # If we got all the results
             if total_item_count <= result_length:
