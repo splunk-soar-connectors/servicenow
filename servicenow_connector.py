@@ -1677,6 +1677,7 @@ class ServicenowConnector(BaseConnector):
         items_list = []
         result_length = 0
         first_call = True
+        data_empty = True
 
         while True:
             ret_val, response = self._make_rest_call_helper(
@@ -1700,10 +1701,14 @@ class ServicenowConnector(BaseConnector):
             else:
                 for i in range(search_results_len):
                     data = response.get("result").get("search_results", [])[i].get("records", [])
-                    items_list[0].get('search_results', [])[i].get("records", []).extend(data)
+                    if not data:
+                        data_empty = True
+                    else:
+                        data_empty = False
+                        items_list[0].get('search_results', [])[i].get("records", []).extend(data)
 
-            # If we got all the results
-            if total_item_count <= result_length:
+            # If we got all the results or if we got empty records of 1000 continuous pages [We are getting empty records due to hidden records]
+            if total_item_count <= result_length or (data_empty and params['sysparm_page'] >= 1000):
                 break
             params['sysparm_page'] = params['sysparm_page'] + 1
 
