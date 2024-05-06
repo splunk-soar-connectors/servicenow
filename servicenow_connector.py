@@ -1515,7 +1515,7 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         endpoint = SERVICENOW_TABLE_ENDPOINT.format(SERVICENOW_ITEM_OPT_MTOM_TABLE)
-        request_params = {'sys_id': sys_id}
+        request_params = {'sysparam_query': sys_id}
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
@@ -1677,7 +1677,7 @@ class ServicenowConnector(BaseConnector):
         items_list = []
         result_length = 0
         first_call = True
-        data_empty = True
+        total_result_count_page_limit = 0
 
         while True:
             ret_val, response = self._make_rest_call_helper(
@@ -1695,20 +1695,19 @@ class ServicenowConnector(BaseConnector):
                 result_length += len(response.get("result").get("search_results", [])[i].get("records", []))
 
             # In first call I want to get response['result'] and in other calls I am extending records into result
+            # In first call we are adding total pages that need to iterate. Because, we are getting empty record in result due to ACLs
+            # Getting default/maximum records from servicenow is 20 in one page
             if first_call:
                 items_list.append(response['result'])
+                total_result_count_page_limit = total_item_count // 20
                 first_call = False
             else:
                 for i in range(search_results_len):
                     data = response.get("result").get("search_results", [])[i].get("records", [])
-                    if not data:
-                        data_empty = True
-                    else:
-                        data_empty = False
-                        items_list[0].get('search_results', [])[i].get("records", []).extend(data)
+                    items_list[0].get('search_results', [])[i].get("records", []).extend(data)
 
-            # If we got all the results or if we got empty records of 1000 continuous pages [We are getting empty records due to hidden records]
-            if total_item_count <= result_length or (data_empty and params['sysparm_page'] >= 1000):
+            # If we got all the results or if we reached maximum pages
+            if total_item_count <= result_length or params['sysparm_page'] >= total_result_count_page_limit + 1:
                 break
             params['sysparm_page'] = params['sysparm_page'] + 1
 
