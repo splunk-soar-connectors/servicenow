@@ -6,7 +6,7 @@ Connector Version: 2.6.0
 Product Vendor: ServiceNow  
 Product Name: ServiceNow  
 Product Version Supported (regex): ".\*"  
-Minimum Product Version: 6.2.0  
+Minimum Product Version: 6.2.1  
 
 This app integrates with ServiceNow to perform investigative and generic actions
 
