@@ -11,7 +11,7 @@
     "main_module": "servicenow_connector.py",
     "app_version": "2.6.0",
     "fips_compliant": true,
-    "min_phantom_version": "6.2.0",
+    "min_phantom_version": "6.2.1",
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, glide-vancouver-07-06-2023__patch2-hotfix1-10-04-2023"
