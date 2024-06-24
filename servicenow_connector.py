@@ -1046,7 +1046,7 @@ class ServicenowConnector(BaseConnector):
             if self._response_headers:
                 total_item_count = int(self._response_headers.get("X-Total-Count"))
 
-            # if no result is found
+            # if result is found
             if items.get("result"):
                 items_list.extend(items.get("result"))
 
@@ -1728,8 +1728,7 @@ class ServicenowConnector(BaseConnector):
         sysparm_term = param[SERVICENOW_JSON_SYSPARM_TERM]
         sysparm_search_sources = param[SERVICENOW_JSON_SYSPARM_SEARCH_SOURCES]
 
-        search_sources = [x.strip() for x in sysparm_search_sources.split(",")]
-        search_sources = list(set(filter(None, search_sources)))
+        search_sources = [x.strip() for x in set(sysparm_search_sources.split(",")) if x.strip()]
 
         if not search_sources:
             return action_result.set_status(phantom.APP_ERROR, "Please provide valid inputs for sysparm_search_sources"), None
