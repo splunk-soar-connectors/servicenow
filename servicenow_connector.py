@@ -1,6 +1,6 @@
 # File: servicenow_connector.py
 #
-# Copyright (c) 2016-2023 Splunk Inc.
+# Copyright (c) 2016-2024 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ class ServicenowConnector(BaseConnector):
     ACTION_ID_ON_POLL = "on_poll"
     ACTION_ID_RUN_QUERY = "run_query"
     ACTION_ID_QUERY_USERS = "query_users"
+    ACTION_ID_SEARCH_SOURCES = "search_sources"
 
     def csv_to_list(self, data):
         """Comma separated values to list"""
@@ -84,6 +85,7 @@ class ServicenowConnector(BaseConnector):
         self._try_oauth = False
         self._use_token = False
         self._state = {}
+        self._response_headers = {}
 
     def encrypt_state(self, encrypt_var, token_name):
         """ Handle encryption of token.
@@ -416,7 +418,7 @@ class ServicenowConnector(BaseConnector):
             request_url = '{}{}'.format(self._base_url, '/oauth_token.do')
             r = requests.post(  # nosemgrep
                 request_url,
-                data=data  # Mostly this line
+                data=data
             )
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
@@ -452,6 +454,7 @@ class ServicenowConnector(BaseConnector):
             return (action_result.set_status(phantom.APP_ERROR,
                                              SERVICENOW_ERROR_SERVER_CONNECTION.format(error_message=error_message)), resp_json)
 
+        self._response_headers = r.headers
         return self._process_response(r, action_result)
 
     def _make_rest_call_helper(self, action_result, endpoint, params={}, data={}, headers={}, method="get", auth=None):
@@ -654,8 +657,8 @@ class ServicenowConnector(BaseConnector):
             self.save_progress(SERVICENOW_ERROR_CONNECTIVITY_TEST)
             return action_result.set_status(phantom.APP_ERROR)
 
-        self.save_progress(SERVICENOW_SUCC_CONNECTIVITY_TEST)
-        return action_result.set_status(phantom.APP_SUCCESS, SERVICENOW_SUCC_CONNECTIVITY_TEST)
+        self.save_progress(SERVICENOW_SUCCESS_CONNECTIVITY_TEST)
+        return action_result.set_status(phantom.APP_SUCCESS, SERVICENOW_SUCCESS_CONNECTIVITY_TEST)
 
     def _get_fields(self, param, action_result):
 
@@ -1039,20 +1042,28 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return None
 
-            if not items.get("result"):
-                return items_list
-            items_list.extend(items.get("result"))
+            # get total record count from headers
+            if self._response_headers:
+                total_item_count = int(self._response_headers.get("X-Total-Count"))
 
+            # if result is found
+            if items.get("result"):
+                items_list.extend(items.get("result"))
+
+            # extend item list if data is present on that page
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
 
-            if len(items.get("result")) < SERVICENOW_DEFAULT_LIMIT:
-                break
+            if total_item_count <= limit:
+                if total_item_count <= SERVICENOW_DEFAULT_LIMIT:
+                    return items_list
 
-            payload['sysparm_offset'] += SERVICENOW_DEFAULT_LIMIT
-            payload['sysparm_limit'] = min(limit - len(items_list), SERVICENOW_DEFAULT_LIMIT)
+            # exit if the total number of records are less than limit or else it has fetched all the pages
+            if ((payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count):
+                return items_list
 
-        return items_list
+            payload['sysparm_offset'] += payload['sysparm_limit']
+            payload['sysparm_limit'] = min(total_item_count - payload["sysparm_offset"], SERVICENOW_DEFAULT_LIMIT)
 
     def _describe_service_catalog(self, param):
 
@@ -1653,6 +1664,83 @@ class ServicenowConnector(BaseConnector):
 
         return result
 
+    def _search_sources_details(self, action_result, sysparm_term, sysparm_search_sources):
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if phantom.is_fail(ret_val):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
+
+        params = {"sysparm_term": sysparm_term, "sysparm_search_sources": sysparm_search_sources}
+        params['sysparm_page'] = SERVICENOW_DEFAULT_PAGE
+        params['sysparm_limit'] = SERVICENOW_MAX_LIMIT
+
+        items_list = []
+        result_length = 0
+        first_call = True
+        total_result_count_page_limit = 0
+
+        while True:
+            ret_val, response = self._make_rest_call_helper(
+                action_result, SERVICENOW_SEARCH_SOURCE_ENDPOINT, auth=auth, headers=headers, params=params
+            )
+            if phantom.is_fail(ret_val):
+                self.debug_print(action_result.get_message())
+                return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
+
+            total_item_count = int(response.get("result", {}).get("result_count", 0))
+            search_results_len = len(response.get("result").get("search_results", []))
+            for i in range(search_results_len):
+                response.get("result").get("search_results", [])[i].pop("limit")
+                response.get("result").get("search_results", [])[i].pop("page")
+                result_length += len(response.get("result").get("search_results", [])[i].get("records", []))
+
+            # Initially fetch response['result'] and extend records into it in subsequent calls
+            # Add total pages to iterate in the first call to handle empty records due to ACLs
+            # ServiceNow returns up to 20 records per page by default
+            if first_call:
+                items_list.append(response['result'])
+                total_result_count_page_limit = total_item_count // 20
+                first_call = False
+            else:
+                for i in range(search_results_len):
+                    data = response.get("result").get("search_results", [])[i].get("records", [])
+                    items_list[0].get('search_results', [])[i].get("records", []).extend(data)
+
+            # If we got all the results or if we reached maximum pages
+            if total_item_count <= result_length or params['sysparm_page'] >= total_result_count_page_limit + 1:
+                break
+            params['sysparm_page'] = params['sysparm_page'] + 1
+
+        action_result.add_data(items_list)
+        action_result.update_summary({SERVICENOW_JSON_TOTAL_RECORDS: total_item_count})
+        return phantom.APP_SUCCESS
+
+    def _search_sources(self, param):
+
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # Progress
+        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
+
+        # Connectivity
+        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
+
+        sysparm_term = param[SERVICENOW_JSON_SYSPARM_TERM]
+        sysparm_search_sources = param[SERVICENOW_JSON_SYSPARM_SEARCH_SOURCES]
+
+        search_sources = [x.strip() for x in set(sysparm_search_sources.split(",")) if x.strip()]
+
+        if not search_sources:
+            return action_result.set_status(phantom.APP_ERROR, "Please provide valid inputs for sysparm_search_sources"), None
+
+        sysparm_search_sources = ",".join(search_sources)
+        ret_val = self._search_sources_details(action_result, sysparm_term, sysparm_search_sources)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
     def _on_poll(self, param):
 
         URI_REGEX = '[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
@@ -1967,6 +2055,8 @@ class ServicenowConnector(BaseConnector):
             ret_val = self._update_ticket(param)
         elif action == self.ACTION_ID_GET_VARIABLES:
             ret_val = self._get_variables(param)
+        elif action == self.ACTION_ID_SEARCH_SOURCES:
+            ret_val = self._search_sources(param)
         elif action == self.ACTION_ID_ON_POLL:
             ret_val = self._on_poll(param)
         elif action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY:
