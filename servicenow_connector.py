@@ -1694,9 +1694,9 @@ class ServicenowConnector(BaseConnector):
                 response.get("result").get("search_results", [])[i].pop("page")
                 result_length += len(response.get("result").get("search_results", [])[i].get("records", []))
 
-            # In first call I want to get response['result'] and in other calls I am extending records into result
-            # In first call we are adding total pages that need to iterate. Because, we are getting empty record in result due to ACLs
-            # Getting default/maximum records from servicenow is 20 in one page
+            # Initially fetch response['result'] and extend records into it in subsequent calls
+            # Add total pages to iterate in the first call to handle empty records due to ACLs
+            # ServiceNow returns up to 20 records per page by default
             if first_call:
                 items_list.append(response['result'])
                 total_result_count_page_limit = total_item_count // 20
