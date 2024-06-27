@@ -1,6 +1,6 @@
 # File: servicenow_consts.py
 #
-# Copyright (c) 2016-2023 Splunk Inc.
+# Copyright (c) 2016-2024 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,9 +42,12 @@ SERVICENOW_JSON_QUERY = "query"
 SERVICENOW_JSON_EXTRACT_IPS = "extract_ips"
 SERVICENOW_JSON_EXTRACT_HASHES = "extract_hashes"
 SERVICENOW_JSON_EXTRACT_URLS = "extract_urls"
+SERVICENOW_JSON_SYSPARM_TERM = "sysparm_term"
+SERVICENOW_JSON_SYSPARM_SEARCH_SOURCES = "sysparm_search_sources"
+SERVICENOW_JSON_TOTAL_RECORDS = "total_records"
 
 SERVICENOW_ERROR_CONNECTIVITY_TEST = "Test Connectivity Failed"
-SERVICENOW_SUCC_CONNECTIVITY_TEST = "Test Connectivity Passed"
+SERVICENOW_SUCCESS_CONNECTIVITY_TEST = "Test Connectivity Passed"
 SERVICENOW_ERROR_SERVER_CONNECTION = "Connection failed. {error_message}"
 SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {param} parameter"
 SERVICENOW_ERROR_FETCH_VALUE = ('Error occurred while fetching variable value'
@@ -53,8 +56,7 @@ SERVICENOW_ERROR_FETCH_QUESTION_ID = ('Error occurred while fetching question ID
                                     ' the item_option_value: {item_opt_value} of the System ID: {sys_id}')
 SERVICENOW_ERROR_FETCH_QUESTION = ('Error occurred while fetching question for'
                                  ' the question ID: {question_id} and the item_option_value: {item_opt_value} of the System ID: {sys_id}')
-SERVICENOW_ERROR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}.\
-Please check the asset configuration and rerun the test connectivity."
+SERVICENOW_ERROR_FROM_SERVER = "API failed, Status code: {status}, Message: {message}, Detail: {detail}."
 SERVICENOW_MESSAGE_GET_INCIDENT_TEST = "Querying a single Incident to check credentials"
 SERVICENOW_ERROR_FIELDS_JSON_PARSE = "Unable to parse the fields parameter into a dictionary"
 SERVICENOW_ERROR_VARIABLES_JSON_PARSE = "Unable to parse the variables parameter into a dictionary"
@@ -86,6 +88,10 @@ SERVICENOW_ITEM_OPT_MTOM_TABLE = "sc_item_option_mtom"
 SERVICENOW_ITEM_OPT_TABLE = "sc_item_option"
 SERVICENOW_ITEM_OPT_NEW_TABLE = "item_option_new"
 
+# In search sources we only getting 20 results per page
+SERVICENOW_DEFAULT_PAGE = 1
+SERVICENOW_MAX_LIMIT = 20
+
 SERVICENOW_DEFAULT_OFFSET = 0
 SERVICENOW_DEFAULT_LIMIT = 10000
 SERVICENOW_DEFAULT_MAX_LIMIT = 100
@@ -115,3 +121,4 @@ SERVICENOW_SYS_JOURNAL_FIELD_ENDPOINT = '/table/sys_journal_field'
 SERVICENOW_SC_CAT_ITEMS_ENDPOINT = '/table/sc_cat_item'
 SERVICENOW_CATALOG_OREDERNOW_ENDPOINT = '/servicecatalog/items/{}/order_now'
 SERVICENOW_API_ENDPOINT = '/api/now'
+SERVICENOW_SEARCH_SOURCE_ENDPOINT = "/search/sources/textsearch"

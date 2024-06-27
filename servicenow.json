@@ -6,15 +6,15 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2023 Splunk Inc.",
+    "license": "Copyright (c) 2016-2024 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.5.0",
+    "app_version": "2.6.0",
     "fips_compliant": true,
-    "min_phantom_version": "6.1.0",
+    "min_phantom_version": "6.2.1",
     "python_version": "3",
     "latest_tested_versions": [
-        "Cloud, Build tag: glide-tokyo-07-08-2022__patch1-09-01-2022"
+        "Cloud, glide-vancouver-07-06-2023__patch2-hotfix1-10-04-2023"
     ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
@@ -472,7 +472,7 @@
                     "data_path": "action_result.data.*.display_name",
                     "data_type": "string",
                     "example_values": [
-                        "SW000077 - Microsoft ASP.NET 2011"
+                        "SW000077 Test"
                     ]
                 },
                 {
@@ -607,7 +607,7 @@
                     "data_path": "action_result.data.*.model.display_value",
                     "data_type": "string",
                     "example_values": [
-                        "Microsoft ASP.NET 2011"
+                        "ASP.NET 2011"
                     ]
                 },
                 {
@@ -1040,7 +1040,7 @@
                     "data_path": "action_result.data.*.vendor.display_value",
                     "data_type": "string",
                     "example_values": [
-                        "Microsoft"
+                        "PRB000050 Test"
                     ]
                 },
                 {
@@ -6927,7 +6927,7 @@
                 {
                     "data_path": "action_result.parameter.description",
                     "example_values": [
-                        "Investigative actions to check for the presence of phapp_servicenow"
+                        "Switch occasionally drops connections"
                     ],
                     "data_type": "string"
                 },
@@ -11559,8 +11559,7 @@
                 {
                     "data_path": "action_result.summary.total_tickets",
                     "example_values": [
-                        2,
-                        68
+                        2
                     ],
                     "data_type": "numeric"
                 },
@@ -11574,8 +11573,7 @@
                 {
                     "data_path": "summary.total_objects",
                     "example_values": [
-                        1,
-                        2
+                        1
                     ],
                     "data_type": "numeric"
                 },
@@ -11739,7 +11737,7 @@
                     "column_order": 3,
                     "column_name": "Email",
                     "example_values": [
-                        "herman@phantom.us"
+                        "abc@pqr.us"
                     ],
                     "contains": [
                         "email"
@@ -12061,6 +12059,413 @@
             }
         },
         {
+            "action": "search sources",
+            "description": "Search for records across multiple tables",
+            "type": "investigate",
+            "identifier": "search_sources",
+            "verbose": "To find the list of search source IDs for the <b>sysparm_search_sources</b> parameter, follow this path in servicenow UI: All > Workspace Experience > Administration > Search Sources. Once there, click with two fingers/right click on the source name and copy the sys_id.",
+            "read_only": true,
+            "parameters": {
+                "sysparm_term": {
+                    "description": "Search record for the given term",
+                    "data_type": "string",
+                    "required": true,
+                    "order": 0
+                },
+                "sysparm_search_sources": {
+                    "description": "SYS ID of search sources, Comma-separated list allowed",
+                    "data_type": "string",
+                    "required": true,
+                    "order": 1,
+                    "contains": [
+                        "servicenow ticket sysid"
+                    ],
+                    "primary": true
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.sysparm_search_sources",
+                    "data_type": "string",
+                    "example_values": [
+                        "tec681c771testfedf0bcbe2c2606c"
+                    ],
+                    "contains": [
+                        "servicenow ticket sysid"
+                    ],
+                    "primary": true
+                },
+                {
+                    "data_path": "action_result.parameter.sysparm_term",
+                    "data_type": "string",
+                    "example_values": [
+                        "Resolved"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.result_count",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.fields.*.label",
+                    "data_type": "string",
+                    "example_values": [
+                        "Number"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.fields.*.label_plural",
+                    "data_type": "string",
+                    "example_values": [
+                        "Numbers"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.fields.*.max_length",
+                    "data_type": "numeric",
+                    "example_values": [
+                        40
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.fields.*.name",
+                    "data_type": "string",
+                    "example_values": [
+                        "number"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.fields.*.reference",
+                    "data_type": "string",
+                    "example_values": [
+                        "sys_user_group"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.fields.*.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "string"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.label",
+                    "data_type": "string",
+                    "example_values": [
+                        "Problem"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.limit",
+                    "data_type": "numeric",
+                    "example_values": [
+                        20
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.page",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.query",
+                    "data_type": "string",
+                    "example_values": [
+                        "123TEXTQUEtest=Fix Applied"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.record_count",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.assignment_group.display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.assignment_group.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.caller_id.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "System Administrator"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.caller_id.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "6816f7test016401c5a33be04be441"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.category.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "Inquiry / Help"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.category.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "inquiry"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.cmdb_ci.display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.cmdb_ci.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.number.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "INC000001"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.number.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "INC000001"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.opened_at.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "2023-04-05 00:59:28"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.opened_at.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "2023-04-05 07:59:28"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.priority.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "5 - Planning"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.priority.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "5"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.related_incidents.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.related_incidents.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "0"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.resolution_code.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.state.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "New"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.state.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "1"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.sys_id.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "c673edctest1106401f1e3f153af11"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.data.sys_id.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "td673test1106401f1e3f153af11"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.metadata.description",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.metadata.thumbnail_url",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.metadata.title",
+                    "data_type": "string",
+                    "example_values": [
+                        "hello"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.record_class_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "incident"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.record_url",
+                    "data_type": "string",
+                    "example_values": [
+                        "/incident.do?sys_id=test978221106401f1e99f11&sysparm_view=text_search"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "c673ettest97822119953af11"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.records.*.table",
+                    "data_type": "string",
+                    "example_values": [
+                        "incident"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "test897862996401f1e3f1990e"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.search_results.*.term",
+                    "data_type": "string",
+                    "example_values": [
+                        "Resolved"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sources.*.condition.display",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sources.*.condition.value",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.data.*.sources.*.name.display",
+                    "data_type": "string",
+                    "example_values": [
+                        "Tasks-Tickets    "
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sources.*.name.value",
+                    "data_type": "string",
+                    "example_values": [
+                        "Tasks-Tickets"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sources.*.source_table",
+                    "data_type": "string",
+                    "example_values": [
+                        "Problem"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.sources.*.sys_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "test8699964099f153af0e99"
+                    ],
+                    "contains": [
+                        "servicenow ticket sysid"
+                    ],
+                    "primary": true
+                },
+                {
+                    "data_path": "action_result.data.*.term",
+                    "data_type": "string",
+                    "example_values": [
+                        "Resolved"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary.total_records",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Total records: 0"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "width": 12,
+                "height": 5,
+                "type": "json",
+                "title": "Search Sources"
+            },
+            "versions": "EQ(*)"
+        },
+        {
             "action": "on poll",
             "description": "Ingest tickets from SNOW",
             "verbose": "For specifying and getting the On Poll filter (available in config parameters) work correctly for the date-time fields, follow the next steps. If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:MM:SS'). If the user provides a date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:MM:SS.",
@@ -12107,40 +12512,24 @@
     "pip_dependencies": {
         "wheel": [
             {
-                "module": "beautifulsoup4",
-                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
-            },
-            {
                 "module": "python_magic",
                 "input_file": "wheels/shared/python_magic-0.4.18-py2.py3-none-any.whl"
             },
             {
                 "module": "pytz",
                 "input_file": "wheels/shared/pytz-2021.1-py2.py3-none-any.whl"
-            },
-            {
-                "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.3.2.post1-py3-none-any.whl"
             }
         ]
     },
     "pip39_dependencies": {
         "wheel": [
             {
-                "module": "beautifulsoup4",
-                "input_file": "wheels/py3/beautifulsoup4-4.9.1-py3-none-any.whl"
-            },
-            {
                 "module": "python_magic",
                 "input_file": "wheels/shared/python_magic-0.4.18-py2.py3-none-any.whl"
             },
             {
                 "module": "pytz",
                 "input_file": "wheels/shared/pytz-2021.1-py2.py3-none-any.whl"
-            },
-            {
-                "module": "soupsieve",
-                "input_file": "wheels/py3/soupsieve-2.5-py3-none-any.whl"
             }
         ]
     }
