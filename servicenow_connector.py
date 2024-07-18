@@ -1632,8 +1632,6 @@ class ServicenowConnector(BaseConnector):
 
         tickets = self._paginator(endpoint, action_result, limit=limit)
 
-        self.save_progress(str(tickets))
-
         if tickets is None:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
