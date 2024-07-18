@@ -1044,11 +1044,12 @@ class ServicenowConnector(BaseConnector):
 
             # get total record count from headers
             if self._response_headers:
-                total_item_count = int(self._response_headers.get("X-Total-Count"))
+                total_item_count = int(self._response_headers.get("X-Total-Count", 1))
 
             # if result is found
-            if items.get("result"):
-                items_list.extend(items.get("result"))
+            result = items.get("result")
+            if result:
+                items_list.extend(result if isinstance(result, list) else [result])
 
             # extend item list if data is present on that page
             if limit and len(items_list) >= limit:
@@ -1630,6 +1631,8 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         tickets = self._paginator(endpoint, action_result, limit=limit)
+
+        self.save_progress(str(tickets))
 
         if tickets is None:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
