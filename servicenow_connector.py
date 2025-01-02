@@ -1044,11 +1044,12 @@ class ServicenowConnector(BaseConnector):
 
             # get total record count from headers
             if self._response_headers:
-                total_item_count = int(self._response_headers.get("X-Total-Count"))
+                total_item_count = int(self._response_headers.get("X-Total-Count", 1))
 
             # if result is found
-            if items.get("result"):
-                items_list.extend(items.get("result"))
+            result = items.get("result")
+            if result:
+                items_list.extend(result if isinstance(result, list) else [result])
 
             # extend item list if data is present on that page
             if limit and len(items_list) >= limit:
