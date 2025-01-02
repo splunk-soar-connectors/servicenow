@@ -2,7 +2,7 @@
 # ServiceNow
 
 Publisher: Splunk  
-Connector Version: 2.6.0  
+Connector Version: 2.6.1  
 Product Vendor: ServiceNow  
 Product Name: ServiceNow  
 Product Version Supported (regex): ".\*"  
@@ -177,8 +177,8 @@ default ports used by Splunk SOAR.
 |         https        | tcp                | 443  |
 
 
-### Configuration Variables
-The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a ServiceNow asset in SOAR.
+### Configuration variables
+This table lists the configuration variables required to operate ServiceNow. These variables are specified when configuring a ServiceNow asset in Splunk SOAR.
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
