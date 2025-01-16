@@ -7873,7 +7873,7 @@
                     "data_path": "action_result.summary.vault_failure_details",
                     "data_type": "string",
                     "example_values": [
-                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
+                        "{'Vault file could not be found with supplied Vault ID': ['<id>']}"
                     ]
                 },
                 {
@@ -10521,7 +10521,7 @@
                     "data_path": "action_result.summary.vault_failure_details",
                     "data_type": "string",
                     "example_values": [
-                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
+                        "{'Vault file could not be found with supplied Vault ID': ['<id>']}"
                     ]
                 },
                 {
@@ -12514,10 +12514,6 @@
             {
                 "module": "python_magic",
                 "input_file": "wheels/shared/python_magic-0.4.18-py2.py3-none-any.whl"
-            },
-            {
-                "module": "pytz",
-                "input_file": "wheels/shared/pytz-2021.1-py2.py3-none-any.whl"
             }
         ]
     },
