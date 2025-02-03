@@ -25,11 +25,11 @@ import ast
 import json
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 import encryption_helper
 import magic
-import pytz
 import requests
 from bs4 import BeautifulSoup
 from phantom.action_result import ActionResult
@@ -2014,8 +2014,8 @@ class ServicenowConnector(BaseConnector):
 
             if "timezone" in config:
                 dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT)
-                tz = pytz.timezone(config["timezone"])
-                new_dt = dt + tz.utcoffset(dt)
+                tz = ZoneInfo(config["timezone"])
+                new_dt = dt + (tz.utcoffset(dt) or timedelta(0))
                 updated_time = new_dt.strftime(SERVICENOW_DATETIME_FORMAT)
 
             self._state["last_time"] = updated_time
