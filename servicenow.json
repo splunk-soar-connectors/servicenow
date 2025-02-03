@@ -6,12 +6,12 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2024 Splunk Inc.",
+    "license": "Copyright (c) 2016-2025 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
-    "app_version": "2.6.1",
+    "app_version": "2.6.2",
     "fips_compliant": true,
-    "min_phantom_version": "6.2.1",
+    "min_phantom_version": "6.3.0",
     "python_version": "3",
     "latest_tested_versions": [
         "Cloud, glide-vancouver-07-06-2023__patch2-hotfix1-10-04-2023"
@@ -7873,7 +7873,7 @@
                     "data_path": "action_result.summary.vault_failure_details",
                     "data_type": "string",
                     "example_values": [
-                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
+                        "{'Vault file could not be found with supplied Vault ID': ['<id>']}"
                     ]
                 },
                 {
@@ -10521,7 +10521,7 @@
                     "data_path": "action_result.summary.vault_failure_details",
                     "data_type": "string",
                     "example_values": [
-                        "{'Vault file could not be found with supplied Vault ID': ['064b5a34257e981880d34913909e0ef83ebb4980']}"
+                        "{'Vault file could not be found with supplied Vault ID': ['<id>']}"
                     ]
                 },
                 {
@@ -12514,22 +12514,6 @@
             {
                 "module": "python_magic",
                 "input_file": "wheels/shared/python_magic-0.4.18-py2.py3-none-any.whl"
-            },
-            {
-                "module": "pytz",
-                "input_file": "wheels/shared/pytz-2021.1-py2.py3-none-any.whl"
-            }
-        ]
-    },
-    "pip39_dependencies": {
-        "wheel": [
-            {
-                "module": "python_magic",
-                "input_file": "wheels/shared/python_magic-0.4.18-py2.py3-none-any.whl"
-            },
-            {
-                "module": "pytz",
-                "input_file": "wheels/shared/pytz-2021.1-py2.py3-none-any.whl"
             }
         ]
     }
