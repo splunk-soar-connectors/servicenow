@@ -6,7 +6,7 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2024 Splunk Inc.",
+    "license": "Copyright (c) 2016-2025 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
     "app_version": "2.6.1",
