@@ -1,5 +1,5 @@
 Splunk SOAR ServiceNow
-Copyright (c) 2016-2024 Splunk Inc.
+Copyright (c) 2016-2025 Splunk Inc.
 
 Third-party Software Attributions:
 
@@ -7,10 +7,3 @@ Library: python-magic
 Version: 0.4.18
 License: MIT
 Copyright 2001-2014 Adam Hupp
-
-Library: pytz
-Version: 2021.1
-License: MIT
-License: Zope
-Copyright 1987-2006 implementation only works for dates between
-Copyright 2003-2019 Stuart Bishop <stuart@stuartbishop.net>
