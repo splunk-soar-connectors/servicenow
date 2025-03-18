@@ -51,10 +51,10 @@ SERVICENOW_SUCCESS_CONNECTIVITY_TEST = "Test Connectivity Passed"
 SERVICENOW_ERROR_SERVER_CONNECTION = "Connection failed. {error_message}"
 SERVICENOW_VALIDATE_INTEGER_MESSAGE = "Please provide a valid integer value in the {param} parameter"
 SERVICENOW_ERROR_FETCH_VALUE = (
-    "Error occurred while fetching variable value" " for the item_option_value: {item_opt_value} of the System ID: {sys_id}"
+    "Error occurred while fetching variable value for the item_option_value: {item_opt_value} of the System ID: {sys_id}"
 )
 SERVICENOW_ERROR_FETCH_QUESTION_ID = (
-    "Error occurred while fetching question ID for" " the item_option_value: {item_opt_value} of the System ID: {sys_id}"
+    "Error occurred while fetching question ID for the item_option_value: {item_opt_value} of the System ID: {sys_id}"
 )
 SERVICENOW_ERROR_FETCH_QUESTION = (
     "Error occurred while fetching question for"
@@ -66,10 +66,10 @@ SERVICENOW_ERROR_FIELDS_JSON_PARSE = "Unable to parse the fields parameter into 
 SERVICENOW_ERROR_VARIABLES_JSON_PARSE = "Unable to parse the variables parameter into a dictionary"
 SERVICENOW_ERROR_API_UNSUPPORTED_METHOD = "Unsupported method"
 SERVICENOW_ERROR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME = (
-    "Provide username and password to generate" "OAuth token for running Test Connectivity for the first time"
+    "Provide username and password to generateOAuth token for running Test Connectivity for the first time"
 )
 SERVICENOW_ERROR_ONE_PARAM_REQ = (
-    "Please specify at least one of the parameters" " short_description, description, or fields to create the ticket with"
+    "Please specify at least one of the parameters short_description, description, or fields to create the ticket with"
 )
 SERVICENOW_ERROR_FAILURES = "Some tickets had issues during ingestion, see logs for details"
 SERVICENOW_ERROR_CODE_MESSAGE = "Error code unavailable"
