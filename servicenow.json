@@ -12509,7 +12509,7 @@
             "versions": "EQ(*)"
         }
     ],
-    "pip_dependencies": {
+    "pip39_dependencies": {
         "wheel": [
             {
                 "module": "python_magic",
