@@ -737,8 +737,6 @@ class ServicenowConnector(BaseConnector):
         else:
             data.update({"description": "{}\n\n{}{}".format("", SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=data, auth=auth, headers=headers, method="post")
-        self.debug_print(f"the response from create ticket")
-        self.debug_print(f"{response}")
 
         if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
