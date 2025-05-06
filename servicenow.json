@@ -14,7 +14,7 @@
     "min_phantom_version": "6.3.0",
     "python_version": "3",
     "latest_tested_versions": [
-        "Cloud, glide-vancouver-07-06-2023__patch2-hotfix1-10-04-2023"
+        "Cloud, glide-washingtondc-12-20-2023__patch10-01-15-2025"
     ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
