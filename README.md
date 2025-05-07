@@ -698,7 +698,7 @@ action_result.data.\*.items.\*.local_currency | string | | USD |
 action_result.data.\*.items.\*.localized_price | string | | $139.99 |
 action_result.data.\*.items.\*.localized_recurring_price | string | | $0.00 |
 action_result.data.\*.items.\*.location | string | | |
-action_result.data.\*.items.\*.mandatory_attachment | string | | true false |
+action_result.data.\*.items.\*.mandatory_attachment | string | | true |
 action_result.data.\*.items.\*.meta | string | | |
 action_result.data.\*.items.\*.mobile_hide_price | string | | false |
 action_result.data.\*.items.\*.mobile_picture | string | | |
@@ -766,7 +766,7 @@ action_result.data.\*.items.\*.vendor.link | string | | https://dev78070.service
 action_result.data.\*.items.\*.vendor.value | string | | 0e8b8e650a0a0b3b004f285ffbb1a4fc |
 action_result.data.\*.items.\*.visible_bundle | string | | true |
 action_result.data.\*.items.\*.visible_guide | string | | true |
-action_result.data.\*.items.\*.visible_standalone | string | | true false |
+action_result.data.\*.items.\*.visible_standalone | string | | true |
 action_result.data.\*.items.\*.workflow | string | | |
 action_result.data.\*.items.\*.workflow.link | string | | https://dev78070.service-now.com/api/now/table/wf_workflow/c2c3f55037023000158bbfc8bcbe5d6d |
 action_result.data.\*.items.\*.workflow.value | string | | c2c3f55037023000158bbfc8bcbe5d6d |
@@ -1475,7 +1475,7 @@ action_result.data.\*.department | string | | |
 action_result.data.\*.depreciated_amount | string | | 0 |
 action_result.data.\*.depreciation | string | | |
 action_result.data.\*.depreciation_date | string | | |
-action_result.data.\*.description | string | | Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 495 |
+action_result.data.\*.description | string | | Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 000 |
 action_result.data.\*.display_name | string | | |
 action_result.data.\*.disposal_reason | string | | |
 action_result.data.\*.due | string | | |
@@ -2126,7 +2126,7 @@ action_result.status | string | | success failed |
 action_result.parameter.max_results | numeric | | 100 |
 action_result.parameter.query | string | | sysparm_query=short_descriptionLIKEunable short_descriptionLIKEphapp_servicenow |
 action_result.parameter.query_table | string | `servicenow table` | incident |
-action_result.data.\*.active | string | | true false |
+action_result.data.\*.active | string | | true |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
 action_result.data.\*.admin_password | string | | |
@@ -2195,7 +2195,7 @@ action_result.data.\*.knowledge | string | | false |
 action_result.data.\*.location | string | | |
 action_result.data.\*.location.link | string | `url` | https://devtest.service-now.com/api/now/table/cmn_location/1083361cc611227501b682158cabf646 |
 action_result.data.\*.location.value | string | `md5` | 1083361cc611227501b682158cabf646 |
-action_result.data.\*.made_sla | string | | true false |
+action_result.data.\*.made_sla | string | | true |
 action_result.data.\*.notify | string | | 1 |
 action_result.data.\*.number | string | `servicenow ticket number` | INC0000001 |
 action_result.data.\*.opened_at | string | | 2016-08-10 16:14:29 |
