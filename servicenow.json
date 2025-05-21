@@ -14,7 +14,7 @@
     "min_phantom_version": "6.3.0",
     "python_version": "3",
     "latest_tested_versions": [
-        "Cloud, glide-vancouver-07-06-2023__patch2-hotfix1-10-04-2023"
+        "Cloud, glide-washingtondc-12-20-2023__patch10-01-15-2025"
     ],
     "product_name": "ServiceNow",
     "product_version_regex": ".*",
@@ -2961,8 +2961,7 @@
                     "data_path": "action_result.data.*.items.*.mandatory_attachment",
                     "data_type": "string",
                     "example_values": [
-                        "true",
-                        "false"
+                        "true"
                     ]
                 },
                 {
@@ -3398,8 +3397,7 @@
                     "data_path": "action_result.data.*.items.*.visible_standalone",
                     "data_type": "string",
                     "example_values": [
-                        "true",
-                        "false"
+                        "true"
                     ]
                 },
                 {
@@ -7279,7 +7277,7 @@
                 {
                     "data_path": "action_result.data.*.description",
                     "example_values": [
-                        "Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 495"
+                        "Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 000"
                     ],
                     "data_type": "string"
                 },
@@ -10734,8 +10732,7 @@
                 {
                     "data_path": "action_result.data.*.active",
                     "example_values": [
-                        "true",
-                        "false"
+                        "true"
                     ],
                     "data_type": "string"
                 },
@@ -11165,8 +11162,7 @@
                 {
                     "data_path": "action_result.data.*.made_sla",
                     "example_values": [
-                        "true",
-                        "false"
+                        "true"
                     ],
                     "data_type": "string"
                 },

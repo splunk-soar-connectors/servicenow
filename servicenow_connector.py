@@ -749,14 +749,18 @@ class ServicenowConnector(BaseConnector):
         action_result.update_summary({SERVICENOW_JSON_NEW_TICKET_ID: created_ticket_id})
 
         vault_ids = param.get(SERVICENOW_JSON_VAULT_ID)
+        ret_val_attachment = True
         if vault_ids:
-            ret_val = self._handle_multiple_attachements(action_result, table, created_ticket_id, vault_ids)
-            if phantom.is_fail(ret_val):
-                return action_result.get_status()
+            ret_val_attachment = self._handle_multiple_attachements(action_result, table, created_ticket_id, vault_ids)
 
         ret_val = self._get_ticket_details(action_result, param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE), created_ticket_id)
 
         if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        if phantom.is_fail(ret_val_attachment):
+            # Add a message indicating ticket creation succeeded but attachment upload failed
+            action_result.append_to_message("Successfully created the ticket, but failed to add attachment(s)")
             return action_result.get_status()
 
         return action_result.set_status(phantom.APP_SUCCESS)
@@ -834,6 +838,7 @@ class ServicenowConnector(BaseConnector):
         action_result.update_summary({"successfully_added_attachments_count": attachment_count})
         if vault_error:
             action_result.update_summary({"vault_failure_details": vault_error})
+            return phantom.APP_ERROR
 
         return phantom.APP_SUCCESS
 
@@ -897,14 +902,19 @@ class ServicenowConnector(BaseConnector):
 
             action_result.update_summary({"fields_updated": True})
 
+        ret_val_attachment = True
         if vault_ids:
-            ret_val = self._handle_multiple_attachements(action_result, table, ticket_id, vault_ids)
-            if phantom.is_fail(ret_val):
-                return action_result.get_status()
+            ret_val_attachment = self._handle_multiple_attachements(action_result, table, ticket_id, vault_ids)
 
         ret_val = self._get_ticket_details(action_result, table, ticket_id)
 
         if phantom.is_fail(ret_val):
+            return action_result.get_status()
+
+        if phantom.is_fail(ret_val_attachment):
+            if fields:
+                # Add a message indicating ticket was updated with other fields but attachment upload failed
+                action_result.append_to_message("Successfully updated the ticket, but failed to add attachment(s)")
             return action_result.get_status()
 
         return action_result.set_status(phantom.APP_SUCCESS)
