@@ -1,7 +1,7 @@
 # ServiceNow
 
 Publisher: Splunk \
-Connector Version: 2.6.3 \
+Connector Version: 2.6.4 \
 Product Vendor: ServiceNow \
 Product Name: ServiceNow \
 Minimum Product Version: 6.3.0
