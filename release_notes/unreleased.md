@@ -1,1 +1,3 @@
 **Unreleased**
+
+* PAPP-36183: Performance improvements specifically related to create_ticket and update_ticket
