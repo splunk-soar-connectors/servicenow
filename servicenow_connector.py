@@ -23,10 +23,12 @@ try:
 except:
     pass
 import ast
+import codecs
 import json
 import re
 import sys
 from datetime import datetime, timedelta
+from typing import Any
 from zoneinfo import ZoneInfo
 
 import encryption_helper
@@ -610,13 +612,8 @@ class ServicenowConnector(BaseConnector):
         return 0, None, None, None
 
     def _test_connectivity(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
         if phantom.is_fail(ret_val):
@@ -644,17 +641,20 @@ class ServicenowConnector(BaseConnector):
         self.save_progress(SERVICENOW_SUCCESS_CONNECTIVITY_TEST)
         return action_result.set_status(phantom.APP_SUCCESS, SERVICENOW_SUCCESS_CONNECTIVITY_TEST)
 
-    def _get_fields(self, param, action_result):
-        fields = param.get(SERVICENOW_JSON_FIELDS)
+    def _create_ticket(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
+        action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # fields is an optional field
-        if not fields:
-            return RetVal(phantom.APP_SUCCESS, None)
+        table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
+
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
+
+        fields = param.get(SERVICENOW_JSON_FIELDS, "{}")
 
         try:
-            fields = ast.literal_eval(fields)
-        except Exception as e:
-            error_message = self._get_error_message_from_exception(e)
+            fields = json.loads(fields)
+        except json.JSONDecodeError as e:
+            error_message = str(e)
             return RetVal(
                 action_result.set_status(
                     phantom.APP_ERROR,
@@ -667,34 +667,8 @@ class ServicenowConnector(BaseConnector):
         if not isinstance(fields, dict):
             return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
 
-        return RetVal(phantom.APP_SUCCESS, fields)
-
-    def _create_ticket(self, param):
-        action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
-
-        table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
-
-        ret_val, auth, headers = self._get_authorization_credentials(action_result)
-        if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
-
-        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
-
-        ret_val, fields = self._get_fields(param, action_result)
-
-        if phantom.is_fail(ret_val):
-            return action_result.get_status()
-
         data = dict()
-
-        if fields:
-            data.update(fields)
+        data.update(fields)
 
         short_desc = param.get(SERVICENOW_JSON_SHORT_DESCRIPTION)
         desc = param.get(SERVICENOW_JSON_DESCRIPTION)
@@ -703,39 +677,20 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_ONE_PARAM_REQ)
 
         if short_desc:
-            data.update(
-                {
-                    "short_description": short_desc.replace("\\n", "\n")
-                    .replace("\\t", "\t")
-                    .replace("\\'", "'")
-                    .replace('\\"', '"')
-                    .replace("\\a", "\a")
-                    .replace("\\b", "\b")
-                }
-            )
+            data.update({"short_description": codecs.decode(short_desc, "unicode_escape")})
 
         if desc:
-            json_description = param.get(SERVICENOW_JSON_DESCRIPTION, "")
-            data.update(
-                {
-                    "description": "{}\n\n{}{}".format(
-                        json_description.replace("\\n", "\n")
-                        .replace("\\r", "\r")
-                        .replace("\\t", "\t")
-                        .replace("\\'", "'")
-                        .replace('\\"', '"')
-                        .replace("\\a", "\a")
-                        .replace("\\b", "\b"),
-                        SERVICENOW_TICKET_FOOTNOTE,
-                        self.get_container_id(),
-                    )
-                }
-            )
-        elif fields and "description" in fields:
+            json_description = codecs.decode(desc, "unicode_escape")
+            data.update({"description": f"{json_description}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
+        elif "description" in fields:
             field_description = fields.get(SERVICENOW_JSON_DESCRIPTION, "")
             data.update({"description": f"{field_description}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
         else:
             data.update({"description": "{}\n\n{}{}".format("", SERVICENOW_TICKET_FOOTNOTE, self.get_container_id())})
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if phantom.is_fail(ret_val):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
         ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=data, auth=auth, headers=headers, method="post")
 
         if phantom.is_fail(ret_val):
@@ -745,24 +700,21 @@ class ServicenowConnector(BaseConnector):
         if not response.get("result"):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
         created_ticket_id = response.get("result", {}).get("sys_id")
+        res = response.get("result")
 
         action_result.update_summary({SERVICENOW_JSON_NEW_TICKET_ID: created_ticket_id})
 
         vault_ids = param.get(SERVICENOW_JSON_VAULT_ID)
-        ret_val_attachment = True
         if vault_ids:
-            ret_val_attachment = self._handle_multiple_attachements(action_result, table, created_ticket_id, vault_ids)
+            ret_val_attachment, attachments_added = self._handle_multiple_attachements(action_result, table, created_ticket_id, vault_ids)
+            if phantom.is_fail(ret_val_attachment):
+                # Add a message indicating ticket creation succeeded but attachment upload failed
+                action_result.add_data(res)
+                action_result.append_to_message("Successfully created the ticket, but failed to add attachment(s)")
+                return action_result.get_status()
+            res["attachment_details"] = attachments_added
 
-        ret_val = self._get_ticket_details(action_result, param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE), created_ticket_id)
-
-        if phantom.is_fail(ret_val):
-            return action_result.get_status()
-
-        if phantom.is_fail(ret_val_attachment):
-            # Add a message indicating ticket creation succeeded but attachment upload failed
-            action_result.append_to_message("Successfully created the ticket, but failed to add attachment(s)")
-            return action_result.get_status()
-
+        action_result.add_data(res)
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _add_attachment(self, action_result, table, ticket_id, vault_id):
@@ -807,23 +759,26 @@ class ServicenowConnector(BaseConnector):
 
         return (phantom.APP_SUCCESS, response)
 
-    def _handle_multiple_attachements(self, action_result, table, ticket_id, vault_ids):
+    def _handle_multiple_attachements(self, action_result, table, ticket_id, vault_ids) -> tuple[bool, list[dict[str, Any]]]:
         attachment_count = 0
         vault_error = {}
         vault_ids = self.csv_to_list(vault_ids)
+        responses = []
         for vault_id in vault_ids:
             if vault_id:
                 self.save_progress(f"Attaching file to the ticket with vault id {vault_id}")
 
                 try:
                     ret_val, response = self._add_attachment(action_result, table, ticket_id, vault_id)
+                    responses.append(response.get("result", {}))
+
                 except Exception as e:
                     error_message = self._get_error_message_from_exception(e)
                     return action_result.set_status(
                         phantom.APP_ERROR,
                         f"Invalid Vault ID, please enter \
                                         valid Vault ID. {error_message}",
-                    )
+                    ), []
 
                 if phantom.is_success(ret_val):
                     attachment_count += 1
@@ -838,18 +793,13 @@ class ServicenowConnector(BaseConnector):
         action_result.update_summary({"successfully_added_attachments_count": attachment_count})
         if vault_error:
             action_result.update_summary({"vault_failure_details": vault_error})
-            return phantom.APP_ERROR
+            return phantom.APP_ERROR, []
 
-        return phantom.APP_SUCCESS
+        return phantom.APP_SUCCESS, responses
 
     def _update_ticket(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         try:
             table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
@@ -884,15 +834,29 @@ class ServicenowConnector(BaseConnector):
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, ticket_id)
 
-        ret_val, fields = self._get_fields(param, action_result)
+        fields = param.get(SERVICENOW_JSON_FIELDS, "{}")
 
-        if phantom.is_fail(ret_val):
-            return action_result.get_status()
+        try:
+            fields = json.loads(fields)
+        except json.JSONDecodeError as e:
+            error_message = str(e)
+            return RetVal(
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    f"Error building fields dictionary: {error_message}. \
+                        Please ensure that provided input is in valid JSON format",
+                ),
+                None,
+            )
+
+        if not isinstance(fields, dict):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
 
         vault_ids = param.get(SERVICENOW_JSON_VAULT_ID)
         if not fields and not vault_ids:
             return action_result.set_status(phantom.APP_ERROR, "Please specify at-least one of fields or vault_id parameter")
 
+        res = {}
         if fields:
             self.save_progress("Updating ticket with the provided fields")
             ret_val, response = self._make_rest_call_helper(action_result, endpoint, data=fields, auth=auth, headers=headers, method="put")
@@ -901,21 +865,19 @@ class ServicenowConnector(BaseConnector):
                 return action_result.get_status()
 
             action_result.update_summary({"fields_updated": True})
+            res.update(response.get("result", {}))
 
-        ret_val_attachment = True
         if vault_ids:
-            ret_val_attachment = self._handle_multiple_attachements(action_result, table, ticket_id, vault_ids)
+            ret_val_attachment, attachments_added = self._handle_multiple_attachements(action_result, table, ticket_id, vault_ids)
 
-        ret_val = self._get_ticket_details(action_result, table, ticket_id)
-
-        if phantom.is_fail(ret_val):
-            return action_result.get_status()
-
-        if phantom.is_fail(ret_val_attachment):
-            if fields:
-                # Add a message indicating ticket was updated with other fields but attachment upload failed
-                action_result.append_to_message("Successfully updated the ticket, but failed to add attachment(s)")
-            return action_result.get_status()
+            if phantom.is_fail(ret_val_attachment):
+                if fields:
+                    # Add a message indicating ticket was updated with other fields but attachment upload failed
+                    action_result.add_data(res)
+                    action_result.append_to_message("Successfully updated the ticket, but failed to add attachment(s)")
+                return action_result.get_status()
+            res["attachment_details"] = attachments_added
+        action_result.add_data(res)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -1004,13 +966,8 @@ class ServicenowConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _get_ticket(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         try:
             table_name = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
@@ -1077,9 +1034,6 @@ class ServicenowConnector(BaseConnector):
     def _describe_service_catalog(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
         catalog_sys_id = param["sys_id"]
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
@@ -1126,6 +1080,7 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, "Details fetched successfully")
 
     def _describe_catalog_item(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # Progress
@@ -1223,10 +1178,8 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _list_categories(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
         ret_val, limit = self._validate_integers(
             action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS
@@ -1248,10 +1201,8 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _list_service_catalogs(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
         ret_val, limit = self._validate_integers(
             action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS
@@ -1273,14 +1224,8 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _add_work_note(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        ret_val, auth, headers = self._get_authorization_credentials(action_result)
-        if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         try:
             sys_id = param.get("id")
@@ -1288,6 +1233,10 @@ class ServicenowConnector(BaseConnector):
             is_sys_id = param.get("is_sys_id", False)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if phantom.is_fail(ret_val):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
             params = {"sysparm_query": f"number={sys_id}"}
@@ -1334,10 +1283,8 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, "Added the work note successfully")
 
     def _request_catalog_item(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
@@ -1429,14 +1376,8 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, "The item has been requested")
 
     def _add_comment(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        ret_val, auth, headers = self._get_authorization_credentials(action_result)
-        if phantom.is_fail(ret_val):
-            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         try:
             sys_id = param.get("id")
@@ -1444,6 +1385,10 @@ class ServicenowConnector(BaseConnector):
             is_sys_id = param.get("is_sys_id", False)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
+
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if phantom.is_fail(ret_val):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
             params = {"sysparm_query": f"number={sys_id}"}
@@ -1490,13 +1435,9 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS, message)
 
     def _list_tickets(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
         table_name = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
         endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
         request_params = {"sysparm_query": param.get(SERVICENOW_JSON_FILTER, "")}
@@ -1524,14 +1465,9 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_variables(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
         sys_id = param[SERVICENOW_JSON_SYS_ID]
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         endpoint = SERVICENOW_TABLE_ENDPOINT.format(SERVICENOW_ITEM_OPT_MTOM_TABLE)
         request_params = {"request_item": sys_id}
@@ -1631,12 +1567,6 @@ class ServicenowConnector(BaseConnector):
             action_result = self.add_action_result(ActionResult(dict(action_result_param)))
         else:
             action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_BASE_QUERY_URI, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         self.save_progress(f"In action handler for: {self.get_action_identifier()}")
 
@@ -1739,13 +1669,8 @@ class ServicenowConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _search_sources(self, param):
+        self.save_progress(f"In action handler for: {self.get_action_identifier()}")
         action_result = self.add_action_result(ActionResult(dict(param)))
-
-        # Progress
-        self.save_progress(SERVICENOW_USING_BASE_URL, base_url=self._base_url)
-
-        # Connectivity
-        self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         sysparm_term = param[SERVICENOW_JSON_SYSPARM_TERM]
         sysparm_search_sources = param[SERVICENOW_JSON_SYSPARM_SEARCH_SOURCES]
