@@ -12,7 +12,7 @@
     "app_version": "2.6.5",
     "fips_compliant": true,
     "min_phantom_version": "6.3.0",
-    "python_version": "3",
+    "python_version": ["3.9", "3.13"],
     "latest_tested_versions": [
         "Cloud, glide-washingtondc-12-20-2023__patch10-01-15-2025"
     ],
