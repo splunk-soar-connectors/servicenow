@@ -1000,6 +1000,7 @@ class ServicenowConnector(BaseConnector):
 
         payload["sysparm_offset"] = SERVICENOW_DEFAULT_OFFSET
         payload["sysparm_limit"] = min(limit, SERVICENOW_DEFAULT_LIMIT)
+        total_item_count = 0  # Initialize to prevent unbound variable error
 
         while True:
             ret_val, items = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=payload)
