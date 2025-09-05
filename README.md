@@ -1,9 +1,9 @@
 # ServiceNow
 
-Publisher: Splunk \
-Connector Version: 2.6.5 \
-Product Vendor: ServiceNow \
-Product Name: ServiceNow \
+Publisher: Splunk <br>
+Connector Version: 2.6.5 <br>
+Product Vendor: ServiceNow <br>
+Product Name: ServiceNow <br>
 Minimum Product Version: 6.3.0
 
 This app integrates with ServiceNow to perform investigative and generic actions
@@ -145,30 +145,30 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Run a query on the device to test connection and credentials \
-[add work note](#action-add-work-note) - Add a work note to a record \
-[add comment](#action-add-comment) - Add a comment to a record \
-[describe service catalog](#action-describe-service-catalog) - Fetches the details of a catalog \
-[request catalog item](#action-request-catalog-item) - Requests a catalog item \
-[describe catalog item](#action-describe-catalog-item) - Fetches the details of a catalog item \
-[list services](#action-list-services) - Get a list of items \
-[list categories](#action-list-categories) - Get a list of categories \
-[list service catalogs](#action-list-service-catalogs) - Get a list of catalogs \
-[list tickets](#action-list-tickets) - Get a list of tickets/records \
-[create ticket](#action-create-ticket) - Create a new ticket/record \
-[get ticket](#action-get-ticket) - Get ticket/record information \
-[update ticket](#action-update-ticket) - Update ticket/record information \
-[get variables](#action-get-variables) - Get variables for a ticket/record \
-[run query](#action-run-query) - Gets object data according to the specified query \
-[query users](#action-query-users) - Gets user data according to the specified query, username, or system ID \
-[search sources](#action-search-sources) - Search for records across multiple tables \
+[test connectivity](#action-test-connectivity) - Run a query on the device to test connection and credentials <br>
+[add work note](#action-add-work-note) - Add a work note to a record <br>
+[add comment](#action-add-comment) - Add a comment to a record <br>
+[describe service catalog](#action-describe-service-catalog) - Fetches the details of a catalog <br>
+[request catalog item](#action-request-catalog-item) - Requests a catalog item <br>
+[describe catalog item](#action-describe-catalog-item) - Fetches the details of a catalog item <br>
+[list services](#action-list-services) - Get a list of items <br>
+[list categories](#action-list-categories) - Get a list of categories <br>
+[list service catalogs](#action-list-service-catalogs) - Get a list of catalogs <br>
+[list tickets](#action-list-tickets) - Get a list of tickets/records <br>
+[create ticket](#action-create-ticket) - Create a new ticket/record <br>
+[get ticket](#action-get-ticket) - Get ticket/record information <br>
+[update ticket](#action-update-ticket) - Update ticket/record information <br>
+[get variables](#action-get-variables) - Get variables for a ticket/record <br>
+[run query](#action-run-query) - Gets object data according to the specified query <br>
+[query users](#action-query-users) - Gets user data according to the specified query, username, or system ID <br>
+[search sources](#action-search-sources) - Search for records across multiple tables <br>
 [on poll](#action-on-poll) - Ingest tickets from SNOW
 
 ## action: 'test connectivity'
 
 Run a query on the device to test connection and credentials
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -183,7 +183,7 @@ No Output
 
 Add a work note to a record
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run. For 'work_note' parameter, users can provide new line(\\n), single quote(\\'), double quote(\\") and backspace(\\b) as escape sequences.
@@ -375,7 +375,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Add a comment to a record
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Users can provide a valid ticket number in the 'sys_id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'sys_id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run. For 'comment' parameter, users can provide new line(\\n), single quote(\\'), double quote(\\") and backspace(\\b) as escape sequences.
@@ -601,7 +601,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetches the details of a catalog
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -796,7 +796,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Requests a catalog item
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -900,7 +900,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetches the details of a catalog item
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -1002,7 +1002,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get a list of items
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 The 'search text' parameter will search the text in the 'Name', 'Display Name', 'Short Description', and 'Description' fields of an item.
@@ -1123,7 +1123,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get a list of categories
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -1189,7 +1189,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get a list of catalogs
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -1238,7 +1238,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get a list of tickets/records
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 Steps for getting the required filter query are as follows: In the ServiceNow instance, navigate to the required table's page. Create the query in the ServiceNow UI. On the top-left corner of the page, right-click on the query string and select the 'Copy query' option to copy the required query string. This query string can be further used or modified as per the user's need to provide in the filter parameter of the action. If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>. If the <b>max_results</b> value is not specified, the action defaults to <b>100</b>. For specifying and getting the filter to work correctly, below is the criteria for the date-time fields: <ul><li>If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:mm:SS'). </li> <li>If the user provides a date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:mm:SS.</li></ul>
@@ -1382,7 +1382,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Create a new ticket/record
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Create a new ticket with the given <b>short_description</b> and <b>description</b> (the values provided in the <b>short_description</b> and <b>description</b> action parameters will override the values provided for these keys in the <b>fields</b> action parameter). Additional values can be specified in the <b>fields</b> parameter. By default, the action appends the 'Added by Phantom for container id: \<container_id_of_action_run>' footnote after the value of description provided either in the <b>description</b> or <b>fields</b> action parameters. If the value for <b>description</b> is not provided in any of the above-mentioned two action parameters, then, the default footnote will be added in the description of the created ticket. Study the results of the <b>get ticket</b> action to get more information about all the properties that can be added. The JSON that is specified in the <b>fields</b> parameter should have the keys and values specified in double-quotes string format, except in the case of boolean values, which should be either <i>True</i> or <i>False</i> (without any single quotes); for example: {"short_description": "Zeus, multiple actions need to be taken", "made_sla": False}.<br><br>If this action is performed from the playbook the easiest thing to do is create a dictionary (e.g: <i>my_fields_value_dict</i>) and then pass the return value of <i>json.dumps(my_fields_value_dict)</i> as the value of <b>fields</b>. Please see the servicenow_app playbook for an example.<br><br>One can specify a <b>table</b> other than the <i>incident</i> to create the ticket in. Do note that the fields for user-generated tables, usually are named with <i>u\_</i> prefix. In such cases, it is better to use the <b>fields</b> parameter to set values.<br><br>To set a parent-child relationship between two tickets, specify the parent ticket's ID in a <b>parent_incident</b> field in the <b>fields</b> parameter while creating the child ticket.<br><br>ServiceNow restricts the upload time and the file size of attached files, which may cause file uploads to fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href="https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0718101" target="_blank">this link</a> on the ServiceNow Website for more information.<br><br>For updating the timeout for attaching the file please go to <b>System Definition</b>-><b>Transaction Quota Rules</b>. Update the <b>maximum duration</b> field as per your requirement in <b>REST Attachment API request timeout</b> or/and <b>REST and JSON Catch ALL</b> rule. The <b>REST Attachment API request timeout</b> rule applies to all incoming attachment requests. Any request exceeding the maximum duration set here will be cancelled and the <b>REST and JSON Catch All</b> rule will be used for all REST transactions.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes.<br><br>For the <b>short_description</b> action parameter, users can provide new line(\\n), tab(\\t), single quote(\\'), double quote(\\"), alarm or beep(\\a) and backspace(\\b) as escape sequences and for the <b>description</b> action parameter, new line(\\n, \\r), tab(\\t), single quote(\\'), double quote(\\"), alarm or beep(\\a) and backspace(\\b) can be provided as escape sequences.
@@ -1592,7 +1592,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get ticket/record information
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>. Users can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.
@@ -1841,7 +1841,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update ticket/record information
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Update an already existing ticket with the values that are specified in the <b>fields</b> parameter. The user has to know the key names to set in this parameter. Study the results of the <b>get ticket</b> action to get more info about all the properties that can be updated. The JSON that is specified in the 'fields' parameter should have the keys and values specified in double-quotes string format, except in case of boolean values, which should be either <i>True</i> or <i>False</i> (without any single quotes); for example: {"short_description": "Zeus, multiple actions need to be taken", "made_sla": False}<br><br>The action first attempts to update the ticket with the values in <b>fields</b>. If this call is successful, it continues to attach the file specified in <b>vault_id</b>. These are two separate calls made to ServiceNow.<br><br>ServiceNow restricts the upload time and the file size of attached files, which may cause file uploads (of attachments) to fail. These values can be configured by an admin on the ServiceNow device. As of this writing, please go to <a href="https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB0718101" target="_blank">this link</a> on the ServiceNow Website for more information.<br><br>For updating the timeout for attaching the file please go to <b>System Definition</b>-><b>Transaction Quota Rules</b>. Update the <b>maximum duration</b> field as per your requirement in <b>REST Attachment API request timeout</b> or/and <b>REST and JSON Catch ALL</b> rule. The <b>REST Attachment API request timeout</b> rule applies to all incoming attachment requests. Any request exceeding the maximum duration set here will be cancelled and the <b>REST and JSON Catch All</b> rule will be used for all REST transactions.<br><br>If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>.<br><br>ServiceNow does not return an error if an invalid field is updated, or if a valid field is updated in an invalid manner (e.g: updating the <i>caller_id</i> dictionary with your dictionary). For the best results, please check the results of the action in the JSON view to verify the changes. Users can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.<br><br>If the <b>short_description</b> action parameter is added as a key in the <b>fields</b> parameter then users can provide new line(\\n), tab(\\t), single quote(\\'), double quote(\\"), alarm or beep(\\a) and backspace(\\b) as escape sequences in the value. Similarly if the <b>description</b> action parameter is added as a key in <b>fields</b> parameter, then new line(\\n, \\r), tab(\\t), single quote(\\'), double quote(\\"), alarm or beep(\\a) and backspace(\\b) can be provided as escape sequences.
@@ -2074,7 +2074,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get variables for a ticket/record
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 The System ID for this action can be obtained by the below steps. Navigate to ServiceNow platform and enter sc_item_option_mtom.LIST in the search panel in the left navigation pane. This opens the list of variables in a new tab. Click on the Parent Item and it will open the Requested Item page. Click on the Options menu available in the top-left corner of the page and select the 'Copy sys_id' option to copy the required System ID.
@@ -2107,7 +2107,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Gets object data according to the specified query
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -2263,7 +2263,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Gets user data according to the specified query, username, or system ID
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -2352,7 +2352,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Search for records across multiple tables
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 To find the list of search source IDs for the <b>sysparm_search_sources</b> parameter, follow this path in servicenow UI: All > Workspace Experience > Administration > Search Sources. Once there, click with two fingers/right click on the source name and copy the sys_id.
@@ -2430,7 +2430,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Ingest tickets from SNOW
 
-Type: **ingest** \
+Type: **ingest** <br>
 Read only: **True**
 
 For specifying and getting the On Poll filter (available in config parameters) work correctly for the date-time fields, follow the next steps. If the user provides date-time filter based on local timezone as selected on the ServiceNow settings, follow the syntax i.e. sys_created_on>javascript:gs.dateGenerate('YYYY-MM-DD','HH:MM:SS'). If the user provides a date-time filter based on GMT/UTC timezone, follow the syntax i.e. sys_created_on>YYYY-MM-DD HH:MM:SS.

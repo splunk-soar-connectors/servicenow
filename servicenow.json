@@ -12,7 +12,7 @@
     "app_version": "2.6.5",
     "fips_compliant": true,
     "min_phantom_version": "6.3.0",
-    "python_version": "3",
+    "python_version": "3.9, 3.13",
     "latest_tested_versions": [
         "Cloud, glide-washingtondc-12-20-2023__patch10-01-15-2025"
     ],
@@ -12506,11 +12506,9 @@
         }
     ],
     "pip39_dependencies": {
-        "wheel": [
-            {
-                "module": "python_magic",
-                "input_file": "wheels/shared/python_magic-0.4.18-py2.py3-none-any.whl"
-            }
-        ]
+        "wheel": []
+    },
+    "pip313_dependencies": {
+        "wheel": []
     }
 }
