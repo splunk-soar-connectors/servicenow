@@ -652,7 +652,17 @@ class ServicenowConnector(BaseConnector):
         fields = param.get(SERVICENOW_JSON_FIELDS, "{}")
 
         try:
-            fields = json.loads(fields)
+            fields = json.loads(json.dumps(fields))
+        except TypeError as e:
+            error_message = str(e)
+            return RetVal(
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    f"Error building fields dictionary: {error_message}. \
+                        Please ensure that provided input is JSON serializable",
+                ),
+                None,
+            )
         except json.JSONDecodeError as e:
             error_message = str(e)
             return RetVal(
@@ -837,7 +847,17 @@ class ServicenowConnector(BaseConnector):
         fields = param.get(SERVICENOW_JSON_FIELDS, "{}")
 
         try:
-            fields = json.loads(fields)
+            fields = json.loads(json.dumps(fields))
+        except TypeError as e:
+            error_message = str(e)
+            return RetVal(
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    f"Error building fields dictionary: {error_message}. \
+                        Please ensure that provided input is JSON serializable",
+                ),
+                None,
+            )
         except json.JSONDecodeError as e:
             error_message = str(e)
             return RetVal(
