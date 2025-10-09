@@ -1,1 +1,2 @@
 **Unreleased**
+* PAPP-36740: Fallback to use ast in create and update ticket when SOAR passes the fields param as a stringified dicts with single quotes (happens when fields is defined as a dictionary in custom code)

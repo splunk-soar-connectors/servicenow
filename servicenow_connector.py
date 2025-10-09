@@ -653,16 +653,18 @@ class ServicenowConnector(BaseConnector):
 
         try:
             fields = json.loads(fields)
-        except json.JSONDecodeError as e:
-            error_message = str(e)
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    f"Error building fields dictionary: {error_message}. \
-                        Please ensure that provided input is in valid JSON format",
-                ),
-                None,
-            )
+        except json.JSONDecodeError:
+            # Fallback: Try Python literal eval (handles SOAR's stringified dicts with single quotes)
+            try:
+                fields = ast.literal_eval(fields)
+            except (ValueError, SyntaxError) as e:
+                return RetVal(
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        f"Error parsing fields: {e!s}. Expected valid JSON or dict format",
+                    ),
+                    None,
+                )
 
         if not isinstance(fields, dict):
             return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
@@ -838,16 +840,18 @@ class ServicenowConnector(BaseConnector):
 
         try:
             fields = json.loads(fields)
-        except json.JSONDecodeError as e:
-            error_message = str(e)
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    f"Error building fields dictionary: {error_message}. \
-                        Please ensure that provided input is in valid JSON format",
-                ),
-                None,
-            )
+        except json.JSONDecodeError:
+            # Fallback: Try Python literal eval (handles SOAR's stringified dicts with single quotes)
+            try:
+                fields = ast.literal_eval(fields)
+            except (ValueError, SyntaxError) as e:
+                return RetVal(
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        f"Error parsing fields: {e!s}. Expected valid JSON or dict format",
+                    ),
+                    None,
+                )
 
         if not isinstance(fields, dict):
             return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
