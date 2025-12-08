@@ -625,7 +625,7 @@ class ServicenowConnector(BaseConnector):
 
         self.save_progress(SERVICENOW_MESSAGE_GET_INCIDENT_TEST)
 
-        ret_val, response = self._make_rest_call_helper(
+        ret_val, _response = self._make_rest_call_helper(
             action_result, SERVICENOW_TEST_CONNECTIVITY_ENDPOINT, params=request_params, headers=headers, auth=auth
         )
 
@@ -649,25 +649,16 @@ class ServicenowConnector(BaseConnector):
 
         endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
 
-        fields = param.get(SERVICENOW_JSON_FIELDS, "{}")
+        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        if phantom.is_fail(ret_val):
+            return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
-        try:
-            fields = json.loads(fields)
-        except json.JSONDecodeError:
-            # Fallback: Try Python literal eval (handles SOAR's stringified dicts with single quotes)
-            try:
-                fields = ast.literal_eval(fields)
-            except (ValueError, SyntaxError) as e:
-                return RetVal(
-                    action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Error parsing fields: {e!s}. Expected valid JSON or dict format",
-                    ),
-                    None,
-                )
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
 
-        if not isinstance(fields, dict):
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
+        ret_val, fields = self._get_fields(param, action_result)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
 
         data = dict()
         data.update(fields)
@@ -719,6 +710,52 @@ class ServicenowConnector(BaseConnector):
         action_result.add_data(res)
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _escape_newlines_inside_json_strings(self, s: str) -> str:
+        lines = s.splitlines(True)
+        result = []
+        inside_string = False
+
+        for line in lines:
+            if '"' in line:
+                quote_count = line.count('"')
+                if quote_count % 2 != 0:
+                    inside_string = not inside_string
+
+            if inside_string and not line.strip().endswith('"'):
+                # Replace newline with \n
+                result.append(line.replace("\n", "\\n"))
+            else:
+                result.append(line)
+
+        return " ".join(result)
+
+    def _get_fields(self, param, action_result):
+        fields = param.get(SERVICENOW_JSON_FIELDS)
+        if fields:
+            fields = self._escape_newlines_inside_json_strings(fields)
+
+        # fields is an optional field
+        if not fields:
+            return RetVal(phantom.APP_SUCCESS, {})
+
+        try:
+            fields = ast.literal_eval(fields)
+        except Exception as e:
+            error_message = self._get_error_message_from_exception(e)
+            return RetVal(
+                action_result.set_status(
+                    phantom.APP_ERROR,
+                    f"Error building fields dictionary: {error_message}. \
+                        Please ensure that provided input is in valid JSON format",
+                ),
+                None,
+            )
+
+        if not isinstance(fields, dict):
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
+
+        return RetVal(phantom.APP_SUCCESS, fields)
+
     def _add_attachment(self, action_result, table, ticket_id, vault_id):
         if not vault_id:
             return (phantom.APP_SUCCESS, None)
@@ -729,7 +766,7 @@ class ServicenowConnector(BaseConnector):
 
         # Check for file in vault
         try:
-            success, message, file_info = phrules.vault_info(vault_id=vault_id)
+            _success, _message, file_info = phrules.vault_info(vault_id=vault_id)
             file_info = next(iter(file_info))
         except IndexError:
             return action_result.set_status(phantom.APP_ERROR, "Vault file could not be found with supplied Vault ID"), None
@@ -836,25 +873,10 @@ class ServicenowConnector(BaseConnector):
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, ticket_id)
 
-        fields = param.get(SERVICENOW_JSON_FIELDS, "{}")
+        ret_val, fields = self._get_fields(param, action_result)
 
-        try:
-            fields = json.loads(fields)
-        except json.JSONDecodeError:
-            # Fallback: Try Python literal eval (handles SOAR's stringified dicts with single quotes)
-            try:
-                fields = ast.literal_eval(fields)
-            except (ValueError, SyntaxError) as e:
-                return RetVal(
-                    action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Error parsing fields: {e!s}. Expected valid JSON or dict format",
-                    ),
-                    None,
-                )
-
-        if not isinstance(fields, dict):
-            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
 
         vault_ids = param.get(SERVICENOW_JSON_VAULT_ID)
         if not fields and not vault_ids:
@@ -1453,7 +1475,7 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        ret_val, _auth, _headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
@@ -1584,7 +1606,7 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        ret_val, auth, headers = self._get_authorization_credentials(action_result)
+        ret_val, _auth, _headers = self._get_authorization_credentials(action_result)
 
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
@@ -1813,7 +1835,7 @@ class ServicenowConnector(BaseConnector):
 
         if config.get("severity"):
             severity = config.get("severity", "medium").lower()
-            ret_val, message = self._validate_custom_severity(action_result, severity)
+            ret_val, _message = self._validate_custom_severity(action_result, severity)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
         else:
@@ -1830,7 +1852,7 @@ class ServicenowConnector(BaseConnector):
             existing_sd = None
             existing_desc = None
 
-            container_id, existing_label, existing_sd, existing_desc = self._check_for_existing_container(sdi, label)
+            container_id, existing_label, _existing_sd, _existing_desc = self._check_for_existing_container(sdi, label)
             if not sd:
                 sd = "Phantom added container name (short description of the ticket/record found empty)"
 

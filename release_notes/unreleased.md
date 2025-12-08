@@ -1,1 +1,2 @@
 **Unreleased**
+* Fixed an escape-character handling issue in the field parameter for JSON input within the 'create ticket' and 'update ticket' actions
