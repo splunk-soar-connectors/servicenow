@@ -1,5 +1,4 @@
 {% extends 'widgets/widget_template.html' %}
-{% load custom_template %}
 {% block custom_title_prop %}
   {% if title_logo %}
     style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
@@ -10,7 +9,7 @@
 {% block custom_tools %}{% endblock %}
 {% block widget_content %}
   <!-- Main Start Block -->
-  <!-- File: servicenow_create_ticket.html
+  <!-- File: servicenow_request_catalog_item.html
   Copyright (c) 2016-2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,52 +105,52 @@ and limitations under the License.
       {% if not result.data %}
         <h4 class="wf-h4-style">No data found</h4>
       {% else %}
-        <h4 class="wf-h4-style">Ticket Detail</h4>
+        <h4 class="wf-h4-style">Order</h4>
         <!--Default View-->
         <table class="wf-table-horizontal datatable">
           <thead>
             <tr>
-              <th>TICKET NUMBER</th>
-              <th>DESCRIPTION</th>
+              <th>NUMBER</th>
               <th>SHORT DESCRIPTION</th>
-              <th>CATEGORY</th>
-              <th>SYS ID</th>
-              <th>SEVERITY</th>
+              <th>DESCRIPTION</th>
+              <th>STATE</th>
+              <th>REQUEST STATE</th>
               <th>PRIORITY</th>
-              <th>OPENED ON</th>
-              <th>CLOSED ON</th>
+              <th>ASSIGNED TO</th>
+              <th>SYS ID</th>
+              <th>OPENED AT</th>
+              <th>DUE DATE</th>
             </tr>
           </thead>
           <tbody>
-            {% if not result.data %}
-              <h4 class="wf-h4-style">No data found</h4>
-            {% else %}
-              {% for data in result.data %}
-                <tr>
-                  <td>
-                    <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':'{{ data.number|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                      {{ data.number }}
-                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                    </a>
-                  </td>
-                  <td>{{ data.description }}</td>
-                  <td>{{ data.short_description }}</td>
-                  <td>{{ data.category }}</td>
-                  <td>
-                    <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow ticket sysid', 'md5'], 'value':'{{ data.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                      {{ data.sys_id }}
-                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                    </a>
-                  </td>
-                  <td>{{ data.severity }}</td>
-                  <td>{{ data.priority }}</td>
-                  <td>{{ data.opened_at }}</td>
-                  <td>{{ data.closed_at }}</td>
-                </tr>
-              {% endfor %}
-            {% endif %}
+            <tr>
+              <td>
+                {% if result.data.number %}
+                  <a href="javascript:;"
+                     onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':'{{ result.data.number }}' }], 0, {{ container.id }}, null, false);">
+                    {{ result.data.number }}
+                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                  </a>
+                {% endif %}
+              </td>
+              <td>{{ result.data.short_description }}</td>
+              <td>{{ result.data.description }}</td>
+              <td>{{ result.data.state }}</td>
+              <td>{{ result.data.request_state }}</td>
+              <td>{{ result.data.priority }}</td>
+              <td>{{ result.data.assigned_to }}</td>
+              <td>
+                {% if result.data.sys_id %}
+                  <a href="javascript:;"
+                     onclick="context_menu(this, [{'contains': ['md5'], 'value':'{{ result.data.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                    {{ result.data.sys_id }}
+                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                  </a>
+                {% endif %}
+              </td>
+              <td>{{ result.data.opened_at }}</td>
+              <td>{{ result.data.due_date }}</td>
+            </tr>
           </tbody>
         </table>
       {% endif %}

@@ -1,5 +1,4 @@
 {% extends 'widgets/widget_template.html' %}
-{% load custom_template %}
 {% block custom_title_prop %}
   {% if title_logo %}
     style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
@@ -73,7 +72,8 @@ and limitations under the License.
   </style>
   <div class="servicenow"
        style="overflow: auto;
-              width: 100% height: 100%;
+              width: 100%;
+              height: 100%;
               padding-left:10px;
               padding-right:10px">
     <!-- Main Div -->
@@ -82,26 +82,19 @@ and limitations under the License.
       {% if not result.data %}
         <h4 class="wf-h4-style">No data found</h4>
       {% else %}
-        <div class="info">
-          <h4 class="wf-h4-style">Info</h4>
-          <table class="wf-table-vertical">
-            <tr>
-              <td>SYS_ID</td>
-              <td>{{ result.param.sys_id }}</td>
-            </tr>
-          </table>
-        </div>
         <div class="results">
           <h4 class="wf-h4-style">Result</h4>
           <table class="phantom-table dataTable">
             <thead>
-              <th class="widget-th">Variable Question</th>
-              <th class="widget-th">Variable Value</th>
+              <tr>
+                <th class="widget-th">Variable Question</th>
+                <th class="widget-th">Variable Value</th>
+              </tr>
             </thead>
             <tbody>
               {% for item in result.data %}
                 {% if item %}
-                  {% for question, answer in item.items %}
+                  {% for question, answer in item.items() %}
                     <tr>
                       <td>{{ question }}</td>
                       {% if answer %}
