@@ -6,3 +6,4 @@
 * Preserve internationalized URLs when extracting indicators from ServiceNow tickets.
 * Bound pagination independently of ServiceNow-provided result counters.
 * Redact OAuth token endpoint responses from connector debug logs.
+* Scope polling deduplication lookups to containers created by the current asset.

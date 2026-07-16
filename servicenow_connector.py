@@ -29,6 +29,7 @@ import re
 import sys
 from datetime import datetime, timedelta
 from typing import Any
+from urllib.parse import quote_plus
 from zoneinfo import ZoneInfo
 
 import encryption_helper
@@ -592,8 +593,9 @@ class ServicenowConnector(BaseConnector):
     def _check_for_existing_container(self, sdi, label):
         uri = "rest/container?page_size=0&_filter_source_data_identifier="
         filter = "&_filter_label="
+        asset_filter = f"&_filter_asset={self.get_asset_id()}"
         prefix = "&sort=create_time&order=asc"
-        request_str = f'{self.get_phantom_base_url()}{uri}"{sdi}"{filter}"{label}"{prefix}'
+        request_str = f'{self.get_phantom_base_url()}{uri}"{quote_plus(sdi)}"{filter}"{quote_plus(label)}"{asset_filter}{prefix}'
 
         try:
             r = requests.get(request_str, verify=False)  # nosemgrep
@@ -617,6 +619,9 @@ class ServicenowConnector(BaseConnector):
             if count > 1:
                 self.debug_print(f"More than one container exists with SDI {sdi}. Going with oldest.")
             response_data = resp_json["data"][0]
+            if str(response_data.get("asset")) != str(self.get_asset_id()):
+                self.debug_print(f"Ignoring matching container from asset {response_data.get('asset')}")
+                return 0, None, None, None
             return response_data["id"], response_data["label"], response_data["name"], response_data["description"]
         elif count < 0:
             self.debug_print("Something went wrong getting container count")
