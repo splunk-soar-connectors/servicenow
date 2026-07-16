@@ -5,3 +5,4 @@
 * Strip known credential columns before persisting arbitrary table-query results.
 * Preserve internationalized URLs when extracting indicators from ServiceNow tickets.
 * Bound pagination independently of ServiceNow-provided result counters.
+* Redact OAuth token endpoint responses from connector debug logs.
