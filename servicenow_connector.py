@@ -1873,6 +1873,7 @@ class ServicenowConnector(BaseConnector):
 
         # Ingest the issues
         failed = 0
+        last_persisted_updated_on = None
         label = self.get_config().get("ingest", {}).get("container_label")
 
         if config.get("severity"):
@@ -1950,23 +1951,29 @@ class ServicenowConnector(BaseConnector):
                     cef["URL"] = match.group()
                     art = {"container_id": container_id, "label": "URL", "cef": cef}
                     artifacts.append(art)
-            self.save_artifacts(artifacts)
+            save_status, save_message, _artifact_ids = self.save_artifacts(artifacts)
+            if phantom.is_fail(save_status):
+                self.debug_print(f"Failed to save artifacts for ticket {sdi}: {save_message}")
+                failed += 1
+                continue
+            last_persisted_updated_on = issue.get("sys_updated_on")
 
         action_result.set_status(phantom.APP_SUCCESS, "Containers created")
 
         if not self.is_poll_now():
-            if "sys_updated_on" not in issues[-1]:
-                return action_result.set_status(phantom.APP_ERROR, "No updated time in last ingested incident.")
+            if failed == 0:
+                if last_persisted_updated_on is None:
+                    return action_result.set_status(phantom.APP_ERROR, "No updated time in last ingested incident.")
 
-            updated_time = issues[-1]["sys_updated_on"]
+                updated_time = last_persisted_updated_on
 
-            if "timezone" in config:
-                dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT)
-                tz = ZoneInfo(config["timezone"])
-                new_dt = dt + (tz.utcoffset(dt) or timedelta(0))
-                updated_time = new_dt.strftime(SERVICENOW_DATETIME_FORMAT)
+                if "timezone" in config:
+                    dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT)
+                    tz = ZoneInfo(config["timezone"])
+                    new_dt = dt + (tz.utcoffset(dt) or timedelta(0))
+                    updated_time = new_dt.strftime(SERVICENOW_DATETIME_FORMAT)
 
-            self._state["last_time"] = updated_time
+                self._state["last_time"] = updated_time
 
             if self._state.get("first_run", True):
                 self._state["first_run"] = False

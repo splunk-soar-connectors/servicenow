@@ -7,3 +7,4 @@
 * Bound pagination independently of ServiceNow-provided result counters.
 * Redact OAuth token endpoint responses from connector debug logs.
 * Scope polling deduplication lookups to containers created by the current asset.
+* Advance scheduled-poll checkpoints only after all fetched records and artifacts are saved.
