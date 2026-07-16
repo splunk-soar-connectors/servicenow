@@ -105,6 +105,15 @@ class ServicenowConnector(BaseConnector):
         self.debug_print(SERVICENOW_DECRYPT_TOKEN.format(token_name))  # nosemgrep
         return encryption_helper.decrypt(decrypt_var, self.get_asset_id())
 
+    @staticmethod
+    def _validate_path_segment(action_result, name, value):
+        if value is None or not re.fullmatch(r"[A-Za-z0-9_.-]+", str(value)):
+            return action_result.set_status(
+                phantom.APP_ERROR,
+                f"Invalid '{name}' parameter; expected one ServiceNow table name or identifier",
+            )
+        return phantom.APP_SUCCESS
+
     def initialize(self):
         # Load all the asset configuration in global variables
         self._state = self.load_state()
@@ -847,6 +856,11 @@ class ServicenowConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, ticket_id)):
+            return action_result.get_status()
+
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
@@ -1001,6 +1015,11 @@ class ServicenowConnector(BaseConnector):
             is_sys_id = param.get("is_sys_id", False)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
+
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, ticket_id)):
+            return action_result.get_status()
 
         ret_val = self._get_ticket_details(action_result, table_name, ticket_id, is_sys_id=is_sys_id)
 
@@ -1466,6 +1485,8 @@ class ServicenowConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         table_name = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
         endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
         request_params = {"sysparm_query": param.get(SERVICENOW_JSON_FILTER, "")}
 
@@ -1599,6 +1620,8 @@ class ServicenowConnector(BaseConnector):
 
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_QUERY_TABLE, lookup_table)):
+            return action_result.get_status()
         endpoint = f"{SERVICENOW_BASE_QUERY_URI}{lookup_table}?{query}"
         ret_val, limit = self._validate_integers(
             action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS
