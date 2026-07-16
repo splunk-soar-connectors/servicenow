@@ -33,6 +33,11 @@ SERVICENOW_JSON_SYS_USER_TABLE = "sys_user"
 SERVICENOW_JSON_TABLE = "table"
 SERVICENOW_JSON_VAULT_ID = "vault_id"
 SERVICENOW_JSON_FILTER = "filter"
+SERVICENOW_SENSITIVE_PROPS = [
+    "admin_password",  # pragma: allowlist secret
+    "database_password",  # pragma: allowlist secret
+    SERVICENOW_JSON_USER_PASSWORD,
+]
 SERVICENOW_JSON_ON_POLL_FILTER = "on_poll_filter"
 SERVICENOW_JSON_ON_POLL_TABLE = "on_poll_table"
 SERVICENOW_JSON_QUERY_TABLE = "query_table"

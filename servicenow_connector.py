@@ -2069,7 +2069,7 @@ class ServicenowConnector(BaseConnector):
         elif action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY:
             ret_val = self._test_connectivity(param)
         elif action == self.ACTION_ID_RUN_QUERY:
-            ret_val = self._run_query(param)
+            ret_val = self._run_query(param, strip_props=SERVICENOW_SENSITIVE_PROPS)
         elif action == self.ACTION_ID_QUERY_USERS:
             ret_val = self._query_users(param)
         return ret_val
