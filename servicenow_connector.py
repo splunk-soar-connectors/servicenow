@@ -1046,12 +1046,15 @@ class ServicenowConnector(BaseConnector):
         payload["sysparm_offset"] = SERVICENOW_DEFAULT_OFFSET
         payload["sysparm_limit"] = min(limit, SERVICENOW_DEFAULT_LIMIT)
         total_item_count = 0  # Initialize to prevent unbound variable error
+        page_count = 0
 
         while True:
             ret_val, items = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=payload)
 
             if phantom.is_fail(ret_val):
                 return None
+
+            page_count += 1
 
             # get total record count from headers
             if self._response_headers:
@@ -1071,7 +1074,11 @@ class ServicenowConnector(BaseConnector):
                     return items_list
 
             # exit if the total number of records are less than limit or else it has fetched all the pages
-            if (payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count:
+            if (payload["sysparm_offset"] + payload["sysparm_limit"]) >= total_item_count:
+                return items_list
+
+            if page_count >= SERVICENOW_MAX_PAGES:
+                self.debug_print(f"Reached the maximum of {SERVICENOW_MAX_PAGES} ServiceNow pages")
                 return items_list
 
             payload["sysparm_offset"] += payload["sysparm_limit"]
@@ -1710,7 +1717,11 @@ class ServicenowConnector(BaseConnector):
                     items_list[0].get("search_results", [])[i].get("records", []).extend(data)
 
             # If we got all the results or if we reached maximum pages
-            if total_item_count <= result_length or params["sysparm_page"] >= total_result_count_page_limit + 1:
+            if (
+                total_item_count <= result_length
+                or params["sysparm_page"] >= total_result_count_page_limit + 1
+                or params["sysparm_page"] >= SERVICENOW_MAX_PAGES
+            ):
                 break
             params["sysparm_page"] = params["sysparm_page"] + 1
 
