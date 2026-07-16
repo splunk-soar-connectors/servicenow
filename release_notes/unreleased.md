@@ -1,3 +1,3 @@
 **Unreleased**
 
-* Refresh development checks for the connector repository.
+* Escape ServiceNow values before embedding them in custom-view JavaScript.

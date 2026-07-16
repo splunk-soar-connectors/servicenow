@@ -130,7 +130,7 @@ and limitations under the License.
                 <tr>
                   <td>
                     <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':'{{ data.number }}' }], 0, {{ container.id }}, null, false);">
+                       onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':'{{ data.number|escapejs }}' }], 0, {{ container.id }}, null, false);">
                       {{ data.number }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>
@@ -140,7 +140,7 @@ and limitations under the License.
                   <td>{{ data.category }}</td>
                   <td>
                     <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow ticket sysid', 'md5'], 'value':'{{ data.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                       onclick="context_menu(this, [{'contains': ['servicenow ticket sysid', 'md5'], 'value':'{{ data.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
                       {{ data.sys_id }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>

@@ -114,7 +114,7 @@ and limitations under the License.
               <td>
                 <a class="no-word-wrap"
                    href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.catalog_sys_id }}' }], 0, {{ container.id }}, null, false);">
+                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.catalog_sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
                   {{ result.param.catalog_sys_id }}
                   &nbsp;
                   <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -128,7 +128,7 @@ and limitations under the License.
               <td>
                 <a class="no-word-wrap"
                    href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ result.param.category_sys_id }}' }], 0, {{ container.id }}, null, false);">
+                   onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ result.param.category_sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
                   {{ result.param.category_sys_id }}
                   &nbsp;
                   <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -170,7 +170,7 @@ and limitations under the License.
                   <td>
                     <a class="no-word-wrap"
                        href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ data.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                       onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ data.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
                       {{ data.sys_id }}
                       &nbsp;
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -180,7 +180,7 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.value }}' }], 0, {{ container.id }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.value|escapejs }}' }], 0, {{ container.id }}, null, false);">
                         {{ data.category.value }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -193,7 +193,7 @@ and limitations under the License.
                     {% for catalog in data.catalogs %}
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog }}' }], 0, {{ container.id }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog|escapejs }}' }], 0, {{ container.id }}, null, false);">
                         {{ catalog }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
