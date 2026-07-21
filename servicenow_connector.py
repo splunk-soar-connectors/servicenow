@@ -24,6 +24,7 @@ except:
     pass
 import ast
 import codecs
+import ipaddress
 import json
 import re
 import sys
@@ -137,6 +138,22 @@ class ServicenowConnector(BaseConnector):
             return RetVal(action_result.get_status(), None)
 
         return RetVal(phantom.APP_SUCCESS, sys_id)
+
+    @staticmethod
+    def _ticket_text_values(value):
+        if isinstance(value, dict):
+            return [text for item in value.values() for text in ServicenowConnector._ticket_text_values(item)]
+        if isinstance(value, list):
+            return [text for item in value for text in ServicenowConnector._ticket_text_values(item)]
+        return [value] if isinstance(value, str) else []
+
+    @staticmethod
+    def _valid_ip_address(value, version):
+        try:
+            address = ipaddress.ip_address(value.strip().split("%", 1)[0])
+        except ValueError:
+            return None
+        return str(address) if address.version == version else None
 
     def initialize(self):
         # Load all the asset configuration in global variables
@@ -1735,8 +1752,8 @@ class ServicenowConnector(BaseConnector):
     def _on_poll(self, param):
         URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\\x00-\\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
         HASH_REGEX = "\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b"
-        IP_REGEX = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
-        IPV6_REGEX = "\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
+        IP_REGEX = "(?<![0-9A-Za-z_.-])\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(?![0-9A-Za-z_.-])"
+        IPV6_REGEX = "(?<![0-9A-Za-z:])((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
         IPV6_REGEX += (
             "(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))"
         )
@@ -1766,7 +1783,7 @@ class ServicenowConnector(BaseConnector):
         )
         IPV6_REGEX += (
             "(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|"
-            "[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*"
+            "[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%[0-9A-Za-z._~-]+)?(?![0-9A-Za-z:])"
         )
         uri_regexc = re.compile(URI_REGEX)
         hash_regexc = re.compile(HASH_REGEX)
@@ -1904,17 +1921,18 @@ class ServicenowConnector(BaseConnector):
             extract_hashes = config.get(SERVICENOW_JSON_EXTRACT_HASHES)
             extract_url = config.get(SERVICENOW_JSON_EXTRACT_URLS)
             if extract_ips:
-                for match in ip_regexc.finditer(str(issue)):
-                    cef = {}
-                    cef["ip_address"] = match.group()
-                    art = {"container_id": container_id, "label": "IP Address", "cef": cef}
-                    artifacts.append(art)
+                for ticket_text in self._ticket_text_values(issue):
+                    for match in ip_regexc.finditer(ticket_text):
+                        ip_address = self._valid_ip_address(match.group(), 4)
+                        if ip_address:
+                            art = {"container_id": container_id, "label": "IP Address", "cef": {"ip_address": ip_address}}
+                            artifacts.append(art)
 
-                for match in ipv6_regexc.finditer(str(issue)):
-                    cef = {}
-                    cef["ipv6_address"] = match.group()
-                    art = {"container_id": container_id, "label": "IPV6 Address", "cef": cef}
-                    artifacts.append(art)
+                    for match in ipv6_regexc.finditer(ticket_text):
+                        ipv6_address = self._valid_ip_address(match.group(), 6)
+                        if ipv6_address:
+                            art = {"container_id": container_id, "label": "IPV6 Address", "cef": {"ipv6_address": ipv6_address}}
+                            artifacts.append(art)
 
             if extract_hashes:
                 for match in hash_regexc.finditer(str(issue)):
