@@ -27,7 +27,7 @@ import codecs
 import json
 import re
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote_plus
 from zoneinfo import ZoneInfo
@@ -1788,7 +1788,7 @@ class ServicenowConnector(BaseConnector):
         last_time = self._state.get("last_time")
 
         if last_time and isinstance(last_time, float):
-            last_time = datetime.strftime(datetime.fromtimestamp(last_time), SERVICENOW_DATETIME_FORMAT)
+            last_time = datetime.fromtimestamp(last_time, timezone.utc).strftime(SERVICENOW_DATETIME_FORMAT)
 
         # Build the query for the issue search (sysparm_query)
         query = "ORDERBYsys_updated_on"
@@ -1810,7 +1810,10 @@ class ServicenowConnector(BaseConnector):
             # "last_time" should be of the format "%Y-%m-%d %H:%M:%S"
             if last_time and len(last_time.split(" ")) == 2:
                 query_prefix = last_time.split(" ")
-                query += f"^sys_updated_on>=javascript:gs.dateGenerate('{query_prefix[0]}','{query_prefix[1]}')"
+                if config.get("timezone"):
+                    query += f"^sys_updated_on>=javascript:gs.dateGenerate('{query_prefix[0]}','{query_prefix[1]}')"
+                else:
+                    query += f"^sys_updated_on>={last_time}"
                 max_tickets = self._max_container
             else:
                 self.debug_print(
@@ -1942,11 +1945,9 @@ class ServicenowConnector(BaseConnector):
 
                 updated_time = last_persisted_updated_on
 
-                if "timezone" in config:
-                    dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT)
-                    tz = ZoneInfo(config["timezone"])
-                    new_dt = dt + (tz.utcoffset(dt) or timedelta(0))
-                    updated_time = new_dt.strftime(SERVICENOW_DATETIME_FORMAT)
+                if config.get("timezone"):
+                    dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT).replace(tzinfo=timezone.utc)
+                    updated_time = dt.astimezone(ZoneInfo(config["timezone"])).strftime(SERVICENOW_DATETIME_FORMAT)
 
                 self._state["last_time"] = updated_time
 
