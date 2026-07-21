@@ -663,8 +663,8 @@ class ServicenowConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
-
-        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table)):
+            return action_result.get_status()
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
@@ -1295,6 +1295,11 @@ class ServicenowConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, sys_id)):
+            return action_result.get_status()
+
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
@@ -1446,6 +1451,11 @@ class ServicenowConnector(BaseConnector):
             is_sys_id = param.get("is_sys_id", False)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
+
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, sys_id)):
+            return action_result.get_status()
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
