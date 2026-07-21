@@ -9,3 +9,4 @@
 * Scope polling deduplication lookups to containers created by the current asset.
 * Advance scheduled-poll checkpoints only after all fetched records and artifacts are saved.
 * Validate ticket action path parameters before constructing ServiceNow REST endpoints.
+* Confirm resolved ticket numbers before updating ServiceNow records or journal entries.

@@ -115,6 +115,29 @@ class ServicenowConnector(BaseConnector):
             )
         return phantom.APP_SUCCESS
 
+    def _resolve_ticket_sys_id(self, action_result, table, ticket_id, auth, headers):
+        params = {"sysparm_query": f"number={ticket_id}"}
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+        if phantom.is_fail(ret_val):
+            return RetVal(action_result.get_status(), None)
+
+        result = response.get("result")
+        if not isinstance(result, list) or not result:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE), None)
+
+        ticket = result[0]
+        if ticket.get("number") != ticket_id:
+            return RetVal(
+                action_result.set_status(phantom.APP_ERROR, "ServiceNow returned a different ticket than the requested ticket number"), None
+            )
+
+        sys_id = ticket.get("sys_id")
+        if not sys_id or phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_SYS_ID, sys_id)):
+            return RetVal(action_result.get_status(), None)
+
+        return RetVal(phantom.APP_SUCCESS, sys_id)
+
     def initialize(self):
         # Load all the asset configuration in global variables
         self._state = self.load_state()
@@ -874,24 +897,9 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={ticket_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, ticket_id = self._resolve_ticket_sys_id(action_result, table, ticket_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                sys_id = response.get("result")[0].get("sys_id")
-
-                if not sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR, f"Unable to fetch the ticket SYS ID for the provided ticket number: {ticket_id}"
-                    )
-
-                ticket_id = sys_id
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, ticket_id)
 
@@ -935,25 +943,9 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={sys_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, sys_id = self._resolve_ticket_sys_id(action_result, table, sys_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                sys_id = response.get("result")[0].get("sys_id")
-
-                if not sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Unable to fetch the ticket SYS ID \
-                                    for the provided ticket number: {sys_id}",
-                    )
-
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, sys_id)
 
@@ -1305,26 +1297,9 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={sys_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, sys_id = self._resolve_ticket_sys_id(action_result, table_name, sys_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                new_sys_id = response.get("result")[0].get("sys_id")
-
-                if not new_sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Unable to fetch the \
-                            ticket SYS ID for the provided ticket number: {sys_id}",
-                    )
-
-                sys_id = new_sys_id
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         work_note = param.get("work_note")
 
@@ -1462,26 +1437,9 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={sys_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, sys_id = self._resolve_ticket_sys_id(action_result, table_name, sys_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                new_sys_id = response.get("result")[0].get("sys_id")
-
-                if not new_sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Unable to fetch the ticket \
-                                    SYS ID for the provided ticket number: {sys_id}",
-                    )
-
-                sys_id = new_sys_id
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         comment = param.get("comment")
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
