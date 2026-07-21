@@ -920,6 +920,9 @@ class ServicenowConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
 
+            if not response.get("result"):
+                return action_result.set_status(phantom.APP_ERROR, "No ticket updated; ServiceNow returned an empty result")
+
             action_result.update_summary({"fields_updated": True})
             res.update(response.get("result", {}))
 
@@ -1316,6 +1319,9 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
+        if not response.get("result"):
+            return action_result.set_status(phantom.APP_ERROR, "No ticket updated; work note was not added")
+
         if response.get("result", {}).get("work_notes"):
             response["result"]["work_notes"] = response["result"]["work_notes"].replace("\n\n", "\n, ").strip(", ")
 
@@ -1454,11 +1460,12 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
+        if not response.get("result"):
+            return action_result.set_status(phantom.APP_ERROR, "No ticket updated; comment was not added")
+
         if response.get("result", {}).get("comments"):
             response["result"]["comments"] = response["result"]["comments"].replace("\n\n", "\n, ").strip(", ")
         message = "Added the comment successfully"
-        if not response.get("result"):
-            message = "No tickets Found"
         action_result.add_data(response.get("result", {}))
 
         return action_result.set_status(phantom.APP_SUCCESS, message)

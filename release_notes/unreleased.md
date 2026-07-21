@@ -10,3 +10,4 @@
 * Advance scheduled-poll checkpoints only after all fetched records and artifacts are saved.
 * Validate ticket action path parameters before constructing ServiceNow REST endpoints.
 * Confirm resolved ticket numbers before updating ServiceNow records or journal entries.
+* Report ticket updates, comments, and work notes as failures when ServiceNow applies no change.
