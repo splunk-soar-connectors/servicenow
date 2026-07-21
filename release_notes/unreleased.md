@@ -13,3 +13,4 @@
 * Report ticket updates, comments, and work notes as failures when ServiceNow applies no change.
 * Preserve scheduled poll checkpoints in the correct ServiceNow timezone.
 * Store only validated IP indicators extracted from ServiceNow ticket text.
+* Remove invisible Unicode format controls from ingested ServiceNow ticket text.

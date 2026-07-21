@@ -28,6 +28,7 @@ import ipaddress
 import json
 import re
 import sys
+import unicodedata
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote_plus
@@ -154,6 +155,16 @@ class ServicenowConnector(BaseConnector):
         except ValueError:
             return None
         return str(address) if address.version == version else None
+
+    @staticmethod
+    def _strip_format_controls(value):
+        if isinstance(value, str):
+            return "".join(character for character in value if unicodedata.category(character) != "Cf")
+        if isinstance(value, dict):
+            return {key: ServicenowConnector._strip_format_controls(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [ServicenowConnector._strip_format_controls(item) for item in value]
+        return value
 
     def initialize(self):
         # Load all the asset configuration in global variables
@@ -1883,6 +1894,7 @@ class ServicenowConnector(BaseConnector):
             severity = config.get("severity", default_severity).lower()
 
         for issue in issues:
+            issue = self._strip_format_controls(issue)
             sdi = issue["sys_id"]
             sd = issue.get("short_description")
             desc = issue.get("description", "")
