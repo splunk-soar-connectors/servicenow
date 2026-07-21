@@ -6,7 +6,7 @@
     "logo_dark": "logo_servicenow_dark.svg",
     "logo": "logo_servicenow.svg",
     "publisher": "Splunk",
-    "license": "Copyright (c) 2016-2025 Splunk Inc.",
+    "license": "Copyright (c) 2016-2026 Splunk Inc.",
     "type": "ticketing",
     "main_module": "servicenow_connector.py",
     "app_version": "2.6.8",
@@ -10745,10 +10745,6 @@
                     "data_type": "string"
                 },
                 {
-                    "data_path": "action_result.data.*.admin_password",
-                    "data_type": "string"
-                },
-                {
                     "data_path": "action_result.data.*.admin_user",
                     "data_type": "string"
                 },
@@ -11033,10 +11029,6 @@
                 },
                 {
                     "data_path": "action_result.data.*.database_name",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.database_password",
                     "data_type": "string"
                 },
                 {

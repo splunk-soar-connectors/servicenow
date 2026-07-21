@@ -1,6 +1,6 @@
 # File: servicenow_consts.py
 #
-# Copyright (c) 2016-2025 Splunk Inc.
+# Copyright (c) 2016-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,6 +33,11 @@ SERVICENOW_JSON_SYS_USER_TABLE = "sys_user"
 SERVICENOW_JSON_TABLE = "table"
 SERVICENOW_JSON_VAULT_ID = "vault_id"
 SERVICENOW_JSON_FILTER = "filter"
+SERVICENOW_SENSITIVE_PROPS = [
+    "admin_password",  # pragma: allowlist secret
+    "database_password",  # pragma: allowlist secret
+    SERVICENOW_JSON_USER_PASSWORD,
+]
 SERVICENOW_JSON_ON_POLL_FILTER = "on_poll_filter"
 SERVICENOW_JSON_ON_POLL_TABLE = "on_poll_table"
 SERVICENOW_JSON_QUERY_TABLE = "query_table"
@@ -99,6 +104,7 @@ SERVICENOW_ITEM_OPT_NEW_TABLE = "item_option_new"
 # In search sources we only getting 20 results per page
 SERVICENOW_DEFAULT_PAGE = 1
 SERVICENOW_MAX_LIMIT = 20
+SERVICENOW_MAX_PAGES = 1000
 
 SERVICENOW_DEFAULT_OFFSET = 0
 SERVICENOW_DEFAULT_LIMIT = 10000

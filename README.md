@@ -2129,7 +2129,6 @@ action_result.parameter.query_table | string | `servicenow table` | incident |
 action_result.data.\*.active | string | | true |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
-action_result.data.\*.admin_password | string | | |
 action_result.data.\*.admin_user | string | | |
 action_result.data.\*.approval | string | | not requested |
 action_result.data.\*.approval_history | string | | |
@@ -2172,7 +2171,6 @@ action_result.data.\*.contact_type | string | | self-service |
 action_result.data.\*.correlation_display | string | | |
 action_result.data.\*.correlation_id | string | | |
 action_result.data.\*.database_name | string | | |
-action_result.data.\*.database_password | string | | |
 action_result.data.\*.database_tablespace | string | | |
 action_result.data.\*.database_type | string | | |
 action_result.data.\*.database_url | string | | |
@@ -2454,7 +2452,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

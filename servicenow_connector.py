@@ -1,6 +1,6 @@
 # File: servicenow_connector.py
 #
-# Copyright (c) 2016-2025 Splunk Inc.
+# Copyright (c) 2016-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,11 +24,14 @@ except:
     pass
 import ast
 import codecs
+import ipaddress
 import json
 import re
 import sys
-from datetime import datetime, timedelta
+import unicodedata
+from datetime import datetime, timezone
 from typing import Any
+from urllib.parse import quote_plus
 from zoneinfo import ZoneInfo
 
 import encryption_helper
@@ -104,6 +107,64 @@ class ServicenowConnector(BaseConnector):
         """
         self.debug_print(SERVICENOW_DECRYPT_TOKEN.format(token_name))  # nosemgrep
         return encryption_helper.decrypt(decrypt_var, self.get_asset_id())
+
+    @staticmethod
+    def _validate_path_segment(action_result, name, value):
+        if value is None or not re.fullmatch(r"[A-Za-z0-9_.-]+", str(value)):
+            return action_result.set_status(
+                phantom.APP_ERROR,
+                f"Invalid '{name}' parameter; expected one ServiceNow table name or identifier",
+            )
+        return phantom.APP_SUCCESS
+
+    def _resolve_ticket_sys_id(self, action_result, table, ticket_id, auth, headers):
+        params = {"sysparm_query": f"number={ticket_id}"}
+        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
+        ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
+        if phantom.is_fail(ret_val):
+            return RetVal(action_result.get_status(), None)
+
+        result = response.get("result")
+        if not isinstance(result, list) or not result:
+            return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE), None)
+
+        ticket = result[0]
+        if ticket.get("number") != ticket_id:
+            return RetVal(
+                action_result.set_status(phantom.APP_ERROR, "ServiceNow returned a different ticket than the requested ticket number"), None
+            )
+
+        sys_id = ticket.get("sys_id")
+        if not sys_id or phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_SYS_ID, sys_id)):
+            return RetVal(action_result.get_status(), None)
+
+        return RetVal(phantom.APP_SUCCESS, sys_id)
+
+    @staticmethod
+    def _ticket_text_values(value):
+        if isinstance(value, dict):
+            return [text for item in value.values() for text in ServicenowConnector._ticket_text_values(item)]
+        if isinstance(value, list):
+            return [text for item in value for text in ServicenowConnector._ticket_text_values(item)]
+        return [value] if isinstance(value, str) else []
+
+    @staticmethod
+    def _valid_ip_address(value, version):
+        try:
+            address = ipaddress.ip_address(value.strip().split("%", 1)[0])
+        except ValueError:
+            return None
+        return str(address) if address.version == version else None
+
+    @staticmethod
+    def _strip_format_controls(value):
+        if isinstance(value, str):
+            return "".join(character for character in value if unicodedata.category(character) != "Cf")
+        if isinstance(value, dict):
+            return {key: ServicenowConnector._strip_format_controls(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [ServicenowConnector._strip_format_controls(item) for item in value]
+        return value
 
     def initialize(self):
         # Load all the asset configuration in global variables
@@ -361,8 +422,11 @@ class ServicenowConnector(BaseConnector):
         # store the r_text in debug data, it will get dumped in the logs if an error occurs
         if hasattr(action_result, "add_debug_data"):
             if r is not None:
-                action_result.add_debug_data({"r_text": r.text})
-                action_result.add_debug_data({"r_headers": r.headers})
+                if "/oauth_token.do" in r.url:
+                    action_result.add_debug_data({"r_text": "<token endpoint response redacted>"})
+                else:
+                    action_result.add_debug_data({"r_text": r.text})
+                    action_result.add_debug_data({"r_headers": r.headers})
                 action_result.add_debug_data({"r_status_code": r.status_code})
             else:
                 action_result.add_debug_data({"r_text": "r is None"})
@@ -580,8 +644,9 @@ class ServicenowConnector(BaseConnector):
     def _check_for_existing_container(self, sdi, label):
         uri = "rest/container?page_size=0&_filter_source_data_identifier="
         filter = "&_filter_label="
+        asset_filter = f"&_filter_asset={self.get_asset_id()}"
         prefix = "&sort=create_time&order=asc"
-        request_str = f'{self.get_phantom_base_url()}{uri}"{sdi}"{filter}"{label}"{prefix}'
+        request_str = f'{self.get_phantom_base_url()}{uri}"{quote_plus(sdi)}"{filter}"{quote_plus(label)}"{asset_filter}{prefix}'
 
         try:
             r = requests.get(request_str, verify=False)  # nosemgrep
@@ -605,6 +670,9 @@ class ServicenowConnector(BaseConnector):
             if count > 1:
                 self.debug_print(f"More than one container exists with SDI {sdi}. Going with oldest.")
             response_data = resp_json["data"][0]
+            if str(response_data.get("asset")) != str(self.get_asset_id()):
+                self.debug_print(f"Ignoring matching container from asset {response_data.get('asset')}")
+                return 0, None, None, None
             return response_data["id"], response_data["label"], response_data["name"], response_data["description"]
         elif count < 0:
             self.debug_print("Something went wrong getting container count")
@@ -646,8 +714,8 @@ class ServicenowConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         table = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
-
-        endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table)):
+            return action_result.get_status()
 
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
@@ -847,29 +915,19 @@ class ServicenowConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, ticket_id)):
+            return action_result.get_status()
+
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={ticket_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, ticket_id = self._resolve_ticket_sys_id(action_result, table, ticket_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                sys_id = response.get("result")[0].get("sys_id")
-
-                if not sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR, f"Unable to fetch the ticket SYS ID for the provided ticket number: {ticket_id}"
-                    )
-
-                ticket_id = sys_id
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, ticket_id)
 
@@ -889,6 +947,9 @@ class ServicenowConnector(BaseConnector):
 
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
+
+            if not response.get("result"):
+                return action_result.set_status(phantom.APP_ERROR, "No ticket updated; ServiceNow returned an empty result")
 
             action_result.update_summary({"fields_updated": True})
             res.update(response.get("result", {}))
@@ -913,25 +974,9 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={sys_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, sys_id = self._resolve_ticket_sys_id(action_result, table, sys_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                sys_id = response.get("result")[0].get("sys_id")
-
-                if not sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Unable to fetch the ticket SYS ID \
-                                    for the provided ticket number: {sys_id}",
-                    )
-
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table, sys_id)
 
@@ -1002,6 +1047,11 @@ class ServicenowConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, ticket_id)):
+            return action_result.get_status()
+
         ret_val = self._get_ticket_details(action_result, table_name, ticket_id, is_sys_id=is_sys_id)
 
         if phantom.is_fail(ret_val):
@@ -1027,12 +1077,15 @@ class ServicenowConnector(BaseConnector):
         payload["sysparm_offset"] = SERVICENOW_DEFAULT_OFFSET
         payload["sysparm_limit"] = min(limit, SERVICENOW_DEFAULT_LIMIT)
         total_item_count = 0  # Initialize to prevent unbound variable error
+        page_count = 0
 
         while True:
             ret_val, items = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=payload)
 
             if phantom.is_fail(ret_val):
                 return None
+
+            page_count += 1
 
             # get total record count from headers
             if self._response_headers:
@@ -1052,7 +1105,11 @@ class ServicenowConnector(BaseConnector):
                     return items_list
 
             # exit if the total number of records are less than limit or else it has fetched all the pages
-            if (payload["sysparm_offset"] + payload["sysparm_limit"]) == total_item_count:
+            if (payload["sysparm_offset"] + payload["sysparm_limit"]) >= total_item_count:
+                return items_list
+
+            if page_count >= SERVICENOW_MAX_PAGES:
+                self.debug_print(f"Reached the maximum of {SERVICENOW_MAX_PAGES} ServiceNow pages")
                 return items_list
 
             payload["sysparm_offset"] += payload["sysparm_limit"]
@@ -1261,31 +1318,19 @@ class ServicenowConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, sys_id)):
+            return action_result.get_status()
+
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={sys_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, sys_id = self._resolve_ticket_sys_id(action_result, table_name, sys_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                new_sys_id = response.get("result")[0].get("sys_id")
-
-                if not new_sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Unable to fetch the \
-                            ticket SYS ID for the provided ticket number: {sys_id}",
-                    )
-
-                sys_id = new_sys_id
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         work_note = param.get("work_note")
 
@@ -1301,6 +1346,9 @@ class ServicenowConnector(BaseConnector):
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
+
+        if not response.get("result"):
+            return action_result.set_status(phantom.APP_ERROR, "No ticket updated; work note was not added")
 
         if response.get("result", {}).get("work_notes"):
             response["result"]["work_notes"] = response["result"]["work_notes"].replace("\n\n", "\n, ").strip(", ")
@@ -1413,31 +1461,19 @@ class ServicenowConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TICKET_ID, sys_id)):
+            return action_result.get_status()
+
         ret_val, auth, headers = self._get_authorization_credentials(action_result)
         if phantom.is_fail(ret_val):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_AUTH_ERROR_MESSAGE)
 
         if not is_sys_id:
-            params = {"sysparm_query": f"number={sys_id}"}
-            endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
-            ret_val, response = self._make_rest_call_helper(action_result, endpoint, auth=auth, headers=headers, params=params)
-
+            ret_val, sys_id = self._resolve_ticket_sys_id(action_result, table_name, sys_id, auth, headers)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if response.get("result"):
-                new_sys_id = response.get("result")[0].get("sys_id")
-
-                if not new_sys_id:
-                    return action_result.set_status(
-                        phantom.APP_ERROR,
-                        f"Unable to fetch the ticket \
-                                    SYS ID for the provided ticket number: {sys_id}",
-                    )
-
-                sys_id = new_sys_id
-            else:
-                return action_result.set_status(phantom.APP_ERROR, SERVICENOW_TICKET_ID_MESSAGE)
 
         comment = param.get("comment")
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
@@ -1452,11 +1488,12 @@ class ServicenowConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
+        if not response.get("result"):
+            return action_result.set_status(phantom.APP_ERROR, "No ticket updated; comment was not added")
+
         if response.get("result", {}).get("comments"):
             response["result"]["comments"] = response["result"]["comments"].replace("\n\n", "\n, ").strip(", ")
         message = "Added the comment successfully"
-        if not response.get("result"):
-            message = "No tickets Found"
         action_result.add_data(response.get("result", {}))
 
         return action_result.set_status(phantom.APP_SUCCESS, message)
@@ -1466,6 +1503,8 @@ class ServicenowConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         table_name = param.get(SERVICENOW_JSON_TABLE, SERVICENOW_DEFAULT_TABLE)
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_TABLE, table_name)):
+            return action_result.get_status()
         endpoint = SERVICENOW_TABLE_ENDPOINT.format(table_name)
         request_params = {"sysparm_query": param.get(SERVICENOW_JSON_FILTER, "")}
 
@@ -1599,6 +1638,8 @@ class ServicenowConnector(BaseConnector):
 
         lookup_table = param[SERVICENOW_JSON_QUERY_TABLE]
         query = param[SERVICENOW_JSON_QUERY]
+        if phantom.is_fail(self._validate_path_segment(action_result, SERVICENOW_JSON_QUERY_TABLE, lookup_table)):
+            return action_result.get_status()
         endpoint = f"{SERVICENOW_BASE_QUERY_URI}{lookup_table}?{query}"
         ret_val, limit = self._validate_integers(
             action_result, param.get(SERVICENOW_JSON_MAX_RESULTS, SERVICENOW_DEFAULT_MAX_LIMIT), SERVICENOW_JSON_MAX_RESULTS
@@ -1687,7 +1728,11 @@ class ServicenowConnector(BaseConnector):
                     items_list[0].get("search_results", [])[i].get("records", []).extend(data)
 
             # If we got all the results or if we reached maximum pages
-            if total_item_count <= result_length or params["sysparm_page"] >= total_result_count_page_limit + 1:
+            if (
+                total_item_count <= result_length
+                or params["sysparm_page"] >= total_result_count_page_limit + 1
+                or params["sysparm_page"] >= SERVICENOW_MAX_PAGES
+            ):
                 break
             params["sysparm_page"] = params["sysparm_page"] + 1
 
@@ -1716,10 +1761,10 @@ class ServicenowConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _on_poll(self, param):
-        URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+        URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\\x00-\\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
         HASH_REGEX = "\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b"
-        IP_REGEX = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
-        IPV6_REGEX = "\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
+        IP_REGEX = "(?<![0-9A-Za-z_.-])\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(?![0-9A-Za-z_.-])"
+        IPV6_REGEX = "(?<![0-9A-Za-z:])((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
         IPV6_REGEX += (
             "(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))"
         )
@@ -1749,7 +1794,7 @@ class ServicenowConnector(BaseConnector):
         )
         IPV6_REGEX += (
             "(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|"
-            "[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*"
+            "[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:%[0-9A-Za-z._~-]+)?(?![0-9A-Za-z:])"
         )
         uri_regexc = re.compile(URI_REGEX)
         hash_regexc = re.compile(HASH_REGEX)
@@ -1771,7 +1816,7 @@ class ServicenowConnector(BaseConnector):
         last_time = self._state.get("last_time")
 
         if last_time and isinstance(last_time, float):
-            last_time = datetime.strftime(datetime.fromtimestamp(last_time), SERVICENOW_DATETIME_FORMAT)
+            last_time = datetime.fromtimestamp(last_time, timezone.utc).strftime(SERVICENOW_DATETIME_FORMAT)
 
         # Build the query for the issue search (sysparm_query)
         query = "ORDERBYsys_updated_on"
@@ -1793,7 +1838,10 @@ class ServicenowConnector(BaseConnector):
             # "last_time" should be of the format "%Y-%m-%d %H:%M:%S"
             if last_time and len(last_time.split(" ")) == 2:
                 query_prefix = last_time.split(" ")
-                query += f"^sys_updated_on>=javascript:gs.dateGenerate('{query_prefix[0]}','{query_prefix[1]}')"
+                if config.get("timezone"):
+                    query += f"^sys_updated_on>=javascript:gs.dateGenerate('{query_prefix[0]}','{query_prefix[1]}')"
+                else:
+                    query += f"^sys_updated_on>={last_time}"
                 max_tickets = self._max_container
             else:
                 self.debug_print(
@@ -1831,6 +1879,7 @@ class ServicenowConnector(BaseConnector):
 
         # Ingest the issues
         failed = 0
+        last_persisted_updated_on = None
         label = self.get_config().get("ingest", {}).get("container_label")
 
         if config.get("severity"):
@@ -1845,6 +1894,7 @@ class ServicenowConnector(BaseConnector):
             severity = config.get("severity", default_severity).lower()
 
         for issue in issues:
+            issue = self._strip_format_controls(issue)
             sdi = issue["sys_id"]
             sd = issue.get("short_description")
             desc = issue.get("description", "")
@@ -1883,17 +1933,18 @@ class ServicenowConnector(BaseConnector):
             extract_hashes = config.get(SERVICENOW_JSON_EXTRACT_HASHES)
             extract_url = config.get(SERVICENOW_JSON_EXTRACT_URLS)
             if extract_ips:
-                for match in ip_regexc.finditer(str(issue)):
-                    cef = {}
-                    cef["ip_address"] = match.group()
-                    art = {"container_id": container_id, "label": "IP Address", "cef": cef}
-                    artifacts.append(art)
+                for ticket_text in self._ticket_text_values(issue):
+                    for match in ip_regexc.finditer(ticket_text):
+                        ip_address = self._valid_ip_address(match.group(), 4)
+                        if ip_address:
+                            art = {"container_id": container_id, "label": "IP Address", "cef": {"ip_address": ip_address}}
+                            artifacts.append(art)
 
-                for match in ipv6_regexc.finditer(str(issue)):
-                    cef = {}
-                    cef["ipv6_address"] = match.group()
-                    art = {"container_id": container_id, "label": "IPV6 Address", "cef": cef}
-                    artifacts.append(art)
+                    for match in ipv6_regexc.finditer(ticket_text):
+                        ipv6_address = self._valid_ip_address(match.group(), 6)
+                        if ipv6_address:
+                            art = {"container_id": container_id, "label": "IPV6 Address", "cef": {"ipv6_address": ipv6_address}}
+                            artifacts.append(art)
 
             if extract_hashes:
                 for match in hash_regexc.finditer(str(issue)):
@@ -1908,23 +1959,27 @@ class ServicenowConnector(BaseConnector):
                     cef["URL"] = match.group()
                     art = {"container_id": container_id, "label": "URL", "cef": cef}
                     artifacts.append(art)
-            self.save_artifacts(artifacts)
+            save_status, save_message, _artifact_ids = self.save_artifacts(artifacts)
+            if phantom.is_fail(save_status):
+                self.debug_print(f"Failed to save artifacts for ticket {sdi}: {save_message}")
+                failed += 1
+                continue
+            last_persisted_updated_on = issue.get("sys_updated_on")
 
         action_result.set_status(phantom.APP_SUCCESS, "Containers created")
 
         if not self.is_poll_now():
-            if "sys_updated_on" not in issues[-1]:
-                return action_result.set_status(phantom.APP_ERROR, "No updated time in last ingested incident.")
+            if failed == 0:
+                if last_persisted_updated_on is None:
+                    return action_result.set_status(phantom.APP_ERROR, "No updated time in last ingested incident.")
 
-            updated_time = issues[-1]["sys_updated_on"]
+                updated_time = last_persisted_updated_on
 
-            if "timezone" in config:
-                dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT)
-                tz = ZoneInfo(config["timezone"])
-                new_dt = dt + (tz.utcoffset(dt) or timedelta(0))
-                updated_time = new_dt.strftime(SERVICENOW_DATETIME_FORMAT)
+                if config.get("timezone"):
+                    dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT).replace(tzinfo=timezone.utc)
+                    updated_time = dt.astimezone(ZoneInfo(config["timezone"])).strftime(SERVICENOW_DATETIME_FORMAT)
 
-            self._state["last_time"] = updated_time
+                self._state["last_time"] = updated_time
 
             if self._state.get("first_run", True):
                 self._state["first_run"] = False
@@ -2046,7 +2101,7 @@ class ServicenowConnector(BaseConnector):
         elif action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY:
             ret_val = self._test_connectivity(param)
         elif action == self.ACTION_ID_RUN_QUERY:
-            ret_val = self._run_query(param)
+            ret_val = self._run_query(param, strip_props=SERVICENOW_SENSITIVE_PROPS)
         elif action == self.ACTION_ID_QUERY_USERS:
             ret_val = self._query_users(param)
         return ret_val
