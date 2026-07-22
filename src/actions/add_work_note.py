@@ -22,7 +22,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import TICKET_ENDPOINT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_path_segment
 
 logger = getLogger()
 
@@ -237,7 +237,7 @@ def add_work_note(
     helper = ServiceNowClient(asset)
 
     sys_id = params.id
-    table_name = params.table_name
+    table_name = validate_path_segment("table_name", params.table_name)
     if not params.is_sys_id:
         sys_id = helper.get_sys_id_from_ticket_number(
             table_name=table_name,
@@ -252,6 +252,7 @@ def add_work_note(
     )
     data = {"work_notes": work_note}
 
+    sys_id = validate_path_segment("sys_id", sys_id)
     endpoint = TICKET_ENDPOINT.format(table_name, sys_id)
     request_params = {"sysparm_display_value": True}
 

@@ -32,6 +32,7 @@ from src.actions.describe_catalog_item import (
     DescribeCatalogItemOutput,
     OnloadOutput,
     VariablesOutput,
+    describe_catalog_item_view,
 )
 from src.actions.describe_service_catalog import (
     CategoriesOutput,
@@ -825,6 +826,19 @@ def test_describe_catalog_item_nested_response_passes_through_unknown_fields():
     }
 
     assert DescribeCatalogItemOutput(**record).model_dump() == record
+
+
+def test_describe_catalog_item_view_populates_sys_id_param():
+    handler = getattr(
+        describe_catalog_item_view,
+        "__wrapped__",
+        describe_catalog_item_view,
+    )
+
+    result = handler([DescribeCatalogItemOutput(sys_id="item-id")])["results"][0]
+
+    assert result["param"] == {"sys_id": "item-id"}
+    assert result["data"][0]["sys_id"] == "item-id"
 
 
 def test_search_sources_nested_response_passes_through_dynamic_fields():

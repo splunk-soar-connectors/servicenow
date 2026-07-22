@@ -123,7 +123,7 @@ def test_on_poll_uses_migrated_last_time_for_scheduled_query(monkeypatch):
             "payload": {
                 "sysparm_query": (
                     "ORDERBYsys_updated_on"
-                    "^sys_updated_on>=javascript:gs.dateGenerate('2026-01-02','03:04:05')"
+                    "^sys_updated_on>=2026-01-02 03:04:05"
                 ),
                 "sysparm_exclude_reference_link": "true",
             },

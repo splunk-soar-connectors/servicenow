@@ -21,7 +21,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import TABLE_ENDPOINT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_path_segment
 
 logger = getLogger()
 
@@ -173,7 +173,8 @@ def list_tickets(
     )
 
     helper = ServiceNowClient(asset)
-    endpoint = TABLE_ENDPOINT.format(params.table)
+    table = validate_path_segment("table", params.table)
+    endpoint = TABLE_ENDPOINT.format(table)
 
     request_params = {"sysparm_query": params.filter}
     limit = params.max_results

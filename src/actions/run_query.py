@@ -21,7 +21,8 @@ from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
-from ..helpers import ServiceNowClient
+from ..consts import SERVICENOW_SENSITIVE_PROPS
+from ..helpers import ServiceNowClient, validate_path_segment
 
 
 class RunQueryParams(Params):
@@ -56,7 +57,6 @@ class RunQueryOutput(PermissiveActionOutput):
     active: str | None = OutputField(example_values=["true"])
     activity_due: str | None = None
     additional_assignee_list: str | None = None
-    admin_password: str | None = None
     admin_user: str | None = None
     approval: str | None = OutputField(example_values=["not requested"])
     approval_history: str | None = None
@@ -80,7 +80,6 @@ class RunQueryOutput(PermissiveActionOutput):
     correlation_display: str | None = None
     correlation_id: str | None = None
     database_name: str | None = None
-    database_password: str | None = None
     database_tablespace: str | None = None
     database_type: str | None = None
     database_url: str | None = None
@@ -157,6 +156,14 @@ class RunQueryOutput(PermissiveActionOutput):
     work_start: str | None = None
 
 
+def _strip_sensitive_props(record: dict) -> dict:
+    return {
+        key: value
+        for key, value in record.items()
+        if key not in SERVICENOW_SENSITIVE_PROPS
+    }
+
+
 @app.view_handler(template="servicenow_run_query.html")
 def run_query_view(outputs: list[RunQueryOutput]) -> dict:
     """Transform run query action results for HTML rendering."""
@@ -198,7 +205,7 @@ def run_query(
     # The query parameter contains the full query string including "sysparm_query=" prefix
     # Format: /table/{table}?{query}
     # Example: /table/sys_user?sysparm_query=sys_id=abc123
-    table = params.query_table
+    table = validate_path_segment("query_table", params.query_table)
     query_string = params.query
 
     # Construct endpoint with query string appended directly
@@ -219,7 +226,9 @@ def run_query(
         if records is None:
             raise ActionFailure("Invalid parameters or query execution failed")
 
-        output_records = [RunQueryOutput(**record) for record in records]
+        output_records = [
+            RunQueryOutput(**_strip_sensitive_props(record)) for record in records
+        ]
 
         # Set summary
         soar.set_summary(RunQuerySummary(total_tickets=len(output_records)))

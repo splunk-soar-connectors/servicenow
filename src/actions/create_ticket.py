@@ -24,7 +24,12 @@ from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
 from ..consts import TABLE_ENDPOINT
-from ..helpers import ServiceNowActionHelper, ServiceNowClient, parse_fields_json
+from ..helpers import (
+    ServiceNowActionHelper,
+    ServiceNowClient,
+    parse_fields_json,
+    validate_path_segment,
+)
 
 logger = getLogger()
 
@@ -255,6 +260,7 @@ def create_ticket(
     logger.progress("Starting create_ticket action")
 
     table = params.table
+    table = validate_path_segment("table", table)
     endpoint = TABLE_ENDPOINT.format(table)
 
     # Parse fields parameter if provided

@@ -126,7 +126,7 @@ and limitations under the License.
                 <td>
                   {% if record.number %}
                     <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':'{{ record.number }}' }], 0, {{ container.id }}, null, false);">
+                       onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':{{ record.number|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                       {{ record.number }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>
@@ -137,7 +137,7 @@ and limitations under the License.
                 <td>
                   {% if record.sys_id %}
                     <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow ticket sysid', 'md5'], 'value':'{{ record.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                       onclick="context_menu(this, [{'contains': ['servicenow ticket sysid', 'md5'], 'value':{{ record.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                       {{ record.sys_id }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>

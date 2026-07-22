@@ -129,7 +129,11 @@ and limitations under the License.
                 <tr>
                   <td>
                     <a href="javascript:;"
+<<<<<<< HEAD
                        onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':'{{ data.number|escapejs }}' }], 0, {{ container.id }}, null, false);">
+=======
+                       onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':{{ data.number|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                       {{ data.number }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>
@@ -139,7 +143,11 @@ and limitations under the License.
                   <td>{{ data.category }}</td>
                   <td>
                     <a href="javascript:;"
+<<<<<<< HEAD
                        onclick="context_menu(this, [{'contains': ['servicenow ticket sysid', 'md5'], 'value':'{{ data.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+=======
+                       onclick="context_menu(this, [{'contains': ['servicenow ticket sysid', 'md5'], 'value':{{ data.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                       {{ data.sys_id }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>

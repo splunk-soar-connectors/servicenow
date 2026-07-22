@@ -23,7 +23,12 @@ from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
 from ..consts import TICKET_ENDPOINT
-from ..helpers import ServiceNowActionHelper, ServiceNowClient, parse_fields_json
+from ..helpers import (
+    ServiceNowActionHelper,
+    ServiceNowClient,
+    parse_fields_json,
+    validate_path_segment,
+)
 
 logger = getLogger()
 
@@ -258,7 +263,7 @@ def update_ticket(
     # Initialize helper
     helper = ServiceNowClient(asset)
 
-    table = params.table
+    table = validate_path_segment("table", params.table)
     ticket_id = params.id
     is_sys_id = params.is_sys_id if params.is_sys_id is not None else False
 
@@ -280,6 +285,7 @@ def update_ticket(
         )
 
     # Build the endpoint for updating ticket
+    ticket_id = validate_path_segment("sys_id", ticket_id)
     endpoint = TICKET_ENDPOINT.format(table, ticket_id)
 
     result = {}

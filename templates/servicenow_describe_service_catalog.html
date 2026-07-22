@@ -105,23 +105,6 @@ and limitations under the License.
       {% if not result.data %}
         <h4 class="wf-h4-style">No data found</h4>
       {% else %}
-<<<<<<< HEAD:servicenow_describe_service_catalog.html
-        <h4 class="wf-h3-style">Info</h4>
-        <table class="wf-table-vertical">
-          <tr>
-            <td>Catalog SYS ID</td>
-            <td>
-              <a class="no-word-wrap"
-                 href="javascript:;"
-                 onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                {{ result.param.sys_id }}
-                &nbsp;
-                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-              </a>
-            </td>
-          </tr>
-        </table>
-=======
         {% for data in result.data %}
           <h4 class="wf-h3-style">Info</h4>
           <table class="wf-table-vertical">
@@ -130,7 +113,7 @@ and limitations under the License.
               <td>
                 <a class="no-word-wrap"
                    href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ data.sys_id }}' }], 0, {{ container.id }}, null, false);">
+                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ data.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                   {{ data.sys_id }}
                   &nbsp;
                   <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -139,7 +122,6 @@ and limitations under the License.
             </tr>
           </table>
         {% endfor %}
->>>>>>> b4e6251 (feat: sdkfied servicenow):templates/servicenow_describe_service_catalog.html
         <div class="results">
           <h4 class="wf-h4-style">Catalog Details</h4>
           <!--Default View-->
@@ -183,7 +165,7 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ category.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ category.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                         {{ category.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -217,7 +199,7 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ item.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':{{ item.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                         {{ item.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -228,11 +210,15 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
+<<<<<<< HEAD
 <<<<<<< HEAD:servicenow_describe_service_catalog.html
                          onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ item.category.value|escapejs }}' }], 0, {{ container.id }}, null, false);">
                         {{ item.category.value }}
 =======
                          onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ item.category_value }}' }], 0, {{ container.id }}, null, false);">
+=======
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ item.category_value|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                         {{ item.category_value }}
 >>>>>>> b4e6251 (feat: sdkfied servicenow):templates/servicenow_describe_service_catalog.html
                         &nbsp;

@@ -113,7 +113,11 @@ and limitations under the License.
               <td>
                 <a class="no-word-wrap"
                    href="javascript:;"
+<<<<<<< HEAD
                    onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.catalog_sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+=======
+                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ result.param.catalog_sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                   {{ result.param.catalog_sys_id }}
                   &nbsp;
                   <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -127,7 +131,11 @@ and limitations under the License.
               <td>
                 <a class="no-word-wrap"
                    href="javascript:;"
+<<<<<<< HEAD
                    onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ result.param.category_sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+=======
+                   onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ result.param.category_sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                   {{ result.param.category_sys_id }}
                   &nbsp;
                   <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -169,7 +177,11 @@ and limitations under the License.
                   <td>
                     <a class="no-word-wrap"
                        href="javascript:;"
+<<<<<<< HEAD
                        onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ data.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+=======
+                       onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':{{ data.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                       {{ data.sys_id }}
                       &nbsp;
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -179,7 +191,11 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
+<<<<<<< HEAD
                          onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.value|escapejs }}' }], 0, {{ container.id }}, null, false);">
+=======
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ data.category.value|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                         {{ data.category.value }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -192,7 +208,11 @@ and limitations under the License.
                     {% for catalog in data.catalogs %}
                       <a class="no-word-wrap"
                          href="javascript:;"
+<<<<<<< HEAD
                          onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog|escapejs }}' }], 0, {{ container.id }}, null, false);">
+=======
+                         onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ catalog|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
                         {{ catalog }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>

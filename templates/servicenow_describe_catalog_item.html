@@ -112,7 +112,7 @@ and limitations under the License.
             <td>
               <a class="no-word-wrap"
                  href="javascript:;"
-                 onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ result.param.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+                 onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':{{ result.param.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                 {{ result.param.sys_id }}
                 &nbsp;
                 <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -144,7 +144,7 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ data.category.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                         {{ data.category.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -157,7 +157,7 @@ and limitations under the License.
                     {% for catalog in data.catalogs %}
                       {{ catalog.title }} : <a class="no-word-wrap"
     href="javascript:;"
-    onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
+    onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ catalog.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
                       {{ catalog.sys_id }}
                       &nbsp;
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>

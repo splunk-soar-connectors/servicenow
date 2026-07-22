@@ -31,7 +31,7 @@ from ..consts import (
     SC_API_URI,
     API_URI,
 )
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_path_segment
 
 logger = getLogger()
 
@@ -155,8 +155,9 @@ def request_catalog_item(
     variables_dict = _parse_variables(params.variables)
 
     # Step 1: Fetch catalog item details to validate mandatory variables
-    logger.info(f"Fetching catalog item details for sys_id: {params.sys_id}")
-    endpoint = CATALOG_ITEMS_ENDPOINT.format(params.sys_id)
+    sys_id = validate_path_segment("sys_id", params.sys_id)
+    logger.info(f"Fetching catalog item details for sys_id: {sys_id}")
+    endpoint = CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
     try:
         response = helper.make_rest_call(
@@ -170,7 +171,7 @@ def request_catalog_item(
     # Validate response
     if not response.get("result"):
         raise ActionFailure(
-            f"No data found for catalog item with sys_id: {params.sys_id}"
+            f"No data found for catalog item with sys_id: {sys_id}"
         )
 
     # Step 2: Extract and validate mandatory variables
@@ -209,7 +210,7 @@ def request_catalog_item(
 
     # Step 3: Order the catalog item
     logger.info(f"Ordering catalog item with quantity: {params.quantity}")
-    order_endpoint = CATALOG_ORDER_NOW_ENDPOINT.format(params.sys_id)
+    order_endpoint = CATALOG_ORDER_NOW_ENDPOINT.format(sys_id)
 
     # Build order request data
     order_data = {"sysparm_quantity": params.quantity}
@@ -245,6 +246,8 @@ def request_catalog_item(
 
     # Step 4: Fetch the created request record details
     logger.info("Fetching request record details")
+    table = validate_path_segment("table", table)
+    request_sys_id = validate_path_segment("sys_id", request_sys_id)
     ticket_endpoint = TICKET_ENDPOINT.format(table, request_sys_id)
 
     try:

@@ -16,6 +16,7 @@
 
 import ast
 import json
+import re
 from typing import TYPE_CHECKING, Optional
 from urllib.parse import urlparse
 
@@ -31,6 +32,7 @@ from .consts import (
     API_URI,
     DEFAULT_OFFSET,
     DEFAULT_LIMIT,
+    MAX_PAGES,
     SC_CAT_ITEMS_ENDPOINT,
     TABLE_ENDPOINT,
     TicketNotFoundException,
@@ -45,6 +47,16 @@ if TYPE_CHECKING:
 
 logger = getLogger()
 
+PATH_SEGMENT_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
+
+
+def validate_path_segment(name: str, value: object) -> str:
+    if value is None or not PATH_SEGMENT_RE.fullmatch(str(value)):
+        raise ActionFailure(
+            f"Invalid '{name}' parameter; expected one ServiceNow table name or identifier"
+        )
+    return str(value)
+
 
 class ServiceNowClient:
     """Client for ServiceNow API operations."""
@@ -58,6 +70,7 @@ class ServiceNowClient:
         self.asset = asset
         self.verify_ssl = verify_ssl
         self.timeout = timeout
+        self._response_headers: dict[str, str] = {}
         self._oauth_client: Optional[ServiceNowOAuthClient] = None
 
     def _normalize_base_url(self) -> str:
@@ -220,6 +233,7 @@ class ServiceNowClient:
                     headers={"Content-Type": "application/json"},
                     params=params,
                 )
+            self._response_headers = dict(response.headers)
         except httpx.RequestError as e:
             raise ActionFailure(f"Error connecting to server: {e}") from e
         except Exception as e:
@@ -235,6 +249,7 @@ class ServiceNowClient:
         """
         Convert ticket number to sys_id by querying ServiceNow
         """
+        table_name = validate_path_segment("table", table_name)
         params = {"sysparm_query": f"number={ticket_number}"}
         endpoint = TABLE_ENDPOINT.format(table_name)
 
@@ -253,11 +268,18 @@ class ServiceNowClient:
                 f"Ticket not found with number: {ticket_number}"
             )
 
-        sys_id = results[0].get("sys_id")
+        ticket = results[0]
+        if ticket.get("number") != ticket_number:
+            raise TicketNotFoundException(
+                "ServiceNow returned a different ticket than the requested ticket number"
+            )
+
+        sys_id = ticket.get("sys_id")
         if not sys_id:
             raise TicketNotFoundException(
                 f"Unable to fetch ticket SYS ID for number: {ticket_number}"
             )
+        sys_id = validate_path_segment("sys_id", sys_id)
 
         logger.info(f"Converted ticket number {ticket_number} to sys_id: {sys_id}")
         return sys_id
@@ -275,9 +297,23 @@ class ServiceNowClient:
         payload["sysparm_offset"] = DEFAULT_OFFSET
         payload["sysparm_limit"] = min(limit, DEFAULT_LIMIT) if limit else DEFAULT_LIMIT
         total_item_count = 0
+        page_count = 0
 
         while True:
             response = self.make_rest_call(endpoint, params=payload)
+            page_count += 1
+
+            total_count_header = self._response_headers.get(
+                "X-Total-Count"
+            ) or self._response_headers.get("x-total-count")
+            if total_count_header is not None:
+                try:
+                    total_item_count = int(total_count_header)
+                except (TypeError, ValueError):
+                    logger.warning(
+                        "Ignoring invalid ServiceNow X-Total-Count header: "
+                        f"{total_count_header}"
+                    )
 
             result = response.get("result")
             if result:
@@ -293,6 +329,10 @@ class ServiceNowClient:
                 payload["sysparm_offset"] + payload["sysparm_limit"] >= total_item_count
                 and total_item_count > 0
             ):
+                return items_list
+
+            if page_count >= MAX_PAGES:
+                logger.warning(f"Reached the maximum of {MAX_PAGES} ServiceNow pages")
                 return items_list
 
             payload["sysparm_offset"] += payload["sysparm_limit"]

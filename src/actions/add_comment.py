@@ -21,7 +21,7 @@ from soar_sdk.logging import getLogger
 from soar_sdk.exceptions import ActionFailure
 from ..app import app, Asset
 from ..consts import TICKET_ENDPOINT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_path_segment
 
 logger = getLogger()
 
@@ -248,10 +248,11 @@ def add_comment(
     helper = ServiceNowClient(asset)
 
     sys_id = params.id
+    table_name = validate_path_segment("table_name", params.table_name)
     is_sys_id = params.is_sys_id if params.is_sys_id is not None else False
     if not is_sys_id:
         sys_id = helper.get_sys_id_from_ticket_number(
-            table_name=params.table_name,
+            table_name=table_name,
             ticket_number=params.id,
         )
     # Replace: \n -> newline, \' -> ', \" -> ", \b -> backspace
@@ -262,7 +263,8 @@ def add_comment(
         .replace("\\b", "\b")
     )
 
-    endpoint = TICKET_ENDPOINT.format(params.table_name, sys_id)
+    sys_id = validate_path_segment("sys_id", sys_id)
+    endpoint = TICKET_ENDPOINT.format(table_name, sys_id)
     data = {"comments": processed_comment}
     request_params = {"sysparm_display_value": True}
     response = helper.make_rest_call(

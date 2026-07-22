@@ -24,7 +24,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import TABLE_ENDPOINT, TICKET_ENDPOINT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_path_segment
 
 logger = getLogger()
 
@@ -177,6 +177,7 @@ def _fetch_variable_details(
     sys_id: str,
 ) -> tuple[str, str]:
     """Fetch variable value and question ID from sc_item_option table"""
+    item_option_value = validate_path_segment("item_option_value", item_option_value)
     endpoint = TICKET_ENDPOINT.format(ITEM_OPT_TABLE, item_option_value)
     logger.debug(f"Fetching variable details from: {endpoint}")
 
@@ -231,6 +232,7 @@ def _fetch_question_text(
     sys_id: str,
 ) -> str:
     """Fetch question text from item_option_new table"""
+    question_id = validate_path_segment("question_id", question_id)
     endpoint = TICKET_ENDPOINT.format(ITEM_OPT_NEW_TABLE, question_id)
     logger.debug(f"Fetching question text from: {endpoint}")
 

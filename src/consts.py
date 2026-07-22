@@ -32,6 +32,7 @@ CATALOG_ORDER_NOW_ENDPOINT = "/servicecatalog/items/{}/order_now"
 DEFAULT_OFFSET = 0
 DEFAULT_LIMIT = 10000
 DEFAULT_MAX_LIMIT = 100
+MAX_PAGES = 1000
 
 # Search endpoints
 SEARCH_SOURCES_ENDPOINT = "/search/sources/textsearch"
@@ -39,6 +40,12 @@ SEARCH_SOURCES_ENDPOINT = "/search/sources/textsearch"
 # Search pagination defaults
 SEARCH_DEFAULT_PAGE = 1
 SEARCH_MAX_LIMIT = 20
+
+SERVICENOW_SENSITIVE_PROPS = [
+    "admin_password",  # pragma: allowlist secret
+    "database_password",  # pragma: allowlist secret
+    "user_password",  # pragma: allowlist secret
+]
 
 # Messages
 TEST_CONNECTIVITY_SUCCESS = "Test Connectivity Passed"

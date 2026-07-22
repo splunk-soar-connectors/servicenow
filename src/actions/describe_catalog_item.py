@@ -23,7 +23,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import CATALOG_ITEMS_ENDPOINT, SC_API_URI
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_path_segment
 
 logger = getLogger()
 
@@ -222,9 +222,10 @@ def describe_catalog_item_view(outputs: list[DescribeCatalogItemOutput]) -> dict
     """Transform describe catalog item action results for HTML rendering."""
     results = []
     for output in outputs:
+        data = output.model_dump()
         ctx_result = {
-            "data": [output.model_dump()],
-            "param": {},
+            "data": [data],
+            "param": {"sys_id": data.get("sys_id")},
             "summary": {},
             "action_name": "describe catalog item",
         }
@@ -247,7 +248,8 @@ def describe_catalog_item(
     # Initialize helper
     helper = ServiceNowClient(asset)
 
-    endpoint = CATALOG_ITEMS_ENDPOINT.format(params.sys_id)
+    sys_id = validate_path_segment("sys_id", params.sys_id)
+    endpoint = CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
     response = helper.make_rest_call(
         endpoint=endpoint,

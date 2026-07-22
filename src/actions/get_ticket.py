@@ -22,7 +22,7 @@ from soar_sdk.logging import getLogger
 from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_path_segment
 from ..consts import (
     SERVICENOW_TICKET_ID_MESSAGE,
     SERVICENOW_INVALID_PARAMETER_MESSAGE,
@@ -280,7 +280,7 @@ def get_ticket(
     This action retrieves detailed information about a ticket/record including
     attachments, comments, and work notes.
     """
-    table_name = params.table
+    table_name = validate_path_segment("table", params.table)
     ticket_id = params.id
     is_sys_id = params.is_sys_id or False
 
@@ -307,6 +307,7 @@ def get_ticket(
     logger.debug(
         f"Fetching ticket details for sys_id '{sys_id}' from table '{table_name}'"
     )
+    sys_id = validate_path_segment("sys_id", sys_id)
     endpoint = f"/table/{table_name}/{sys_id}"
     response = helper.make_rest_call(endpoint=endpoint)
 
