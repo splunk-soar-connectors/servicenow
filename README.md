@@ -608,7 +608,7 @@ action_result.data.\*.delivery_plan | string | | |
 action_result.data.\*.delivery_task | string | | |
 action_result.data.\*.depreciated_amount | string | | 0 |
 action_result.data.\*.depreciation_date | string | | |
-action_result.data.\*.description | string | | Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Splunk for container id: 000 |
+action_result.data.\*.description | string | | Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Phantom for container id: 000 |
 action_result.data.\*.display_name | string | | |
 action_result.data.\*.disposal_reason | string | | |
 action_result.data.\*.due | string | | |
@@ -695,7 +695,7 @@ action_result.data.\*.work_notes_list | string | | |
 action_result.data.\*.work_start | string | | |
 action_result.summary.created_ticket_id | string | `servicenow ticket sysid` `md5` | |
 action_result.summary.successfully_added_attachments_count | numeric | | 1 2 3 |
-action_result.summary.vault_failure_details.\* | string | | |
+action_result.summary.vault_failure_details | string | | Invalid Vault ID: vault_id_1, vault_id_2 |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 
@@ -1486,7 +1486,7 @@ PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 **endpoint** | required | ServiceNow API endpoint path appended to the base URL. Do not include the base URL itself. Examples: '/api/now/table/incident', '/api/sn_sc/servicecatalog/items/{sys_id}', '/api/now/table/sys_user?sysparm_query=user_name=admin'. | string | |
 **headers** | optional | The headers to send with the request (JSON object). An example is {'Content-Type': 'application/json'} | string | |
 **query_parameters** | optional | Parameters to append to the URL (JSON object or query string). An example is ?key=value&key2=value2 | string | |
-**body** | optional | The body to send with the request (JSON object). An example is {'key': 'value', 'key2': 'value2'} | string | |
+**body** | optional | The request body to send. When Content-Type contains 'json', this must be a JSON object. For other content types, the body is sent as raw text. | string | |
 **timeout** | optional | The timeout for the request in seconds. | numeric | |
 **verify_ssl** | optional | Whether to verify the SSL certificate. | boolean | |
 
@@ -1749,7 +1749,6 @@ action_result.parameter.max_results | numeric | | |
 action_result.data.\*.active | string | | true |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
-action_result.data.\*.admin_password | string | | |
 action_result.data.\*.admin_user | string | | |
 action_result.data.\*.approval | string | | not requested |
 action_result.data.\*.approval_history | string | | |
@@ -1771,7 +1770,6 @@ action_result.data.\*.contact_type | string | | self-service |
 action_result.data.\*.correlation_display | string | | |
 action_result.data.\*.correlation_id | string | | |
 action_result.data.\*.database_name | string | | |
-action_result.data.\*.database_password | string | | |
 action_result.data.\*.database_tablespace | string | | |
 action_result.data.\*.database_type | string | | |
 action_result.data.\*.database_url | string | | |
@@ -2113,6 +2111,8 @@ action_result.data.\*.work_notes | string | | |
 action_result.data.\*.work_notes_list | string | | |
 action_result.data.\*.work_start | string | | |
 action_result.summary.fields_updated | boolean | | True False |
+action_result.summary.successfully_added_attachments_count | numeric | | 1 2 3 |
+action_result.summary.vault_failure_details | string | | Invalid Vault ID: vault_id_1, vault_id_2 |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 

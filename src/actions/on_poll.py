@@ -35,9 +35,7 @@ from ..helpers import ServiceNowClient, validate_path_segment
 logger = getLogger()
 
 # Regex patterns for artifact extraction
-URI_REGEX = (
-    r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\x00-\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
-)
+URI_REGEX = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\x00-\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 HASH_REGEX = r"\b[0-9a-fA-F]{32}\b|\b[0-9a-fA-F]{40}\b|\b[0-9a-fA-F]{64}\b"
 IP_REGEX = r"(?<![0-9A-Za-z_.-])\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?![0-9A-Za-z_.-])"
 IPV6_REGEX = "(?<![0-9A-Za-z:])((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
@@ -109,15 +107,10 @@ def _format_time_query(operator: str, value: str, timezone_value: Any = None) ->
 def _strip_format_controls(value: Any) -> Any:
     if isinstance(value, str):
         return "".join(
-            character
-            for character in value
-            if unicodedata.category(character) != "Cf"
+            character for character in value if unicodedata.category(character) != "Cf"
         )
     if isinstance(value, dict):
-        return {
-            key: _strip_format_controls(item)
-            for key, item in value.items()
-        }
+        return {key: _strip_format_controls(item) for key, item in value.items()}
     if isinstance(value, list):
         return [_strip_format_controls(item) for item in value]
     return value

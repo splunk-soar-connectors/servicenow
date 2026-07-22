@@ -170,9 +170,7 @@ def request_catalog_item(
 
     # Validate response
     if not response.get("result"):
-        raise ActionFailure(
-            f"No data found for catalog item with sys_id: {sys_id}"
-        )
+        raise ActionFailure(f"No data found for catalog item with sys_id: {sys_id}")
 
     # Step 2: Extract and validate mandatory variables
     mandatory_variables = []

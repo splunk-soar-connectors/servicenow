@@ -127,7 +127,7 @@ and limitations under the License.
               <td>
                 {% if result.data.number %}
                   <a href="javascript:;"
-                     onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':{{ result.data.number|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                     onclick="context_menu(this, [{'contains': ['servicenow ticket number'], 'value':{{ result.data.number|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                     {{ result.data.number }}
                     <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                   </a>
@@ -142,7 +142,7 @@ and limitations under the License.
               <td>
                 {% if result.data.sys_id %}
                   <a href="javascript:;"
-                     onclick="context_menu(this, [{'contains': ['md5'], 'value':{{ result.data.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                     onclick="context_menu(this, [{'contains': ['md5'], 'value':{{ result.data.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                     {{ result.data.sys_id }}
                     <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                   </a>

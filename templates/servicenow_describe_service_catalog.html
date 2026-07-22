@@ -113,7 +113,7 @@ and limitations under the License.
               <td>
                 <a class="no-word-wrap"
                    href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ data.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ data.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                   {{ data.sys_id }}
                   &nbsp;
                   <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -165,7 +165,7 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ category.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ category.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                         {{ category.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -199,7 +199,7 @@ and limitations under the License.
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':{{ item.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                         onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':{{ item.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                         {{ item.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
@@ -211,6 +211,7 @@ and limitations under the License.
                       <a class="no-word-wrap"
                          href="javascript:;"
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< HEAD:servicenow_describe_service_catalog.html
                          onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ item.category.value|escapejs }}' }], 0, {{ container.id }}, null, false);">
                         {{ item.category.value }}
@@ -219,6 +220,9 @@ and limitations under the License.
 =======
                          onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ item.category_value|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
 >>>>>>> b7b3968 (fix: add security vuln fixed in main branch)
+=======
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ item.category_value|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
+>>>>>>> e8a196f (chore: pre-commit fixes)
                         {{ item.category_value }}
 >>>>>>> b4e6251 (feat: sdkfied servicenow):templates/servicenow_describe_service_catalog.html
                         &nbsp;

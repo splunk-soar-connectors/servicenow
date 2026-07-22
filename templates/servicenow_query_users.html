@@ -129,7 +129,7 @@ and limitations under the License.
                 <td>
                   {% if user.email %}
                     <a href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['email'], 'value':{{ user.email|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                       onclick="context_menu(this, [{'contains': ['email'], 'value':{{ user.email|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                       {{ user.email }}
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                     </a>
@@ -141,7 +141,7 @@ and limitations under the License.
                 <td>{{ user.last_name }}</td>
                 <td>
                   <a href="javascript:;"
-                     onclick="context_menu(this, [{'contains': ['md5'], 'value':{{ user.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                     onclick="context_menu(this, [{'contains': ['md5'], 'value':{{ user.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                     {{ user.sys_id }}
                     <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                   </a>

@@ -492,7 +492,9 @@ def test_raw_record_outputs_pass_through_custom_and_reference_fields(output_cls)
         ),
     ],
 )
-def test_reference_fields_are_not_declared_on_raw_record_outputs(output_cls, dropped_fields):
+def test_reference_fields_are_not_declared_on_raw_record_outputs(
+    output_cls, dropped_fields
+):
     assert dropped_fields.isdisjoint(output_cls.model_fields)
 
 
@@ -555,7 +557,9 @@ def test_get_variables_output_passes_through_dynamic_question_keys():
     assert GetVariablesOutput(**record).model_dump() == record
 
 
-@pytest.mark.parametrize("output_cls", [CreateTicketOutput, GetTicketOutput, UpdateTicketOutput])
+@pytest.mark.parametrize(
+    "output_cls", [CreateTicketOutput, GetTicketOutput, UpdateTicketOutput]
+)
 def test_attachment_details_pass_through(output_cls):
     attachment = {
         "file_name": "evidence.txt",
@@ -648,10 +652,17 @@ def test_query_users_returns_flat_records_and_strips_user_password(monkeypatch):
 
     monkeypatch.setattr("src.helpers.ServiceNowClient", FakeHelper)
     soar = FakeSoar()
-    handler = getattr(query_users_module.query_users, "__wrapped__", query_users_module.query_users)
+    handler = getattr(
+        query_users_module.query_users, "__wrapped__", query_users_module.query_users
+    )
 
     outputs = handler(
-        QueryUsersParams(query="sysparm_query=user_name=admin", user_id="", username="", max_results=100),
+        QueryUsersParams(
+            query="sysparm_query=user_name=admin",
+            user_id="",
+            username="",
+            max_results=100,
+        ),
         soar,
         SimpleNamespace(),
     )
@@ -746,9 +757,18 @@ def test_describe_service_catalog_view_handles_raw_category_references():
         DescribeServiceCatalogOutput(
             sys_id="catalog-id",
             items=[
-                {"sys_id": "item-with-dict-category", "category": {"value": "category-id"}},
-                {"sys_id": "item-with-enriched-category", "category": {"sys_id": "enriched-category-id"}},
-                {"sys_id": "item-with-string-category", "category": "string-category-id"},
+                {
+                    "sys_id": "item-with-dict-category",
+                    "category": {"value": "category-id"},
+                },
+                {
+                    "sys_id": "item-with-enriched-category",
+                    "category": {"sys_id": "enriched-category-id"},
+                },
+                {
+                    "sys_id": "item-with-string-category",
+                    "category": "string-category-id",
+                },
             ],
         )
     ]

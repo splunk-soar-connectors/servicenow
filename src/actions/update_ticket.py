@@ -345,7 +345,9 @@ def update_ticket(
                 )
             )
             # Always raise exception when attachments fail (matches legacy behavior)
-            raise ActionFailure(f"Failed to attach files. Errors: {vault_failure_details}")
+            raise ActionFailure(
+                f"Failed to attach files. Errors: {vault_failure_details}"
+            )
 
     soar.set_summary(
         UpdateTicketSummary(

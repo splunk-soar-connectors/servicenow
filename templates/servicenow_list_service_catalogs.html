@@ -127,7 +127,7 @@ and limitations under the License.
                 <td>{{ catalog.active }}</td>
                 <td>
                   <a href="javascript:;"
-                     onclick="context_menu(this, [{'contains': ['servicenow catalog sys id', 'md5'], 'value':{{ catalog.sys_id|default("")|tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                     onclick="context_menu(this, [{'contains': ['servicenow catalog sys id', 'md5'], 'value':{{ catalog.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
                     {{ catalog.sys_id }}
                     <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                   </a>

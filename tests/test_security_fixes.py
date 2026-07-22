@@ -214,9 +214,7 @@ def test_paginator_stops_when_total_count_reached(monkeypatch):
 
     monkeypatch.setattr(client, "make_rest_call", fake_make_rest_call)
 
-    assert client.paginator("/table/incident", limit=100) == [
-        {"number": "INC0000001"}
-    ]
+    assert client.paginator("/table/incident", limit=100) == [{"number": "INC0000001"}]
     assert calls == [{"sysparm_offset": 0, "sysparm_limit": 100}]
 
 
@@ -254,9 +252,7 @@ def test_paginator_ignores_invalid_total_count_header(monkeypatch):
 
     monkeypatch.setattr(client, "make_rest_call", fake_make_rest_call)
 
-    assert client.paginator("/table/incident", limit=100) == [
-        {"number": "INC0000001"}
-    ]
+    assert client.paginator("/table/incident", limit=100) == [{"number": "INC0000001"}]
     assert len(calls) == 2
 
 
@@ -324,7 +320,9 @@ def test_on_poll_extracts_internationalized_urls(monkeypatch):
         make_poll_asset(extract_urls=True),
     )
 
-    urls = [item.cef["URL"] for item in outputs if getattr(item, "label", None) == "URL"]
+    urls = [
+        item.cef["URL"] for item in outputs if getattr(item, "label", None) == "URL"
+    ]
     assert urls == ["http://例え.テスト/パス"]
 
 
@@ -334,8 +332,7 @@ def test_on_poll_validates_ips_and_scans_text_values_only(monkeypatch):
         "number": "INC0000001",
         "short_description": "Case title",
         "description": (
-            "valid 192.0.2.10 invalid 999.999.999.999 "
-            "ipv6 2001:db8::1%eth0"
+            "valid 192.0.2.10 invalid 999.999.999.999 ipv6 2001:db8::1%eth0"
         ),
         "198.51.100.77": True,
         "sys_updated_on": "2026-01-02 03:04:05",
@@ -446,9 +443,13 @@ def test_custom_view_context_menu_values_are_escaped():
         for line_number, line in enumerate(template_path.read_text().splitlines(), 1):
             if "context_menu(" not in line:
                 continue
-            if "|escapejs" in line or "'value':'{{" in line or (
-                "'value':{{" in line
-                and "|default(\"\")|tojson|forceescape" not in line
+            if (
+                "|escapejs" in line
+                or "'value':'{{" in line
+                or (
+                    "'value':{{" in line
+                    and '|default("")|tojson|forceescape' not in line
+                )
             ):
                 unescaped_lines.append(f"{template_path.name}:{line_number}")
 
@@ -520,6 +521,8 @@ def test_update_ticket_fails_on_empty_write_result(monkeypatch):
                 vault_id="",
                 is_sys_id=True,
             ),
-            SimpleNamespace(set_summary=lambda summary: None, set_message=lambda message: None),
+            SimpleNamespace(
+                set_summary=lambda summary: None, set_message=lambda message: None
+            ),
             make_asset(),
         )

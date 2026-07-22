@@ -123,14 +123,18 @@ def test_private_get_auth_alias_delegates_to_public_get_auth(monkeypatch):
 
 
 def test_get_auth_rejects_client_id_without_client_secret():
-    helper = ServiceNowClient(make_asset(client_id="client-id", username="user", password="pass"))
+    helper = ServiceNowClient(
+        make_asset(client_id="client-id", username="user", password="pass")
+    )
 
     with pytest.raises(ValueError, match="client_secret is required"):
         helper._get_auth()
 
 
 def test_get_auth_rejects_client_secret_without_client_id():
-    helper = ServiceNowClient(make_asset(client_secret="client-secret", username="user", password="pass"))
+    helper = ServiceNowClient(
+        make_asset(client_secret="client-secret", username="user", password="pass")
+    )
 
     with pytest.raises(ValueError, match="client_id is required"):
         helper._get_auth()
@@ -169,13 +173,17 @@ def test_test_connectivity_preserves_request_failure_message(monkeypatch):
             self.asset = asset
 
         def make_rest_call(self, *args, **kwargs):
-            raise ActionFailure("Invalid ServiceNow URL configured. Include the protocol")
+            raise ActionFailure(
+                "Invalid ServiceNow URL configured. Include the protocol"
+            )
 
     monkeypatch.setattr(test_connectivity_action, "ServiceNowClient", FakeHelper)
 
     asset = make_asset(username="user", password="pass")
     with pytest.raises(Exception, match="Invalid ServiceNow URL configured"):
-        test_connectivity_action.test_connectivity.__wrapped__(soar=FakeSOAR(), asset=asset)
+        test_connectivity_action.test_connectivity.__wrapped__(
+            soar=FakeSOAR(), asset=asset
+        )
 
     assert messages == [
         "Test Connectivity Failed: Action failure: Invalid ServiceNow URL configured. Include the protocol"
@@ -211,7 +219,11 @@ def test_oauth_client_bootstraps_with_password_grant_when_no_token(monkeypatch):
 
     monkeypatch.setattr(SOARAssetOAuthClient, "get_valid_token", get_valid_token)
     monkeypatch.setattr(client, "fetch_token_with_password", fetch_token_with_password)
-    monkeypatch.setattr(client, "fetch_token_with_client_credentials", fetch_token_with_client_credentials)
+    monkeypatch.setattr(
+        client,
+        "fetch_token_with_client_credentials",
+        fetch_token_with_client_credentials,
+    )
 
     assert client.get_valid_token() is token
 
@@ -224,7 +236,9 @@ def test_oauth_client_falls_back_to_password_grant_when_refresh_fails(monkeypatc
         raise TokenRefreshError("refresh failed")
 
     monkeypatch.setattr(SOARAssetOAuthClient, "get_valid_token", get_valid_token)
-    monkeypatch.setattr(client, "fetch_token_with_password", lambda username, password: token)
+    monkeypatch.setattr(
+        client, "fetch_token_with_password", lambda username, password: token
+    )
 
     assert client.get_valid_token() is token
 
@@ -270,7 +284,11 @@ def test_oauth_client_rejects_bootstrap_without_username_password(monkeypatch):
         raise AssertionError("client credentials must not be used")
 
     monkeypatch.setattr(SOARAssetOAuthClient, "get_valid_token", get_valid_token)
-    monkeypatch.setattr(client, "fetch_token_with_client_credentials", fetch_token_with_client_credentials)
+    monkeypatch.setattr(
+        client,
+        "fetch_token_with_client_credentials",
+        fetch_token_with_client_credentials,
+    )
 
     with pytest.raises(OAuthClientError, match="requires username and password"):
         client.get_valid_token()
@@ -307,7 +325,9 @@ def test_oauth_client_force_new_token_uses_stored_refresh_token(monkeypatch):
     assert client.force_new_token() is refreshed_token
 
 
-def test_oauth_client_force_new_token_uses_password_grant_without_refresh_token(monkeypatch):
+def test_oauth_client_force_new_token_uses_password_grant_without_refresh_token(
+    monkeypatch,
+):
     client = make_oauth_client(username="user", password="pass")
     password_token = OAuthToken(access_token="password-token")
 
@@ -325,7 +345,9 @@ def test_oauth_client_force_new_token_uses_password_grant_without_refresh_token(
 def test_oauth_client_force_new_token_rejects_without_refresh_or_password(monkeypatch):
     client = make_oauth_client()
 
-    monkeypatch.setattr(client, "get_stored_token", lambda: OAuthToken(access_token="old-token"))
+    monkeypatch.setattr(
+        client, "get_stored_token", lambda: OAuthToken(access_token="old-token")
+    )
 
     with pytest.raises(OAuthClientError, match="requires a stored refresh token"):
         client.force_new_token()
@@ -409,4 +431,7 @@ def test_extract_error_from_response_handles_empty_body():
     helper = ServiceNowClient(make_asset())
     response = httpx.Response(500, text="")
 
-    assert helper._extract_error_from_response(response) == "Unknown error (empty response)"
+    assert (
+        helper._extract_error_from_response(response)
+        == "Unknown error (empty response)"
+    )
