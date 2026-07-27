@@ -64,7 +64,7 @@ def make_asset(**overrides):
 def make_oauth_client(username=None, password=None):
     config = OAuthConfig(
         client_id="client-id",
-        client_secret="client-secret",
+        client_secret="client-secret",  # pragma: allowlist secret
         token_endpoint="https://example.service-now.com/oauth_token.do",
     )
     return ServiceNowOAuthClient(
@@ -76,13 +76,17 @@ def make_oauth_client(username=None, password=None):
 
 
 def test_get_auth_uses_basic_auth_without_oauth_fields():
-    helper = ServiceNowClient(make_asset(username="user", password="pass"))
+    helper = ServiceNowClient(
+        make_asset(username="user", password="pass")  # pragma: allowlist secret
+    )
 
     assert isinstance(helper._get_auth(), BasicAuth)
 
 
 def test_public_get_auth_uses_basic_auth_without_oauth_fields():
-    helper = ServiceNowClient(make_asset(username="user", password="pass"))
+    helper = ServiceNowClient(
+        make_asset(username="user", password="pass")  # pragma: allowlist secret
+    )
 
     assert isinstance(helper.get_auth(), BasicAuth)
 
@@ -91,9 +95,9 @@ def test_get_auth_uses_oauth_when_client_credentials_are_configured():
     helper = ServiceNowClient(
         make_asset(
             username="user",
-            password="pass",
+            password="pass",  # pragma: allowlist secret
             client_id="client-id",
-            client_secret="client-secret",
+            client_secret="client-secret",  # pragma: allowlist secret
         ),
     )
 
@@ -104,9 +108,9 @@ def test_public_get_auth_uses_oauth_when_client_credentials_are_configured():
     helper = ServiceNowClient(
         make_asset(
             username="user",
-            password="pass",
+            password="pass",  # pragma: allowlist secret
             client_id="client-id",
-            client_secret="client-secret",
+            client_secret="client-secret",  # pragma: allowlist secret
         ),
     )
 
@@ -124,7 +128,11 @@ def test_private_get_auth_alias_delegates_to_public_get_auth(monkeypatch):
 
 def test_get_auth_rejects_client_id_without_client_secret():
     helper = ServiceNowClient(
-        make_asset(client_id="client-id", username="user", password="pass")
+        make_asset(
+            client_id="client-id",
+            username="user",
+            password="pass",  # pragma: allowlist secret
+        )
     )
 
     with pytest.raises(ValueError, match="client_secret is required"):
@@ -133,7 +141,11 @@ def test_get_auth_rejects_client_id_without_client_secret():
 
 def test_get_auth_rejects_client_secret_without_client_id():
     helper = ServiceNowClient(
-        make_asset(client_secret="client-secret", username="user", password="pass")
+        make_asset(
+            client_secret="client-secret",  # pragma: allowlist secret
+            username="user",
+            password="pass",  # pragma: allowlist secret
+        )
     )
 
     with pytest.raises(ValueError, match="client_id is required"):
@@ -179,7 +191,7 @@ def test_test_connectivity_preserves_request_failure_message(monkeypatch):
 
     monkeypatch.setattr(test_connectivity_action, "ServiceNowClient", FakeHelper)
 
-    asset = make_asset(username="user", password="pass")
+    asset = make_asset(username="user", password="pass")  # pragma: allowlist secret
     with pytest.raises(Exception, match="Invalid ServiceNow URL configured"):
         test_connectivity_action.test_connectivity.__wrapped__(
             soar=FakeSOAR(), asset=asset
@@ -191,7 +203,9 @@ def test_test_connectivity_preserves_request_failure_message(monkeypatch):
 
 
 def test_oauth_client_returns_valid_sdk_token(monkeypatch):
-    client = make_oauth_client(username="user", password="pass")
+    client = make_oauth_client(
+        username="user", password="pass"  # pragma: allowlist secret
+    )
     token = OAuthToken(access_token="stored-token")
 
     def get_valid_token(self, *, auto_refresh=True):
@@ -203,7 +217,9 @@ def test_oauth_client_returns_valid_sdk_token(monkeypatch):
 
 
 def test_oauth_client_bootstraps_with_password_grant_when_no_token(monkeypatch):
-    client = make_oauth_client(username="user", password="pass")
+    client = make_oauth_client(
+        username="user", password="pass"  # pragma: allowlist secret
+    )
     token = OAuthToken(access_token="password-token")
 
     def get_valid_token(self, *, auto_refresh=True):
@@ -211,7 +227,7 @@ def test_oauth_client_bootstraps_with_password_grant_when_no_token(monkeypatch):
 
     def fetch_token_with_password(username, password):
         assert username == "user"
-        assert password == "pass"
+        assert password == "pass"  # pragma: allowlist secret
         return token
 
     def fetch_token_with_client_credentials():
@@ -229,7 +245,9 @@ def test_oauth_client_bootstraps_with_password_grant_when_no_token(monkeypatch):
 
 
 def test_oauth_client_falls_back_to_password_grant_when_refresh_fails(monkeypatch):
-    client = make_oauth_client(username="user", password="pass")
+    client = make_oauth_client(
+        username="user", password="pass"  # pragma: allowlist secret
+    )
     token = OAuthToken(access_token="password-token")
 
     def get_valid_token(self, *, auto_refresh=True):
@@ -244,7 +262,9 @@ def test_oauth_client_falls_back_to_password_grant_when_refresh_fails(monkeypatc
 
 
 def test_oauth_client_refresh_token_falls_back_to_password_grant(monkeypatch):
-    client = make_oauth_client(username="user", password="pass")
+    client = make_oauth_client(
+        username="user", password="pass"  # pragma: allowlist secret
+    )
     token = OAuthToken(access_token="password-token")
 
     def refresh_token(self, refresh_token):
@@ -253,7 +273,7 @@ def test_oauth_client_refresh_token_falls_back_to_password_grant(monkeypatch):
 
     def fetch_token_with_password(username, password):
         assert username == "user"
-        assert password == "pass"
+        assert password == "pass"  # pragma: allowlist secret
         return token
 
     monkeypatch.setattr(SOARAssetOAuthClient, "refresh_token", refresh_token)
@@ -328,12 +348,14 @@ def test_oauth_client_force_new_token_uses_stored_refresh_token(monkeypatch):
 def test_oauth_client_force_new_token_uses_password_grant_without_refresh_token(
     monkeypatch,
 ):
-    client = make_oauth_client(username="user", password="pass")
+    client = make_oauth_client(
+        username="user", password="pass"  # pragma: allowlist secret
+    )
     password_token = OAuthToken(access_token="password-token")
 
     def fetch_token_with_password(username, password):
         assert username == "user"
-        assert password == "pass"
+        assert password == "pass"  # pragma: allowlist secret
         return password_token
 
     monkeypatch.setattr(client, "get_stored_token", lambda: None)
@@ -384,9 +406,9 @@ def test_helper_passes_verify_ssl_to_oauth_client(monkeypatch):
     helper = ServiceNowClient(
         make_asset(
             username="user",
-            password="pass",
+            password="pass",  # pragma: allowlist secret
             client_id="client-id",
-            client_secret="client-secret",
+            client_secret="client-secret",  # pragma: allowlist secret
         ),
         verify_ssl=False,
     )

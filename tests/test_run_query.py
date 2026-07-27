@@ -39,10 +39,10 @@ def test_run_query_strips_sensitive_properties(monkeypatch, asset_factory):
                 {
                     "number": "INC0000001",
                     "short_description": "safe",
-                    "admin_password": "admin-secret",
-                    "database_password": "db-secret",
-                    "password": "generic-secret",
-                    "user_password": "user-secret",
+                    "admin_password": "admin-secret",  # pragma: allowlist secret
+                    "database_password": "db-secret",  # pragma: allowlist secret
+                    "password": "generic-secret",  # pragma: allowlist secret
+                    "user_password": "user-secret",  # pragma: allowlist secret
                 }
             ]
 
@@ -74,7 +74,7 @@ def test_run_query_strips_sensitive_properties(monkeypatch, asset_factory):
     for sensitive_prop in SERVICENOW_SENSITIVE_PROPS:
         assert sensitive_prop not in dumped
 
-    assert dumped["password"] == "generic-secret"
+    assert dumped["password"] == "generic-secret"  # pragma: allowlist secret
     assert dumped["number"] == "INC0000001"
     assert dumped["short_description"] == "safe"
 

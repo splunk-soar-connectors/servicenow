@@ -27,7 +27,7 @@ def test_ticket_number_resolution_requires_exact_returned_number(
         assert params == {"sysparm_query": "number=INC0000001"}
         return {
             "result": [
-                {"number": "INC0000002", "sys_id": "0123456789abcdef0123456789abcdef"}
+                {"number": "INC0000002", "sys_id": "ticket-sys-id"}
             ]
         }
 
@@ -50,12 +50,12 @@ def test_ticket_number_resolution_returns_sys_id_for_exact_match(
         "make_rest_call",
         lambda endpoint, params: {
             "result": [
-                {"number": "INC0000001", "sys_id": "0123456789abcdef0123456789abcdef"}
+                {"number": "INC0000001", "sys_id": "ticket-sys-id"}
             ]
         },
     )
 
     assert (
         client.get_sys_id_from_ticket_number("incident", "INC0000001")
-        == "0123456789abcdef0123456789abcdef"
+        == "ticket-sys-id"
     )

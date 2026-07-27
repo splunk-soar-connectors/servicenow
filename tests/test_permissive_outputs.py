@@ -625,7 +625,7 @@ def test_query_users_returns_flat_records_and_strips_user_password(monkeypatch):
             },
             "sys_domain": "global",
             "u_custom_field": "tenant-specific value",
-            "user_password": "secret",
+            "user_password": "secret",  # pragma: allowlist secret
         }
     ]
 

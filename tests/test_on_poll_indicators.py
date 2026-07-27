@@ -98,10 +98,10 @@ def test_on_poll_extracts_supported_hashes(collect_on_poll_outputs, poll_asset_f
         "number": "INC0000001",
         "short_description": "Case title",
         "description": (
-            "md5 d41d8cd98f00b204e9800998ecf8427e "
-            "sha1 da39a3ee5e6b4b0d3255bfef95601890afd80709 "
+            "md5 d41d8cd98f00b204e9800998ecf8427e "  # pragma: allowlist secret
+            "sha1 da39a3ee5e6b4b0d3255bfef95601890afd80709 "  # pragma: allowlist secret
             "sha256 e3b0c44298fc1c149afbf4c8996fb924"
-            "27ae41e4649b934ca495991b7852b855"
+            "27ae41e4649b934ca495991b7852b855"  # pragma: allowlist secret
         ),
         "sys_updated_on": "2026-01-02 03:04:05",
     }
@@ -114,10 +114,9 @@ def test_on_poll_extracts_supported_hashes(collect_on_poll_outputs, poll_asset_f
     assert [
         item.cef["hash"] for item in outputs if getattr(item, "label", None) == "Hash"
     ] == [
-        "d41d8cd98f00b204e9800998ecf8427e",
-        "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-        "e3b0c44298fc1c149afbf4c8996fb924"
-        "27ae41e4649b934ca495991b7852b855",
+        "d41d8cd98f00b204e9800998ecf8427e",  # pragma: allowlist secret
+        "da39a3ee5e6b4b0d3255bfef95601890afd80709",  # pragma: allowlist secret
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # pragma: allowlist secret
     ]
 
 

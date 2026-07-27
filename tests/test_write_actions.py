@@ -42,7 +42,7 @@ def test_add_comment_fails_on_empty_write_result(monkeypatch, asset_factory):
         run_add_comment(
             AddCommentParams(
                 table_name="incident",
-                id="0123456789abcdef0123456789abcdef",
+                id="ticket-sys-id",
                 comment="hello",
                 is_sys_id=True,
             ),
@@ -65,7 +65,7 @@ def test_add_work_note_fails_on_empty_write_result(monkeypatch, asset_factory):
         run_add_work_note(
             AddWorkNoteParams(
                 table_name="incident",
-                id="0123456789abcdef0123456789abcdef",
+                id="ticket-sys-id",
                 work_note="hello",
                 is_sys_id=True,
             ),
@@ -88,7 +88,7 @@ def test_update_ticket_fails_on_empty_write_result(monkeypatch, asset_factory):
         run_update_ticket(
             UpdateTicketParams(
                 table="incident",
-                id="0123456789abcdef0123456789abcdef",
+                id="ticket-sys-id",
                 fields='{"short_description": "updated"}',
                 vault_id="",
                 is_sys_id=True,

@@ -57,7 +57,7 @@ def make_asset(**overrides):
     values = {
         "url": "https://example.service-now.com/",
         "username": "user",
-        "password": "pass",
+        "password": "pass",  # pragma: allowlist secret
         "client_id": None,
         "client_secret": None,
         "auth_state": SimpleNamespace(),

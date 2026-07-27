@@ -85,7 +85,9 @@ def test_custom_actions_register_sdk_view_handlers(identifier):
 def test_custom_view_handlers_return_sdk_template_context(identifier):
     action = app.actions_manager.get_action(identifier)
 
-    template_context = _call_view_handler(action.meta.view_handler, VIEW_OUTPUTS[identifier])
+    template_context = _call_view_handler(
+        action.meta.view_handler, VIEW_OUTPUTS[identifier]
+    )
 
     assert set(template_context) == {"results"}
     assert template_context["results"]
@@ -154,8 +156,8 @@ def test_context_menu_values_use_jinja_safe_json_escaping():
                 unescaped_lines.append(f"{template_path.name}:{line_number}")
             if (
                 "'value':{{" in line
-                and "|default(\"\") |tojson|forceescape" not in line
-                and "|default(\"\")|tojson|forceescape" not in line
+                and '|default("") |tojson|forceescape' not in line
+                and '|default("")|tojson|forceescape' not in line
             ):
                 unescaped_lines.append(f"{template_path.name}:{line_number}")
 
