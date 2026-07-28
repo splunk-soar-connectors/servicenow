@@ -303,7 +303,6 @@ def update_ticket(
                 method="put",
             )
         except Exception as e:
-            logger.error(f"Failed to update ticket: {e}")
             raise ActionFailure(f"Failed to update ticket: {e}") from e
 
         # Validate response

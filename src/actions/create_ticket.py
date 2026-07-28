@@ -301,7 +301,6 @@ def create_ticket(
             method="post",
         )
     except Exception as e:
-        logger.error(f"Failed to create ticket: {e}")
         raise ActionFailure(f"Failed to create ticket: {e}") from e
 
     if not (result := response.get("result")):

@@ -165,7 +165,6 @@ def request_catalog_item(
             api_uri=SC_API_URI,
         )
     except Exception as e:
-        logger.error(f"Failed to fetch catalog item details: {e}")
         raise ActionFailure(f"Failed to fetch catalog item details: {e}") from e
 
     # Validate response
@@ -224,7 +223,6 @@ def request_catalog_item(
             api_uri=SC_API_URI,
         )
     except Exception as e:
-        logger.error(f"Failed to order catalog item: {e}")
         raise ActionFailure(f"Failed to order catalog item: {e}") from e
 
     # Validate order response
@@ -254,7 +252,6 @@ def request_catalog_item(
             api_uri=API_URI,
         )
     except Exception as e:
-        logger.error(f"Failed to fetch request details: {e}")
         raise ActionFailure(f"Failed to fetch request details: {e}") from e
 
     # Validate ticket response

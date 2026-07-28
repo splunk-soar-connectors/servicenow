@@ -109,7 +109,6 @@ def get_variables(
             params=request_params,
         )
     except Exception as e:
-        logger.error(f"Failed to query {ITEM_OPT_MTOM_TABLE}: {e}")
         raise ActionFailure(f"Failed to query {ITEM_OPT_MTOM_TABLE}: {e}") from e
 
     # Check if results were returned
@@ -117,7 +116,6 @@ def get_variables(
         error_msg = (
             f"No data found for the requested item having System ID: {params.sys_id}"
         )
-        logger.error(error_msg)
         raise ActionFailure(error_msg)
 
     # Step 2: Process each item to build variables dictionary
@@ -129,7 +127,6 @@ def get_variables(
 
         if not item_option_value:
             error_msg = f"Error occurred while fetching variable info for the System ID: {params.sys_id}"
-            logger.error(error_msg)
             raise ActionFailure(error_msg)
 
         logger.debug(f"Processing item_option_value: {item_option_value}")
@@ -187,7 +184,6 @@ def _fetch_variable_details(
             params={"sysparm_display_value": "all"},
         )
     except Exception as e:
-        logger.error(f"Failed to fetch variable details: {e}")
         raise ActionFailure(f"Failed to fetch variable details: {e}") from e
 
     # Check if result and value are present
@@ -196,7 +192,6 @@ def _fetch_variable_details(
             f"Error occurred while fetching the value for variable having System ID: "
             f"{item_option_value} for the request item having System ID: {sys_id}"
         )
-        logger.error(error_msg)
         raise ActionFailure(error_msg)
 
     variable_value = response["result"]["value"]
@@ -210,7 +205,6 @@ def _fetch_variable_details(
             f"Error occurred while fetching the question ID for variable having System ID: "
             f"{item_option_value} for the request item having System ID: {sys_id}"
         )
-        logger.error(error_msg)
         raise ActionFailure(error_msg)
 
     question_id = _extract_reference_value(item_option_new)
@@ -239,7 +233,6 @@ def _fetch_question_text(
     try:
         response = helper.make_rest_call(endpoint=endpoint)
     except Exception as e:
-        logger.error(f"Failed to fetch question text: {e}")
         raise ActionFailure(f"Failed to fetch question text: {e}") from e
 
     # Check if result and question_text are present
@@ -249,7 +242,6 @@ def _fetch_question_text(
             f"{question_id}, variable having System ID: {item_option_value} for the "
             f"request item having System ID: {sys_id}"
         )
-        logger.error(error_msg)
         raise ActionFailure(error_msg)
 
     question_text = response["result"]["question_text"]

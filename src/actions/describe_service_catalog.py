@@ -25,9 +25,6 @@ from ..app import app, Asset
 from ..consts import SC_CATALOG_ENDPOINT, SC_CATEGORY_ENDPOINT, DEFAULT_MAX_LIMIT
 from ..helpers import ServiceNowClient
 
-
-# TODO: raise value error or actionfailure error?
-
 logger = getLogger()
 
 

@@ -56,7 +56,6 @@ def test_connectivity(soar: SOARClient, asset: Asset) -> None:
         error_msg = (
             f"{TEST_CONNECTIVITY_FAIL}: Failed to initialize authentication: {e}"
         )
-        logger.error(error_msg)
         soar.set_message(error_msg)
         raise Exception(error_msg) from e
 
@@ -71,7 +70,6 @@ def test_connectivity(soar: SOARClient, asset: Asset) -> None:
         )
     except Exception as e:
         error_msg = f"{TEST_CONNECTIVITY_FAIL}: {e}"
-        logger.error(error_msg)
         soar.set_message(error_msg)
         raise Exception(error_msg) from e
 

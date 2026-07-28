@@ -53,10 +53,9 @@ def test_on_poll_extracts_internationalized_urls(
         poll_asset_factory(extract_urls=True),
     )
 
-    urls = [
-        item.cef["URL"] for item in outputs if getattr(item, "label", None) == "URL"
-    ]
-    assert urls == ["http://例え.テスト/パス"]
+    url_artifacts = [item for item in outputs if getattr(item, "label", None) == "URL"]
+    assert [item.cef["URL"] for item in url_artifacts] == ["http://例え.テスト/パス"]
+    assert [item.cef_types for item in url_artifacts] == [{"URL": ["url"]}]
 
 
 def test_on_poll_validates_ips_and_scans_text_values_only(
@@ -90,6 +89,16 @@ def test_on_poll_validates_ips_and_scans_text_values_only(
     ]
     assert ipv4s == ["192.0.2.10"]
     assert ipv6s == ["2001:db8::1"]
+    assert [
+        item.cef_types
+        for item in outputs
+        if getattr(item, "label", None) == "IP Address"
+    ] == [{"ip_address": ["ip"]}]
+    assert [
+        item.cef_types
+        for item in outputs
+        if getattr(item, "label", None) == "IPV6 Address"
+    ] == [{"ipv6_address": ["ip"]}]
 
 
 def test_on_poll_extracts_supported_hashes(collect_on_poll_outputs, poll_asset_factory):
@@ -111,12 +120,21 @@ def test_on_poll_extracts_supported_hashes(collect_on_poll_outputs, poll_asset_f
         poll_asset_factory(extract_hashes=True),
     )
 
-    assert [
-        item.cef["hash"] for item in outputs if getattr(item, "label", None) == "Hash"
-    ] == [
-        "d41d8cd98f00b204e9800998ecf8427e",  # pragma: allowlist secret
-        "da39a3ee5e6b4b0d3255bfef95601890afd80709",  # pragma: allowlist secret
-        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # pragma: allowlist secret
+    hash_artifacts = [
+        item for item in outputs if getattr(item, "label", None) == "Hash"
+    ]
+    assert (
+        [item.cef["hash"] for item in hash_artifacts]
+        == [
+            "d41d8cd98f00b204e9800998ecf8427e",  # pragma: allowlist secret
+            "da39a3ee5e6b4b0d3255bfef95601890afd80709",  # pragma: allowlist secret
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # pragma: allowlist secret
+        ]
+    )
+    assert [item.cef_types for item in hash_artifacts] == [
+        {"hash": ["hash"]},
+        {"hash": ["hash"]},
+        {"hash": ["hash"]},
     ]
 
 

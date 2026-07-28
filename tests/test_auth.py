@@ -204,7 +204,8 @@ def test_test_connectivity_preserves_request_failure_message(monkeypatch):
 
 def test_oauth_client_returns_valid_sdk_token(monkeypatch):
     client = make_oauth_client(
-        username="user", password="pass"  # pragma: allowlist secret
+        username="user",
+        password="pass",  # pragma: allowlist secret
     )
     token = OAuthToken(access_token="stored-token")
 
@@ -218,7 +219,8 @@ def test_oauth_client_returns_valid_sdk_token(monkeypatch):
 
 def test_oauth_client_bootstraps_with_password_grant_when_no_token(monkeypatch):
     client = make_oauth_client(
-        username="user", password="pass"  # pragma: allowlist secret
+        username="user",
+        password="pass",  # pragma: allowlist secret
     )
     token = OAuthToken(access_token="password-token")
 
@@ -246,7 +248,8 @@ def test_oauth_client_bootstraps_with_password_grant_when_no_token(monkeypatch):
 
 def test_oauth_client_falls_back_to_password_grant_when_refresh_fails(monkeypatch):
     client = make_oauth_client(
-        username="user", password="pass"  # pragma: allowlist secret
+        username="user",
+        password="pass",  # pragma: allowlist secret
     )
     token = OAuthToken(access_token="password-token")
 
@@ -263,7 +266,8 @@ def test_oauth_client_falls_back_to_password_grant_when_refresh_fails(monkeypatc
 
 def test_oauth_client_refresh_token_falls_back_to_password_grant(monkeypatch):
     client = make_oauth_client(
-        username="user", password="pass"  # pragma: allowlist secret
+        username="user",
+        password="pass",  # pragma: allowlist secret
     )
     token = OAuthToken(access_token="password-token")
 
@@ -349,7 +353,8 @@ def test_oauth_client_force_new_token_uses_password_grant_without_refresh_token(
     monkeypatch,
 ):
     client = make_oauth_client(
-        username="user", password="pass"  # pragma: allowlist secret
+        username="user",
+        password="pass",  # pragma: allowlist secret
     )
     password_token = OAuthToken(access_token="password-token")
 

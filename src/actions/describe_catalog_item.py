@@ -263,7 +263,6 @@ def describe_catalog_item(
         error_msg = (
             f"No data found for the requested item having System ID: {params.sys_id}"
         )
-        logger.error(error_msg)
         soar.set_message(error_msg)
         raise Exception(error_msg)
 

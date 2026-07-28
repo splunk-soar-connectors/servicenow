@@ -351,6 +351,7 @@ def get_ticket(
 
     comments_section = []
     worknotes_section = []
+    journal_response = {}
 
     try:
         journal_response = helper.make_rest_call(

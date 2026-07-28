@@ -230,7 +230,8 @@ def _search_sources_with_pagination(
     }
 
     # Track pagination state
-    items_list = []
+    aggregate_result = None
+    search_results_by_sys_id = {}
     result_length = 0
     first_call = True
     total_result_count_page_limit = 0
@@ -244,7 +245,6 @@ def _search_sources_with_pagination(
                 params=params,
             )
         except Exception as e:
-            logger.error(f"Failed to search sources: {e}")
             raise ActionFailure(f"Failed to search sources: {e}") from e
 
         # Extract result
@@ -256,30 +256,30 @@ def _search_sources_with_pagination(
         # Get total count
         total_item_count = int(result.get("result_count", 0))
 
-        # Process search results - remove pagination metadata
+        # Process search results - remove page-local metadata
         search_results = result.get("search_results", [])
-        search_results_len = len(search_results)
 
-        for i in range(search_results_len):
-            # Remove internal pagination fields (limit, page)
-            search_results[i].pop("limit", None)
-            search_results[i].pop("page", None)
-
+        for search_result in search_results:
+            search_result.pop("limit", None)
+            search_result.pop("page", None)
             # Count records in this search result
-            result_length += len(search_results[i].get("records", []))
+            result_length += len(search_result.get("records", []))
 
-        # On first call, initialize items_list with the full result structure
+        # On first call, initialize aggregate_result with the full result structure
         # Also calculate total pages to handle empty records due to ACLs
         if first_call:
-            items_list.append(result)
+            aggregate_result = result
+            search_results_by_sys_id = _index_search_results_by_sys_id(
+                aggregate_result.get("search_results", [])
+            )
             # ServiceNow returns up to 20 records per page by default
             total_result_count_page_limit = total_item_count // 20
             first_call = False
         else:
-            # On subsequent calls, extend records for each search source
-            for i in range(search_results_len):
-                data = search_results[i].get("records", [])
-                items_list[0]["search_results"][i]["records"].extend(data)
+            # On subsequent calls, extend records for each search source by sys_id.
+            _merge_search_results_by_sys_id(
+                aggregate_result, search_results_by_sys_id, search_results
+            )
 
         # Check if we've fetched all results or reached max pages
         if (
@@ -291,5 +291,47 @@ def _search_sources_with_pagination(
         # Move to next page
         params["sysparm_page"] += 1
 
-    # Return the aggregated result (first and only item in items_list)
-    return items_list[0] if items_list else {}
+    return aggregate_result or {}
+
+
+def _index_search_results_by_sys_id(search_results: list[dict]) -> dict[str, dict]:
+    search_results_by_sys_id = {}
+    for search_result in search_results:
+        source_sys_id = _get_search_result_sys_id(search_result)
+        search_results_by_sys_id[source_sys_id] = search_result
+    return search_results_by_sys_id
+
+
+def _merge_search_results_by_sys_id(
+    aggregate_result: dict | None,
+    search_results_by_sys_id: dict[str, dict],
+    search_results: list[dict],
+) -> None:
+    if aggregate_result is None:
+        raise ActionFailure(
+            "Invalid response from ServiceNow - no aggregate result data"
+        )
+
+    aggregate_search_results = aggregate_result.setdefault("search_results", [])
+
+    for search_result in search_results:
+        source_sys_id = _get_search_result_sys_id(search_result)
+        records = search_result.get("records", [])
+
+        if source_sys_id in search_results_by_sys_id:
+            search_results_by_sys_id[source_sys_id].setdefault("records", []).extend(
+                records
+            )
+            continue
+
+        search_results_by_sys_id[source_sys_id] = search_result
+        aggregate_search_results.append(search_result)
+
+
+def _get_search_result_sys_id(search_result: dict) -> str:
+    source_sys_id = search_result.get("sys_id")
+    if not source_sys_id:
+        raise ActionFailure(
+            "Invalid response from ServiceNow - search result missing sys_id"
+        )
+    return source_sys_id

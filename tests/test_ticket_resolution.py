@@ -25,11 +25,7 @@ def test_ticket_number_resolution_requires_exact_returned_number(
     def fake_make_rest_call(endpoint, params):
         assert endpoint == "/table/incident"
         assert params == {"sysparm_query": "number=INC0000001"}
-        return {
-            "result": [
-                {"number": "INC0000002", "sys_id": "ticket-sys-id"}
-            ]
-        }
+        return {"result": [{"number": "INC0000002", "sys_id": "ticket-sys-id"}]}
 
     monkeypatch.setattr(client, "make_rest_call", fake_make_rest_call)
 
@@ -49,9 +45,7 @@ def test_ticket_number_resolution_returns_sys_id_for_exact_match(
         client,
         "make_rest_call",
         lambda endpoint, params: {
-            "result": [
-                {"number": "INC0000001", "sys_id": "ticket-sys-id"}
-            ]
+            "result": [{"number": "INC0000001", "sys_id": "ticket-sys-id"}]
         },
     )
 

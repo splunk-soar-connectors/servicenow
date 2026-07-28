@@ -27,6 +27,7 @@ from soar_sdk.params import OnPollParams
 from soar_sdk.models.container import Container
 from soar_sdk.models.artifact import Artifact
 from soar_sdk.logging import getLogger
+from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
 from ..consts import TABLE_ENDPOINT
@@ -168,7 +169,6 @@ Are start_time/end_time populated for scheduled polls in your environment? If so
 """
 
 
-# TODO:
 @app.on_poll()
 def on_poll(
     params: OnPollParams, soar: SOARClient, asset: Asset
@@ -281,10 +281,7 @@ def on_poll(
     try:
         issues = helper.paginator(endpoint, payload=params_dict, limit=max_tickets)
     except Exception as e:
-        logger.error(f"Error fetching issues: {e}")
-        raise Exception(
-            f"Failed to fetch issues from ServiceNow: {e}"
-        ) from e  # TODO: check if this is right way of raising exceptions
+        raise ActionFailure(f"Failed to fetch issues from ServiceNow: {e}") from e
 
     if not issues:
         logger.info("No issues found. Nothing to ingest.")
@@ -352,6 +349,7 @@ def on_poll(
                     yield Artifact(
                         label="IP Address",
                         cef={"ip_address": ip_address},
+                        cef_types={"ip_address": ["ip"]},
                         source_data_identifier=sdi,
                     )
                     artifacts_created += 1
@@ -366,6 +364,7 @@ def on_poll(
                     yield Artifact(
                         label="IPV6 Address",
                         cef={"ipv6_address": ipv6_address},
+                        cef_types={"ipv6_address": ["ip"]},
                         source_data_identifier=sdi,
                     )
                     artifacts_created += 1
@@ -378,6 +377,7 @@ def on_poll(
                     yield Artifact(
                         label="Hash",
                         cef={"hash": match.group()},
+                        cef_types={"hash": ["hash"]},
                         source_data_identifier=sdi,
                     )
                     artifacts_created += 1
@@ -390,6 +390,7 @@ def on_poll(
                     yield Artifact(
                         label="URL",
                         cef={"URL": match.group()},
+                        cef_types={"URL": ["url"]},
                         source_data_identifier=sdi,
                     )
                     artifacts_created += 1
@@ -399,10 +400,9 @@ def on_poll(
         f"Yielded {containers_created} containers and {artifacts_created} artifacts"
     )
 
-    # Update state for scheduled polling only (not for manual polls)
+    # Preserve legacy behavior: scheduled polls advance the checkpoint;
+    # manual polls do not modify scheduled poll state.
     if not is_manual_poll and issues:
-        # TODO: check if we should update state even for manual polls. (might not make sense since we wanna force stuff)
-        # also check servicenow api ensures issues are in order all the time.
         if "sys_updated_on" not in issues[-1]:
             raise Exception("No updated time in last ingested incident.")
 
@@ -473,11 +473,7 @@ def _get_container_severities(soar: SOARClient) -> list[dict[str, Any]]:
     The /rest/container_options endpoint exposes severities without requiring
     system_settings view permissions.
     """
-    try:
-        response = soar.get("/rest/container_options").json()
-    except Exception as e:
-        logger.error(f"Failed to get container options from platform: {e}")
-        raise
+    response = soar.get("/rest/container_options").json()
 
     if not isinstance(response, dict):
         raise Exception(

@@ -242,5 +242,4 @@ def run_query(
     except ActionFailure:
         raise
     except Exception as e:
-        logger.error(f"Error executing query: {e}")
         raise ActionFailure(f"Failed to execute query: {e}") from e

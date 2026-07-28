@@ -24,32 +24,10 @@ This app integrates with ServiceNow to perform investigative and generic actions
   - severity: Custom severity of the ingested artifact.
 
     - **Using Custom Severities on Ingested Data**
-      - If you decide to use custom severities to apply to Containers and Artifacts ingested
-        via On Poll, then you must make sure that the automation user you use has the
-        correct permissions.
-
-      - By default, the automation user is selected to run the ServiceNow ingestion action.
-        (See **Asset Configuration** > **Asset Settings** > **Advanced** ) The automation
-        user does **NOT** have access to view or edit **System Settings** , which includes
-        the permission to view the custom severities on your instance. This will cause your
-        On Poll action to fail since your user cannot pull the custom severities on your
-        instance.
-
-      - In order to solve this problem, you must create a user of type **Automation** and
-        assign this user a Role that has permissions to view or edit **System Settings** (
-        **Administration** > **User Management** > **Users** **> + User** button on the
-        top right corner). Then, choose this user in your ServiceNow **Asset Settings**
-        under **Advanced** and you will be able to successfully apply custom severities to
-        your ingested data.
-
-        **Administration** > **User Management** > **Users** **> + User**
-        [![](img/servicenow_create_user.png)](img/servicenow_create_user.png)
-
-        **Administration** > **User Management** > **Roles & Permissions** **> + Role**
-        [![](img/servicenow_create_role.png)](img/servicenow_create_role.png)
-
-        **Asset Settings** > **Advanced**
-        [![](img/servicenow_asset_settings.png)](img/servicenow_asset_settings.png)
+      - Custom severities can be applied to Containers and Artifacts ingested via On Poll.
+        The app reads severity options from the SOAR `/rest/container_options` endpoint,
+        which only requires container view permissions available to the automation role by
+        default.
 
       - In order to use the custom severity it is necessary to create a severity over (
         **Administration** > **Event Settings** > **Severity** ). If custom severity has
