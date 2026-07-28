@@ -37,7 +37,21 @@ class QueryUsersParams(Params):
 
 
 class QueryUserOutput(PermissiveActionOutput):
-    active: str = OutputField(example_values=["true"])
+    user_name: str = OutputField(column_name="USER NAME", example_values=["admin"])
+    name: str = OutputField(column_name="NAME", example_values=["System Administrator"])
+    email: str = OutputField(
+        column_name="EMAIL", cef_types=["email"], example_values=["abc@pqr.us"]
+    )
+    active: str = OutputField(column_name="ACTIVE", example_values=["true"])
+    title: str = OutputField(column_name="TITLE", example_values=["System Administrator"])
+    first_name: str = OutputField(column_name="FIRST NAME", example_values=["System"])
+    last_name: str = OutputField(
+        column_name="LAST NAME", example_values=["Administrator"]
+    )
+    sys_id: str = OutputField(column_name="SYS ID", cef_types=["md5"])
+    last_login: str = OutputField(
+        column_name="LAST LOGIN", example_values=["2022-06-24"]
+    )
     avatar: str = OutputField(cef_types=["md5"])
     building: str
     calendar_integration: str = OutputField(example_values=["1"])
@@ -47,25 +61,20 @@ class QueryUserOutput(PermissiveActionOutput):
     country: str
     date_format: str
     default_perspective: str
-    email: str = OutputField(cef_types=["email"], example_values=["abc@pqr.us"])
     employee_number: str
     enable_multifactor_authn: str = OutputField(example_values=["false"])
     failed_attempts: str = OutputField(example_values=["0"])
-    first_name: str = OutputField(example_values=["System"])
     gender: str
     home_phone: str
     internal_integration_user: str = OutputField(example_values=["false"])
     introduction: str
-    last_login: str = OutputField(example_values=["2022-06-24"])
     last_login_time: str = OutputField(example_values=["2022-06-24 22:32:15"])
-    last_name: str = OutputField(example_values=["Administrator"])
     ldap_server: str
     location: str
     locked_out: str = OutputField(example_values=["false"])
     manager: str
     middle_name: str
     mobile_phone: str
-    name: str = OutputField(example_values=["System Administrator"])
     notification: str = OutputField(example_values=["2"])
     password_needs_reset: str = OutputField(example_values=["false"])
     phone: str
@@ -80,15 +89,12 @@ class QueryUserOutput(PermissiveActionOutput):
     sys_created_by: str = OutputField(example_values=["fred.luddy"])
     sys_created_on: str = OutputField(example_values=["2007-07-03 18:48:47"])
     sys_domain_path: str = OutputField(cef_types=["domain"])
-    sys_id: str = OutputField(cef_types=["md5"])
     sys_mod_count: str = OutputField(example_values=["110"])
     sys_tags: str
     sys_updated_by: str = OutputField(example_values=["system"])
     sys_updated_on: str = OutputField(example_values=["2022-06-24 22:32:28"])
     time_format: str
     time_zone: str
-    title: str = OutputField(example_values=["System Administrator"])
-    user_name: str = OutputField(example_values=["admin"])
     vip: str = OutputField(example_values=["false"])
     web_service_access_only: str = OutputField(example_values=["false"])
     zip: str
@@ -100,24 +106,12 @@ class QueryUsersSummary(ActionOutput):
     total_users: int = OutputField(example_values=[1])
 
 
-@app.view_handler(template="servicenow_query_users.html")
-def query_users_view(outputs: list[QueryUserOutput]) -> dict:
-    """Transform query users action results for HTML rendering."""
-    ctx_result = {
-        "data": {"users": [output.model_dump() for output in outputs]},
-        "param": {},
-        "summary": {},
-        "action_name": "query users",
-    }
-    return {"results": [ctx_result]}
-
-
 @app.action(
     description="Gets user data according to the specified query, username, or system ID",
     action_type="investigate",
     read_only=True,
     summary_type=QueryUsersSummary,
-    view_handler=query_users_view,
+    render_as="table",
 )
 def query_users(
     params: QueryUsersParams, soar: SOARClient[QueryUsersSummary], asset: Asset

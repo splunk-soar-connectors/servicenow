@@ -48,7 +48,6 @@ from src.actions.list_services import ServiceItemOutput
 from src.actions.list_tickets import ListTicketOutput
 from src.actions.query_users import QueryUserOutput, QueryUsersParams
 from src.actions.request_catalog_item import RequestCatalogItemOutput
-from src.actions import run_query as run_query_module
 from src.actions.run_query import RunQueryOutput
 from src.actions.search_sources import (
     DataOutput,
@@ -221,6 +220,7 @@ EXPECTED_SCALAR_DATAPATHS = {
         "action_result.data.*.value",
     },
     GetVariablesOutput: {
+        "action_result.data.*.sys_id",
         "action_result.data.*.Additional software requirements",
         "action_result.data.*.Adobe Acrobat",
         "action_result.data.*.Adobe Photoshop",
@@ -595,22 +595,6 @@ def test_run_query_output_preserves_raw_record_data_flat():
     output = RunQueryOutput(**record)
     assert output.model_dump() == record
 
-    view_handler = getattr(
-        run_query_module.run_query_view,
-        "__wrapped__",
-        run_query_module.run_query_view,
-    )
-    assert view_handler([output]) == {
-        "results": [
-            {
-                "data": [record],
-                "param": {},
-                "summary": {},
-                "action_name": "run query",
-            }
-        ]
-    }
-
 
 def test_query_users_returns_flat_records_and_strips_user_password(monkeypatch):
     users = [
@@ -684,36 +668,6 @@ def test_query_users_returns_flat_records_and_strips_user_password(monkeypatch):
     assert soar.summary.total_users == 1
     assert soar.message == "Total users: 1"
 
-    view_handler = getattr(
-        query_users_module.query_users_view,
-        "__wrapped__",
-        query_users_module.query_users_view,
-    )
-    assert view_handler(outputs) == {
-        "results": [
-            {
-                "data": {
-                    "users": [
-                        {
-                            "sys_id": "user-id",
-                            "user_name": "admin",
-                            "name": "System Administrator",
-                            "email": "admin@example.com",
-                            "department": {
-                                "link": "https://example.service-now.com/api/now/table/cmn_department/department-id",
-                                "value": "department-id",
-                            },
-                            "sys_domain": "global",
-                            "u_custom_field": "tenant-specific value",
-                        }
-                    ]
-                },
-                "param": {},
-                "summary": {},
-                "action_name": "query users",
-            }
-        ]
-    }
 
 
 def test_describe_service_catalog_nested_records_pass_through():
@@ -857,7 +811,6 @@ def test_describe_catalog_item_view_populates_sys_id_param():
 
     result = handler([DescribeCatalogItemOutput(sys_id="item-id")])["results"][0]
 
-    assert result["param"] == {"sys_id": "item-id"}
     assert result["data"][0]["sys_id"] == "item-id"
 
 

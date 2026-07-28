@@ -220,17 +220,7 @@ class DescribeCatalogItemOutput(PermissiveActionOutput):
 @app.view_handler(template="servicenow_describe_catalog_item.html")
 def describe_catalog_item_view(outputs: list[DescribeCatalogItemOutput]) -> dict:
     """Transform describe catalog item action results for HTML rendering."""
-    results = []
-    for output in outputs:
-        data = output.model_dump()
-        ctx_result = {
-            "data": [data],
-            "param": {"sys_id": data.get("sys_id")},
-            "summary": {},
-            "action_name": "describe catalog item",
-        }
-        results.append(ctx_result)
-    return {"results": results}
+    return {"results": [{"data": [output.model_dump() for output in outputs]}]}
 
 
 @app.action(

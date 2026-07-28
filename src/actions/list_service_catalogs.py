@@ -37,9 +37,22 @@ class ListServiceCatalogsParams(Params):
 class ServiceCatalogOutput(PermissiveActionOutput):
     """ServiceNow service catalog details"""
 
-    active: str | None = OutputField(example_values=["true"])
-    background_color: str | None = OutputField(example_values=["white"])
-    description: str | None = None
+    title: str | None = OutputField(column_name="TITLE", example_values=["test_catalog"])
+    description: str | None = OutputField(column_name="DESCRIPTION")
+    active: str | None = OutputField(column_name="ACTIVE", example_values=["true"])
+    sys_id: str | None = OutputField(
+        column_name="SYS ID",
+        cef_types=["servicenow catalog sys id", "md5"],
+    )
+    background_color: str | None = OutputField(
+        column_name="BACKGROUND COLOR", example_values=["white"]
+    )
+    sys_created_on: str | None = OutputField(
+        column_name="CREATED ON", example_values=["2019-10-11 06:12:27"]
+    )
+    sys_updated_on: str | None = OutputField(
+        column_name="UPDATED ON", example_values=["2019-10-11 06:12:27"]
+    )
     desktop_continue_shopping: str | None = None
     desktop_home_page: str | None = None
     desktop_image: str | None = None
@@ -48,18 +61,12 @@ class ServiceCatalogOutput(PermissiveActionOutput):
     manager: str | None = None
     sys_class_name: str | None = OutputField(example_values=["sc_catalog"])
     sys_created_by: str | None = OutputField(example_values=["admin"])
-    sys_created_on: str | None = OutputField(example_values=["2019-10-11 06:12:27"])
-    sys_id: str | None = OutputField(
-        cef_types=["servicenow catalog sys id", "md5"],
-    )
     sys_mod_count: str | None = OutputField(example_values=["0"])
     sys_name: str | None = OutputField(example_values=["test_catalog"])
     sys_policy: str | None = None
     sys_tags: str | None = None
     sys_update_name: str | None = None
     sys_updated_by: str | None = OutputField(example_values=["admin"])
-    sys_updated_on: str | None = OutputField(example_values=["2019-10-11 06:12:27"])
-    title: str | None = OutputField(example_values=["test_catalog"])
 
 
 class ListServiceCatalogsSummary(ActionOutput):
@@ -68,24 +75,12 @@ class ListServiceCatalogsSummary(ActionOutput):
     service_catalogs_returned: int = OutputField(example_values=[2])
 
 
-@app.view_handler(template="servicenow_list_service_catalogs.html")
-def list_service_catalogs_view(outputs: list[ServiceCatalogOutput]) -> dict:
-    """Transform list service catalogs action results for HTML rendering."""
-    ctx_result = {
-        "data": {"catalogs": [output.model_dump() for output in outputs]},
-        "param": {},
-        "summary": {},
-        "action_name": "list service catalogs",
-    }
-    return {"results": [ctx_result]}
-
-
 @app.action(
     description="Get a list of catalogs",
     action_type="investigate",
     read_only=True,
     summary_type=ListServiceCatalogsSummary,
-    view_handler=list_service_catalogs_view,
+    render_as="table",
 )
 def list_service_catalogs(
     params: ListServiceCatalogsParams,

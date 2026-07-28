@@ -54,6 +54,33 @@ class RunQueryOutput(PermissiveActionOutput):
     Raw ServiceNow fields are preserved for compatibility with arbitrary query tables.
     """
 
+    number: str | None = OutputField(
+        column_name="TICKET NUMBER",
+        cef_types=["servicenow ticket number"],
+        example_values=["INC0000001"],
+    )
+    description: str | None = OutputField(
+        column_name="DESCRIPTION",
+        example_values=[
+            "I can access my folder but can't access my team's folder on our file share"
+        ],
+    )
+    short_description: str | None = OutputField(
+        column_name="SHORT DESCRIPTION",
+        example_values=["Unable to access team file share"],
+    )
+    sys_id: str | None = OutputField(
+        column_name="ID",
+        cef_types=["servicenow ticket sysid", "md5"],
+    )
+    severity: str | None = OutputField(column_name="SEVERITY", example_values=["3"])
+    priority: str | None = OutputField(column_name="PRIORITY", example_values=["3"])
+    opened_at: str | None = OutputField(
+        column_name="OPENED ON", example_values=["2016-08-10 16:14:29"]
+    )
+    closed_at: str | None = OutputField(
+        column_name="CLOSED ON", example_values=["2018-02-08 23:10:06"]
+    )
     active: str | None = OutputField(example_values=["true"])
     activity_due: str | None = None
     additional_assignee_list: str | None = None
@@ -72,7 +99,6 @@ class RunQueryOutput(PermissiveActionOutput):
     close_notes: str | None = OutputField(
         example_values=["Closed before close notes were made mandatory<br>\t\t"]
     )
-    closed_at: str | None = OutputField(example_values=["2018-02-08 23:10:06"])
     cluster_node: str | None = None
     comments: str | None = None
     comments_and_work_notes: str | None = None
@@ -86,11 +112,6 @@ class RunQueryOutput(PermissiveActionOutput):
     database_user: str | None = None
     delivery_plan: str | None = None
     delivery_task: str | None = None
-    description: str | None = OutputField(
-        example_values=[
-            "I can access my folder but can't access my team's folder on our file share"
-        ]
-    )
     due_date: str | None = None
     escalation: str | None = OutputField(example_values=["0"])
     expected_start: str | None = None
@@ -105,14 +126,9 @@ class RunQueryOutput(PermissiveActionOutput):
     knowledge: str | None = OutputField(example_values=["false"])
     made_sla: str | None = OutputField(example_values=["true"])
     notify: str | None = OutputField(example_values=["1"])
-    number: str | None = OutputField(
-        cef_types=["servicenow ticket number"], example_values=["INC0000001"]
-    )
-    opened_at: str | None = OutputField(example_values=["2016-08-10 16:14:29"])
     order: str | None = None
     parent: str | None = None
     primary: str | None = None
-    priority: str | None = OutputField(example_values=["3"])
     production: str | None = OutputField(example_values=["true"])
     reassignment_count: str | None = OutputField(example_values=["0"])
     reopen_count: str | None = OutputField(example_values=["0"])
@@ -120,10 +136,6 @@ class RunQueryOutput(PermissiveActionOutput):
     reopened_time: str | None = None
     resolved_at: str | None = OutputField(example_values=["2018-05-10 19:56:12"])
     service_offering: str | None = None
-    severity: str | None = OutputField(example_values=["3"])
-    short_description: str | None = OutputField(
-        example_values=["Unable to access team file share"]
-    )
     sla_due: str | None = None
     source: str | None = OutputField(example_values=["true"])
     state: str | None = OutputField(example_values=["1"])
@@ -133,9 +145,6 @@ class RunQueryOutput(PermissiveActionOutput):
     sys_created_on: str | None = OutputField(example_values=["2016-08-10 16:14:29"])
     sys_domain_path: str | None = OutputField(
         cef_types=["domain"], example_values=["/"]
-    )
-    sys_id: str | None = OutputField(
-        cef_types=["servicenow ticket sysid", "md5"],
     )
     sys_mod_count: str | None = OutputField(example_values=["0"])
     sys_tags: str | None = None
@@ -164,23 +173,11 @@ def _strip_sensitive_props(record: dict) -> dict:
     }
 
 
-@app.view_handler(template="servicenow_run_query.html")
-def run_query_view(outputs: list[RunQueryOutput]) -> dict:
-    """Transform run query action results for HTML rendering."""
-    ctx_result = {
-        "data": [output.model_dump() for output in outputs],
-        "param": {},
-        "summary": {},
-        "action_name": "run query",
-    }
-    return {"results": [ctx_result]}
-
-
 @app.action(
     description="Gets object data according to the specified query",
     action_type="investigate",
     summary_type=RunQuerySummary,
-    view_handler=run_query_view,
+    render_as="table",
 )
 def run_query(
     params: RunQueryParams, soar: SOARClient[RunQuerySummary], asset: Asset

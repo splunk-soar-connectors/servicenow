@@ -211,19 +211,13 @@ def _reference_value(value: object) -> object:
 @app.view_handler(template="servicenow_describe_service_catalog.html")
 def describe_service_catalog_view(outputs: list[DescribeServiceCatalogOutput]) -> dict:
     """Transform describe service catalog action results for HTML rendering."""
-    results = []
+    data = []
     for output in outputs:
-        data = output.model_dump()
-        for item in data.get("items", []):
+        output_data = output.model_dump()
+        for item in output_data.get("items", []):
             item["category_value"] = _reference_value(item.get("category"))
-        ctx_result = {
-            "data": [data],
-            "param": {},
-            "summary": {},
-            "action_name": "describe service catalog",
-        }
-        results.append(ctx_result)
-    return {"results": results}
+        data.append(output_data)
+    return {"results": [{"data": data}]}
 
 
 @app.action(

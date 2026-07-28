@@ -37,11 +37,29 @@ class ListCategoriesParams(Params):
 class CategoryOutput(PermissiveActionOutput):
     """ServiceNow category details"""
 
-    active: str | None = OutputField(example_values=["true", "false"])
+    title: str | None = OutputField(
+        column_name="TITLE",
+        example_values=["Template Management", "Hardware", "Software"],
+    )
     description: str | None = OutputField(
+        column_name="DESCRIPTION",
         example_values=[
             "Propose a new Standard Change Template. Modify or Retire an existing Standard Change Template."
-        ]
+        ],
+    )
+    active: str | None = OutputField(
+        column_name="ACTIVE", example_values=["true", "false"]
+    )
+    sys_id: str | None = OutputField(
+        column_name="SYS ID",
+        cef_types=["servicenow category sys id", "md5"],
+    )
+    order: str | None = OutputField(column_name="ORDER", example_values=["0", "1", "2"])
+    sys_created_on: str | None = OutputField(
+        column_name="CREATED ON", example_values=["2015-06-24 04:53:17"]
+    )
+    sys_updated_on: str | None = OutputField(
+        column_name="UPDATED ON", example_values=["2015-06-24 04:54:20"]
     )
     entitlement_script: str | None = None
     header_icon: str | None = None
@@ -52,15 +70,10 @@ class CategoryOutput(PermissiveActionOutput):
     mobile_hide_description: str | None = OutputField(example_values=["false", "true"])
     mobile_picture: str | None = None
     mobile_subcategory_render_type: str | None = OutputField(example_values=["list"])
-    order: str | None = OutputField(example_values=["0", "1", "2"])
     roles: str | None = None
     show_in_cms: str | None = OutputField(example_values=["false", "true"])
     sys_class_name: str | None = OutputField(example_values=["sc_category"])
     sys_created_by: str | None = OutputField(example_values=["admin", "system"])
-    sys_created_on: str | None = OutputField(example_values=["2015-06-24 04:53:17"])
-    sys_id: str | None = OutputField(
-        cef_types=["servicenow category sys id", "md5"],
-    )
     sys_mod_count: str | None = OutputField(example_values=["0", "1", "2"])
     sys_name: str | None = OutputField(
         example_values=["Template Management", "Hardware", "Software"]
@@ -71,10 +84,6 @@ class CategoryOutput(PermissiveActionOutput):
         example_values=["sc_category_00728916937002002dcef157b67ffb6d"]
     )
     sys_updated_by: str | None = OutputField(example_values=["admin", "system"])
-    sys_updated_on: str | None = OutputField(example_values=["2015-06-24 04:54:20"])
-    title: str | None = OutputField(
-        example_values=["Template Management", "Hardware", "Software"]
-    )
 
 
 class ListCategoriesSummary(ActionOutput):
@@ -83,24 +92,12 @@ class ListCategoriesSummary(ActionOutput):
     categories_returned: int = OutputField(example_values=[5, 10, 50])
 
 
-@app.view_handler(template="servicenow_list_categories.html")
-def list_categories_view(outputs: list[CategoryOutput]) -> dict:
-    """Transform list categories action results for HTML rendering."""
-    ctx_result = {
-        "data": {"categories": [output.model_dump() for output in outputs]},
-        "param": {},
-        "summary": {},
-        "action_name": "list categories",
-    }
-    return {"results": [ctx_result]}
-
-
 @app.action(
     description="Get a list of service categories",
     action_type="investigate",
     read_only=True,
     summary_type=ListCategoriesSummary,
-    view_handler=list_categories_view,
+    render_as="table",
 )
 def list_categories(
     params: ListCategoriesParams, soar: SOARClient[ListCategoriesSummary], asset: Asset

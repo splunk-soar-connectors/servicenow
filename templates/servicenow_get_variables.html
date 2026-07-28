@@ -82,6 +82,16 @@ and limitations under the License.
       {% if not result.data %}
         <h4 class="wf-h4-style">No data found</h4>
       {% else %}
+        {% set input = result.data[0] %}
+        <div class="info">
+          <h4 class="wf-h4-style">Info</h4>
+          <table class="wf-table-vertical">
+            <tr>
+              <td>SYS_ID</td>
+              <td>{{ input.sys_id }}</td>
+            </tr>
+          </table>
+        </div>
         <div class="results">
           <h4 class="wf-h4-style">Result</h4>
           <table class="phantom-table dataTable">
@@ -95,14 +105,16 @@ and limitations under the License.
               {% for item in result.data %}
                 {% if item %}
                   {% for question, answer in item.items() %}
-                    <tr>
-                      <td>{{ question }}</td>
-                      {% if answer %}
-                        <td>{{ answer }}</td>
-                      {% else %}
-                        <td>None</td>
-                      {% endif %}
-                    </tr>
+                    {% if question != "sys_id" %}
+                      <tr>
+                        <td>{{ question }}</td>
+                        {% if answer %}
+                          <td>{{ answer }}</td>
+                        {% else %}
+                          <td>None</td>
+                        {% endif %}
+                      </tr>
+                    {% endif %}
                   {% endfor %}
                 {% else %}
                   <tr>

@@ -18,7 +18,7 @@ import pytest
 from soar_sdk.exceptions import ActionFailure
 
 from src.actions import run_query as run_query_module
-from src.actions.run_query import RunQueryOutput, RunQueryParams, run_query
+from src.actions.run_query import RunQueryParams, run_query
 from src.consts import SERVICENOW_SENSITIVE_PROPS
 
 run_run_query = run_query.__wrapped__
@@ -91,33 +91,3 @@ def test_run_query_rejects_non_positive_max_results(max_results, asset_factory):
             SimpleNamespace(set_summary=lambda summary: None),
             asset_factory(),
         )
-
-
-def test_run_query_view_uses_flat_output_records():
-    output = RunQueryOutput(
-        sys_id="ticket-sys-id",
-        number="INC0000001",
-        u_custom_field="tenant-specific value",
-    )
-    handler = getattr(
-        run_query_module.run_query_view,
-        "__wrapped__",
-        run_query_module.run_query_view,
-    )
-
-    assert handler([output]) == {
-        "results": [
-            {
-                "data": [
-                    {
-                        "sys_id": "ticket-sys-id",
-                        "number": "INC0000001",
-                        "u_custom_field": "tenant-specific value",
-                    }
-                ],
-                "param": {},
-                "summary": {},
-                "action_name": "run query",
-            }
-        ]
-    }

@@ -17,21 +17,14 @@ from pathlib import Path
 import pytest
 from soar_sdk.models.view import ViewContext
 
-from src.actions.create_ticket import CreateTicketOutput
 from src.actions.describe_catalog_item import DescribeCatalogItemOutput
 from src.actions.describe_service_catalog import DescribeServiceCatalogOutput
 from src.actions.get_variables import GetVariablesOutput
-from src.actions.list_categories import CategoryOutput
-from src.actions.list_service_catalogs import ServiceCatalogOutput
-from src.actions.list_services import ServiceItemOutput
-from src.actions.query_users import QueryUserOutput
-from src.actions.run_query import RunQueryOutput
 from src.app import app
 
 TEMPLATE_DIR = Path(__file__).resolve().parents[1] / "templates"
 
 VIEW_OUTPUTS = {
-    "create_ticket": [CreateTicketOutput(sys_id="ticket-sys-id", number="INC0000001")],
     "describe_catalog_item": [
         DescribeCatalogItemOutput(sys_id="item-sys-id", name="Laptop")
     ],
@@ -41,20 +34,99 @@ VIEW_OUTPUTS = {
             items=[{"sys_id": "item-sys-id", "category": {"value": "category-sys-id"}}],
         )
     ],
-    "get_variables": [GetVariablesOutput(**{"Optional Software": "Adobe Acrobat"})],
-    "list_categories": [CategoryOutput(sys_id="category-sys-id", title="Hardware")],
-    "list_service_catalogs": [
-        ServiceCatalogOutput(sys_id="catalog-sys-id", title="Service Catalog")
-    ],
-    "list_services": [
-        ServiceItemOutput(
-            sys_id="item-sys-id",
-            name="Laptop",
-            catalogs="catalog-one,catalog-two",
+    "get_variables": [
+        GetVariablesOutput(
+            sys_id="ritm-sys-id", **{"Optional Software": "Adobe Acrobat"}
         )
     ],
-    "query_users": [QueryUserOutput(sys_id="user-sys-id", user_name="admin")],
-    "run_query": [RunQueryOutput(sys_id="ticket-sys-id", number="INC0000001")],
+}
+
+TABLE_ACTIONS = {
+    "create_ticket",
+    "list_categories",
+    "list_service_catalogs",
+    "list_services",
+    "list_tickets",
+    "query_users",
+    "request_catalog_item",
+    "run_query",
+}
+
+EXPECTED_TABLE_COLUMNS = {
+    "create_ticket": [
+        "TICKET NUMBER",
+        "DESCRIPTION",
+        "SHORT DESCRIPTION",
+        "CATEGORY",
+        "SYS ID",
+        "SEVERITY",
+        "PRIORITY",
+        "OPENED ON",
+        "CLOSED ON",
+    ],
+    "list_categories": [
+        "TITLE",
+        "DESCRIPTION",
+        "ACTIVE",
+        "SYS ID",
+        "ORDER",
+        "CREATED ON",
+        "UPDATED ON",
+    ],
+    "list_service_catalogs": [
+        "TITLE",
+        "DESCRIPTION",
+        "ACTIVE",
+        "SYS ID",
+        "BACKGROUND COLOR",
+        "CREATED ON",
+        "UPDATED ON",
+    ],
+    "list_services": [
+        "NAME",
+        "SHORT DESCRIPTION",
+        "ITEM SYS ID",
+        "CATALOG SYS ID",
+    ],
+    "list_tickets": [
+        "TICKET NUMBER",
+        "DESCRIPTION",
+        "SHORT DESCRIPTION",
+        "ID",
+        "SEVERITY",
+        "PRIORITY",
+        "OPENED ON",
+        "CLOSED ON",
+    ],
+    "query_users": [
+        "USER NAME",
+        "NAME",
+        "EMAIL",
+        "ACTIVE",
+        "TITLE",
+        "FIRST NAME",
+        "LAST NAME",
+        "SYS ID",
+        "LAST LOGIN",
+    ],
+    "request_catalog_item": [
+        "REQUEST NUMBER",
+        "SHORT DESCRIPTION",
+        "PRIORITY",
+        "PRICE",
+        "DUE DATE",
+        "ASSIGNED TO",
+    ],
+    "run_query": [
+        "TICKET NUMBER",
+        "DESCRIPTION",
+        "SHORT DESCRIPTION",
+        "ID",
+        "SEVERITY",
+        "PRIORITY",
+        "OPENED ON",
+        "CLOSED ON",
+    ],
 }
 
 
@@ -81,6 +153,31 @@ def test_custom_actions_register_sdk_view_handlers(identifier):
     assert action.meta.view_handler is not None
 
 
+@pytest.mark.parametrize("identifier", sorted(TABLE_ACTIONS))
+def test_flat_actions_use_standard_table_rendering(identifier):
+    action = app.actions_manager.get_action(identifier)
+
+    assert action.meta.render_as == "table"
+    assert action.meta.view_handler is None
+
+
+@pytest.mark.parametrize("identifier", sorted(EXPECTED_TABLE_COLUMNS))
+def test_standard_table_actions_declare_widget_columns(identifier):
+    output_cls = app.actions_manager.get_action(identifier).meta.output
+    columns = [
+        {
+            "name": field["column_name"].upper(),
+            "order": field["column_order"],
+        }
+        for field in output_cls._to_json_schema()
+        if "column_name" in field and "column_order" in field
+    ]
+
+    actual_columns = [col["name"] for col in sorted(columns, key=lambda col: col["order"])]
+
+    assert actual_columns == EXPECTED_TABLE_COLUMNS[identifier]
+
+
 @pytest.mark.parametrize("identifier", sorted(VIEW_OUTPUTS))
 def test_custom_view_handlers_return_sdk_template_context(identifier):
     action = app.actions_manager.get_action(identifier)
@@ -92,11 +189,10 @@ def test_custom_view_handlers_return_sdk_template_context(identifier):
     assert set(template_context) == {"results"}
     assert template_context["results"]
     for result in template_context["results"]:
-        assert {"data", "param", "summary", "action_name"} <= set(result)
-        assert result["action_name"] == action.meta.action
+        assert set(result) == {"data"}
 
 
-def test_describe_catalog_item_view_populates_sys_id_param():
+def test_describe_catalog_item_view_keeps_sys_id_on_output_row():
     action = app.actions_manager.get_action("describe_catalog_item")
 
     template_context = _call_view_handler(
@@ -105,22 +201,25 @@ def test_describe_catalog_item_view_populates_sys_id_param():
     )
 
     result = template_context["results"][0]
-    assert result["param"] == {"sys_id": "item-sys-id"}
     assert result["data"][0]["sys_id"] == "item-sys-id"
 
 
-def test_list_services_view_splits_catalog_strings_for_template():
-    action = app.actions_manager.get_action("list_services")
+def test_get_variables_view_keeps_sys_id_on_output_row():
+    action = app.actions_manager.get_action("get_variables")
 
     template_context = _call_view_handler(
         action.meta.view_handler,
-        [ServiceItemOutput(sys_id="item-sys-id", catalogs="catalog-one,catalog-two")],
+        [
+            GetVariablesOutput(
+                sys_id="ritm-sys-id", **{"Optional Software": "Adobe Acrobat"}
+            )
+        ],
     )
 
-    assert template_context["results"][0]["data"][0]["catalogs"] == [
-        "catalog-one",
-        "catalog-two",
-    ]
+    result = template_context["results"][0]
+    assert result == {
+        "data": [{"sys_id": "ritm-sys-id", "Optional Software": "Adobe Acrobat"}]
+    }
 
 
 def test_custom_view_templates_use_sdk_container_context():

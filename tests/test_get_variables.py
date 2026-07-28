@@ -82,6 +82,9 @@ def test_get_variables_queries_request_item_and_handles_string_references(monkey
         "endpoint": "/table/sc_item_option/option-sys-id",
         "params": {"sysparm_display_value": "all"},
     }
-    assert output.model_dump() == {"Optional Software": "Adobe Acrobat"}
+    assert output.model_dump() == {
+        "sys_id": "ritm-sys-id",
+        "Optional Software": "Adobe Acrobat",
+    }
     assert soar.summary.num_variables == 1
     assert soar.message == "Num variables: 1"

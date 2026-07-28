@@ -51,10 +51,17 @@ class ListServicesParams(Params):
 class ServiceItemOutput(PermissiveActionOutput):
     """ServiceNow catalog item details"""
 
+    name: str = OutputField(
+        column_name="Name", example_values=["Retire a Standard Change Template"]
+    )
+    short_description: str = OutputField(column_name="Short Description")
+    sys_id: str = OutputField(column_name="Item SYS ID", cef_types=["md5"])
+    catalogs: list[str] | None = OutputField(
+        column_name="Catalog SYS ID", cef_types=["md5"]
+    )
     active: str = OutputField(example_values=["true"])
     availability: str = OutputField(example_values=["on_desktop"])
     billable: str = OutputField(example_values=["false"])
-    catalogs: list[str] | None = OutputField(cef_types=["md5"])
     cost: str = OutputField(example_values=["0"])
     custom_cart: str = ""
     delivery_plan_script: str = ""
@@ -78,7 +85,6 @@ class ServiceItemOutput(PermissiveActionOutput):
     mobile_hide_price: str = OutputField(example_values=["false"])
     mobile_picture: str = ""
     mobile_picture_type: str = OutputField(example_values=["use_desktop_picture"])
-    name: str = OutputField(example_values=["Retire a Standard Change Template"])
     no_attachment_v2: str = OutputField(example_values=["false"])
     no_cart: str = OutputField(example_values=["false"])
     no_cart_v2: str = OutputField(example_values=["false"])
@@ -107,13 +113,11 @@ class ServiceItemOutput(PermissiveActionOutput):
     sc_catalogs: str = OutputField(cef_types=["md5"])
     sc_ic_item_staging: str = ""
     sc_ic_version: str = ""
-    short_description: str = ""
     show_variable_help_on_load: str = OutputField(example_values=["false"])
     start_closed: str = OutputField(example_values=["false"])
     sys_class_name: str = OutputField(example_values=["sc_cat_item_producer"])
     sys_created_by: str = OutputField(example_values=["admin"])
     sys_created_on: str = OutputField(example_values=["2015-06-25 20:19:46"])
-    sys_id: str = OutputField(cef_types=["md5"])
     sys_mod_count: str = OutputField(example_values=["21"])
     sys_name: str = OutputField(example_values=["Retire a Standard Change Template"])
     sys_policy: str = ""
@@ -136,34 +140,13 @@ class ListServicesSummary(ActionOutput):
     services_returned: int = OutputField(example_values=[3])
 
 
-@app.view_handler(template="servicenow_list_services.html")
-def list_services_view(outputs: list[ServiceItemOutput]) -> dict:
-    """Transform list services action results for HTML rendering."""
-    data = []
-    for output in outputs:
-        d = output.model_dump()
-        catalogs = d.get("catalogs")
-        if isinstance(catalogs, str) and catalogs:
-            d["catalogs"] = [x.strip() for x in catalogs.split(",")]
-        elif not isinstance(catalogs, list):
-            d["catalogs"] = []
-        data.append(d)
-    ctx_result = {
-        "data": data,
-        "param": {},
-        "summary": {},
-        "action_name": "list services",
-    }
-    return {"results": [ctx_result]}
-
-
 @app.action(
     description="Get a list of items",
     action_type="investigate",
     read_only=True,
     verbose="The 'search text' parameter will search the text in the 'Name', 'Display Name', 'Short Description', and 'Description' fields of an item.",
     summary_type=ListServicesSummary,
-    view_handler=list_services_view,
+    render_as="table",
 )
 def list_services(
     params: ListServicesParams, soar: SOARClient[ListServicesSummary], asset: Asset

@@ -47,6 +47,10 @@ class GetVariablesOutput(PermissiveActionOutput):
     Dynamic output for variables with example fields.
     """
 
+    sys_id: str | None = OutputField(
+        cef_types=["servicenow item sys id", "md5"],
+        example_values=["07f52398838603104bb4c8c6feaad345"],
+    )
     Additional_software_requirements: str | None = OutputField(
         alias="Additional software requirements"
     )
@@ -64,16 +68,7 @@ class GetVariablesSummary(ActionOutput):
 @app.view_handler(template="servicenow_get_variables.html")
 def get_variables_view(outputs: list[GetVariablesOutput]) -> dict:
     """Transform get variables action results for HTML rendering."""
-    results = []
-    for output in outputs:
-        ctx_result = {
-            "data": [output.model_dump()],
-            "param": {},
-            "summary": {},
-            "action_name": "get variables",
-        }
-        results.append(ctx_result)
-    return {"results": results}
+    return {"results": [{"data": [output.model_dump()]} for output in outputs]}
 
 
 @app.action(
@@ -156,7 +151,7 @@ def get_variables(
     soar.set_summary(GetVariablesSummary(num_variables=len(variables)))
     soar.set_message(f"Num variables: {len(variables)}")
 
-    return GetVariablesOutput(**variables)
+    return GetVariablesOutput(sys_id=params.sys_id, **variables)
 
 
 def _extract_reference_value(reference: Any) -> str:

@@ -144,18 +144,6 @@ class ListTicketsSummary(ActionOutput):
     total_tickets: int = OutputField(example_values=[10, 50, 100])
 
 
-@app.view_handler(template="servicenow_list_tickets.html")
-def list_tickets_view(outputs: list[ListTicketOutput]) -> dict:
-    """Transform list tickets action results for HTML rendering."""
-    ctx_result = {
-        "data": {"tickets": [output.model_dump() for output in outputs]},
-        "param": {},
-        "summary": {},
-        "action_name": "list tickets",
-    }
-    return {"results": [ctx_result]}
-
-
 @app.action(
     description="Get a list of tickets/records",
     action_type="investigate",
