@@ -16,7 +16,8 @@
 
 from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionOutput
 
-#TODO: check and remove if these are not needed.
+# TODO: check and remove if these are not needed.
+
 
 class LinkValueOutput(ActionOutput):
     """

@@ -669,7 +669,6 @@ def test_query_users_returns_flat_records_and_strips_user_password(monkeypatch):
     assert soar.message == "Total users: 1"
 
 
-
 def test_describe_service_catalog_nested_records_pass_through():
     category_reference = {
         "link": "https://example.service-now.com/api/now/table/sc_catalog/catalog-id",

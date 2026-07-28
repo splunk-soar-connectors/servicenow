@@ -173,7 +173,9 @@ def test_standard_table_actions_declare_widget_columns(identifier):
         if "column_name" in field and "column_order" in field
     ]
 
-    actual_columns = [col["name"] for col in sorted(columns, key=lambda col: col["order"])]
+    actual_columns = [
+        col["name"] for col in sorted(columns, key=lambda col: col["order"])
+    ]
 
     assert actual_columns == EXPECTED_TABLE_COLUMNS[identifier]
 

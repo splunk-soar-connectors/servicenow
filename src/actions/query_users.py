@@ -43,7 +43,9 @@ class QueryUserOutput(PermissiveActionOutput):
         column_name="EMAIL", cef_types=["email"], example_values=["abc@pqr.us"]
     )
     active: str = OutputField(column_name="ACTIVE", example_values=["true"])
-    title: str = OutputField(column_name="TITLE", example_values=["System Administrator"])
+    title: str = OutputField(
+        column_name="TITLE", example_values=["System Administrator"]
+    )
     first_name: str = OutputField(column_name="FIRST NAME", example_values=["System"])
     last_name: str = OutputField(
         column_name="LAST NAME", example_values=["Administrator"]

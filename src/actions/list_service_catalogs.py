@@ -37,7 +37,9 @@ class ListServiceCatalogsParams(Params):
 class ServiceCatalogOutput(PermissiveActionOutput):
     """ServiceNow service catalog details"""
 
-    title: str | None = OutputField(column_name="TITLE", example_values=["test_catalog"])
+    title: str | None = OutputField(
+        column_name="TITLE", example_values=["test_catalog"]
+    )
     description: str | None = OutputField(column_name="DESCRIPTION")
     active: str | None = OutputField(column_name="ACTIVE", example_values=["true"])
     sys_id: str | None = OutputField(

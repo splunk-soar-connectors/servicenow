@@ -49,7 +49,6 @@ class GetVariablesOutput(PermissiveActionOutput):
 
     sys_id: str | None = OutputField(
         cef_types=["servicenow item sys id", "md5"],
-        example_values=["07f52398838603104bb4c8c6feaad345"],
     )
     Additional_software_requirements: str | None = OutputField(
         alias="Additional software requirements"

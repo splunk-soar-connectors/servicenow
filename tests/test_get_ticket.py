@@ -19,7 +19,9 @@ from src.actions.get_ticket import GetTicketParams, get_ticket
 run_get_ticket = get_ticket.__wrapped__
 
 
-def test_get_ticket_continues_when_journal_lookup_fails(monkeypatch, fake_soar, asset_factory):
+def test_get_ticket_continues_when_journal_lookup_fails(
+    monkeypatch, fake_soar, asset_factory
+):
     class FakeServiceNowClient:
         def __init__(self, asset):
             self.asset = asset

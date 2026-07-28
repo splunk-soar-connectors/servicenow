@@ -531,6 +531,15 @@ action_result.parameter.table | string | `servicenow table` | |
 action_result.parameter.vault_id | string | `vault id` | |
 action_result.parameter.description | string | | |
 action_result.parameter.fields | string | | |
+action_result.data.\*.number | string | `servicenow ticket number` | INC0000001 |
+action_result.data.\*.description | string | | Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Phantom for container id: 000 |
+action_result.data.\*.short_description | string | | phapp_servicenow, Multiple action need to be taken |
+action_result.data.\*.category | string | | inquiry |
+action_result.data.\*.sys_id | string | `servicenow ticket sysid` `md5` | |
+action_result.data.\*.severity | string | | 3 |
+action_result.data.\*.priority | string | | 5 |
+action_result.data.\*.opened_at | string | | 2018-11-22 09:57:05 |
+action_result.data.\*.closed_at | string | | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | true |
 action_result.data.\*.activity_due | string | | |
@@ -567,14 +576,12 @@ action_result.data.\*.business_duration | string | | |
 action_result.data.\*.business_stc | string | | |
 action_result.data.\*.calendar_duration | string | | |
 action_result.data.\*.calendar_stc | string | | |
-action_result.data.\*.category | string | | inquiry |
 action_result.data.\*.caused_by | string | | |
 action_result.data.\*.checked_in | string | | |
 action_result.data.\*.checked_out | string | | |
 action_result.data.\*.child_incidents | string | | 0 |
 action_result.data.\*.close_code | string | | |
 action_result.data.\*.close_notes | string | | |
-action_result.data.\*.closed_at | string | | |
 action_result.data.\*.comments | string | | |
 action_result.data.\*.comments_and_work_notes | string | | |
 action_result.data.\*.contact_type | string | | |
@@ -586,7 +593,6 @@ action_result.data.\*.delivery_plan | string | | |
 action_result.data.\*.delivery_task | string | | |
 action_result.data.\*.depreciated_amount | string | | 0 |
 action_result.data.\*.depreciation_date | string | | |
-action_result.data.\*.description | string | | Investigative actions to check for the presence of phapp_servicenow<br><br>Added by Phantom for container id: 000 |
 action_result.data.\*.display_name | string | | |
 action_result.data.\*.disposal_reason | string | | |
 action_result.data.\*.due | string | | |
@@ -613,10 +619,8 @@ action_result.data.\*.license_key | string | | |
 action_result.data.\*.made_sla | string | | true |
 action_result.data.\*.merged_into | string | | |
 action_result.data.\*.notify | string | | 1 |
-action_result.data.\*.number | string | `servicenow ticket number` | INC0000001 |
 action_result.data.\*.old_status | string | | |
 action_result.data.\*.old_substatus | string | | |
-action_result.data.\*.opened_at | string | | 2018-11-22 09:57:05 |
 action_result.data.\*.order | string | | |
 action_result.data.\*.order_date | string | | |
 action_result.data.\*.owned_by | string | | |
@@ -624,7 +628,6 @@ action_result.data.\*.parent | string | | |
 action_result.data.\*.parent_incident | string | | |
 action_result.data.\*.po_number | string | | |
 action_result.data.\*.pre_allocated | string | | false |
-action_result.data.\*.priority | string | | 5 |
 action_result.data.\*.problem_id | string | | |
 action_result.data.\*.purchase_date | string | | |
 action_result.data.\*.quantity | string | | 1 |
@@ -643,8 +646,6 @@ action_result.data.\*.retirement_date | string | | |
 action_result.data.\*.rights | string | | |
 action_result.data.\*.salvage_value | string | | 0 |
 action_result.data.\*.serial_number | string | | |
-action_result.data.\*.severity | string | | 3 |
-action_result.data.\*.short_description | string | | phapp_servicenow, Multiple action need to be taken |
 action_result.data.\*.skip_sync | string | | false |
 action_result.data.\*.sla_due | string | | |
 action_result.data.\*.state | string | | 1 |
@@ -654,7 +655,6 @@ action_result.data.\*.sys_class_name | string | | incident |
 action_result.data.\*.sys_created_by | string | | admin |
 action_result.data.\*.sys_created_on | string | | 2018-11-22 09:57:05 |
 action_result.data.\*.sys_domain_path | string | `domain` | / |
-action_result.data.\*.sys_id | string | `servicenow ticket sysid` `md5` | |
 action_result.data.\*.sys_mod_count | string | | 0 |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_updated_by | string | | admin |
@@ -1143,6 +1143,7 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.status | string | | success failure |
 action_result.message | string | | |
 action_result.parameter.sys_id | string | `servicenow item sys id` `md5` | |
+action_result.data.\*.sys_id | string | `servicenow item sys id` `md5` | |
 action_result.data.\*.Additional software requirements | string | | |
 action_result.data.\*.Adobe Acrobat | string | | |
 action_result.data.\*.Adobe Photoshop | string | | |
@@ -1171,8 +1172,13 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.status | string | | success failure |
 action_result.message | string | | |
 action_result.parameter.max_results | numeric | | |
-action_result.data.\*.active | string | | true false |
+action_result.data.\*.title | string | | Template Management Hardware Software |
 action_result.data.\*.description | string | | Propose a new Standard Change Template. Modify or Retire an existing Standard Change Template. |
+action_result.data.\*.active | string | | true false |
+action_result.data.\*.sys_id | string | `servicenow category sys id` `md5` | |
+action_result.data.\*.order | string | | 0 1 2 |
+action_result.data.\*.sys_created_on | string | | 2015-06-24 04:53:17 |
+action_result.data.\*.sys_updated_on | string | | 2015-06-24 04:54:20 |
 action_result.data.\*.entitlement_script | string | | |
 action_result.data.\*.header_icon | string | | |
 action_result.data.\*.homepage_image | string | | |
@@ -1182,21 +1188,16 @@ action_result.data.\*.location | string | | |
 action_result.data.\*.mobile_hide_description | string | | false true |
 action_result.data.\*.mobile_picture | string | | |
 action_result.data.\*.mobile_subcategory_render_type | string | | list |
-action_result.data.\*.order | string | | 0 1 2 |
 action_result.data.\*.roles | string | | |
 action_result.data.\*.show_in_cms | string | | false true |
 action_result.data.\*.sys_class_name | string | | sc_category |
 action_result.data.\*.sys_created_by | string | | admin system |
-action_result.data.\*.sys_created_on | string | | 2015-06-24 04:53:17 |
-action_result.data.\*.sys_id | string | `servicenow category sys id` `md5` | |
 action_result.data.\*.sys_mod_count | string | | 0 1 2 |
 action_result.data.\*.sys_name | string | | Template Management Hardware Software |
 action_result.data.\*.sys_policy | string | | |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_update_name | string | | sc_category_00728916937002002dcef157b67ffb6d |
 action_result.data.\*.sys_updated_by | string | | admin system |
-action_result.data.\*.sys_updated_on | string | | 2015-06-24 04:54:20 |
-action_result.data.\*.title | string | | Template Management Hardware Software |
 action_result.summary.categories_returned | numeric | | 5 10 50 |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
@@ -1221,9 +1222,13 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.status | string | | success failure |
 action_result.message | string | | |
 action_result.parameter.max_results | numeric | | |
-action_result.data.\*.active | string | | true |
-action_result.data.\*.background_color | string | | white |
+action_result.data.\*.title | string | | test_catalog |
 action_result.data.\*.description | string | | |
+action_result.data.\*.active | string | | true |
+action_result.data.\*.sys_id | string | `servicenow catalog sys id` `md5` | |
+action_result.data.\*.background_color | string | | white |
+action_result.data.\*.sys_created_on | string | | 2019-10-11 06:12:27 |
+action_result.data.\*.sys_updated_on | string | | 2019-10-11 06:12:27 |
 action_result.data.\*.desktop_continue_shopping | string | | |
 action_result.data.\*.desktop_home_page | string | | |
 action_result.data.\*.desktop_image | string | | |
@@ -1232,16 +1237,12 @@ action_result.data.\*.enable_wish_list | string | | false |
 action_result.data.\*.manager | string | | |
 action_result.data.\*.sys_class_name | string | | sc_catalog |
 action_result.data.\*.sys_created_by | string | | admin |
-action_result.data.\*.sys_created_on | string | | 2019-10-11 06:12:27 |
-action_result.data.\*.sys_id | string | `servicenow catalog sys id` `md5` | |
 action_result.data.\*.sys_mod_count | string | | 0 |
 action_result.data.\*.sys_name | string | | test_catalog |
 action_result.data.\*.sys_policy | string | | |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_update_name | string | | |
 action_result.data.\*.sys_updated_by | string | | admin |
-action_result.data.\*.sys_updated_on | string | | 2019-10-11 06:12:27 |
-action_result.data.\*.title | string | | test_catalog |
 action_result.summary.service_catalogs_returned | numeric | | 2 |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
@@ -1274,10 +1275,13 @@ action_result.parameter.catalog_sys_id | string | `servicenow catalog sys id` `m
 action_result.parameter.category_sys_id | string | `servicenow category sys id` `md5` | |
 action_result.parameter.search_text | string | | |
 action_result.parameter.max_results | numeric | | |
+action_result.data.\*.name | string | | Retire a Standard Change Template |
+action_result.data.\*.short_description | string | | |
+action_result.data.\*.sys_id | string | `md5` | |
+action_result.data.\*.catalogs.\* | string | `md5` | |
 action_result.data.\*.active | string | | true |
 action_result.data.\*.availability | string | | on_desktop |
 action_result.data.\*.billable | string | | false |
-action_result.data.\*.catalogs.\* | string | `md5` | |
 action_result.data.\*.cost | string | | 0 |
 action_result.data.\*.custom_cart | string | | |
 action_result.data.\*.delivery_plan_script | string | | |
@@ -1297,7 +1301,6 @@ action_result.data.\*.meta | string | | |
 action_result.data.\*.mobile_hide_price | string | | false |
 action_result.data.\*.mobile_picture | string | | |
 action_result.data.\*.mobile_picture_type | string | | use_desktop_picture |
-action_result.data.\*.name | string | | Retire a Standard Change Template |
 action_result.data.\*.no_attachment_v2 | string | | false |
 action_result.data.\*.no_cart | string | | false |
 action_result.data.\*.no_cart_v2 | string | | false |
@@ -1322,13 +1325,11 @@ action_result.data.\*.roles | string | | |
 action_result.data.\*.sc_catalogs | string | `md5` | |
 action_result.data.\*.sc_ic_item_staging | string | | |
 action_result.data.\*.sc_ic_version | string | | |
-action_result.data.\*.short_description | string | | |
 action_result.data.\*.show_variable_help_on_load | string | | false |
 action_result.data.\*.start_closed | string | | false |
 action_result.data.\*.sys_class_name | string | | sc_cat_item_producer |
 action_result.data.\*.sys_created_by | string | | admin |
 action_result.data.\*.sys_created_on | string | | 2015-06-25 20:19:46 |
-action_result.data.\*.sys_id | string | `md5` | |
 action_result.data.\*.sys_mod_count | string | | 21 |
 action_result.data.\*.sys_name | string | | Retire a Standard Change Template |
 action_result.data.\*.sys_policy | string | | |
@@ -1542,7 +1543,15 @@ action_result.parameter.query | string | | |
 action_result.parameter.user_id | string | | |
 action_result.parameter.username | string | | |
 action_result.parameter.max_results | numeric | | |
+action_result.data.\*.user_name | string | | admin |
+action_result.data.\*.name | string | | System Administrator |
+action_result.data.\*.email | string | `email` | abc@pqr.us |
 action_result.data.\*.active | string | | true |
+action_result.data.\*.title | string | | System Administrator |
+action_result.data.\*.first_name | string | | System |
+action_result.data.\*.last_name | string | | Administrator |
+action_result.data.\*.sys_id | string | `md5` | |
+action_result.data.\*.last_login | string | | 2022-06-24 |
 action_result.data.\*.avatar | string | `md5` | |
 action_result.data.\*.building | string | | |
 action_result.data.\*.calendar_integration | string | | 1 |
@@ -1552,25 +1561,20 @@ action_result.data.\*.cost_center | string | | |
 action_result.data.\*.country | string | | |
 action_result.data.\*.date_format | string | | |
 action_result.data.\*.default_perspective | string | | |
-action_result.data.\*.email | string | `email` | abc@pqr.us |
 action_result.data.\*.employee_number | string | | |
 action_result.data.\*.enable_multifactor_authn | string | | false |
 action_result.data.\*.failed_attempts | string | | 0 |
-action_result.data.\*.first_name | string | | System |
 action_result.data.\*.gender | string | | |
 action_result.data.\*.home_phone | string | | |
 action_result.data.\*.internal_integration_user | string | | false |
 action_result.data.\*.introduction | string | | |
-action_result.data.\*.last_login | string | | 2022-06-24 |
 action_result.data.\*.last_login_time | string | | 2022-06-24 22:32:15 |
-action_result.data.\*.last_name | string | | Administrator |
 action_result.data.\*.ldap_server | string | | |
 action_result.data.\*.location | string | | |
 action_result.data.\*.locked_out | string | | false |
 action_result.data.\*.manager | string | | |
 action_result.data.\*.middle_name | string | | |
 action_result.data.\*.mobile_phone | string | | |
-action_result.data.\*.name | string | | System Administrator |
 action_result.data.\*.notification | string | | 2 |
 action_result.data.\*.password_needs_reset | string | | false |
 action_result.data.\*.phone | string | | |
@@ -1585,15 +1589,12 @@ action_result.data.\*.sys_class_name | string | | sys_user |
 action_result.data.\*.sys_created_by | string | | fred.luddy |
 action_result.data.\*.sys_created_on | string | | 2007-07-03 18:48:47 |
 action_result.data.\*.sys_domain_path | string | `domain` | |
-action_result.data.\*.sys_id | string | `md5` | |
 action_result.data.\*.sys_mod_count | string | | 110 |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_updated_by | string | | system |
 action_result.data.\*.sys_updated_on | string | | 2022-06-24 22:32:28 |
 action_result.data.\*.time_format | string | | |
 action_result.data.\*.time_zone | string | | |
-action_result.data.\*.title | string | | System Administrator |
-action_result.data.\*.user_name | string | | admin |
 action_result.data.\*.vip | string | | false |
 action_result.data.\*.web_service_access_only | string | | false |
 action_result.data.\*.zip | string | | |
@@ -1724,6 +1725,14 @@ action_result.message | string | | |
 action_result.parameter.query | string | | |
 action_result.parameter.query_table | string | `servicenow table` | |
 action_result.parameter.max_results | numeric | | |
+action_result.data.\*.number | string | `servicenow ticket number` | INC0000001 |
+action_result.data.\*.description | string | | I can access my folder but can't access my team's folder on our file share |
+action_result.data.\*.short_description | string | | Unable to access team file share |
+action_result.data.\*.sys_id | string | `servicenow ticket sysid` `md5` | |
+action_result.data.\*.severity | string | | 3 |
+action_result.data.\*.priority | string | | 3 |
+action_result.data.\*.opened_at | string | | 2016-08-10 16:14:29 |
+action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
 action_result.data.\*.active | string | | true |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
@@ -1740,7 +1749,6 @@ action_result.data.\*.caused_by | string | | |
 action_result.data.\*.child_incidents | string | | 0 |
 action_result.data.\*.close_code | string | | Closed/Resolved by Caller |
 action_result.data.\*.close_notes | string | | Closed before close notes were made mandatory<br> |
-action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
 action_result.data.\*.cluster_node | string | | |
 action_result.data.\*.comments | string | | |
 action_result.data.\*.comments_and_work_notes | string | | |
@@ -1754,7 +1762,6 @@ action_result.data.\*.database_url | string | | |
 action_result.data.\*.database_user | string | | |
 action_result.data.\*.delivery_plan | string | | |
 action_result.data.\*.delivery_task | string | | |
-action_result.data.\*.description | string | | I can access my folder but can't access my team's folder on our file share |
 action_result.data.\*.due_date | string | | |
 action_result.data.\*.escalation | string | | 0 |
 action_result.data.\*.expected_start | string | | |
@@ -1769,12 +1776,9 @@ action_result.data.\*.instance_url | string | | |
 action_result.data.\*.knowledge | string | | false |
 action_result.data.\*.made_sla | string | | true |
 action_result.data.\*.notify | string | | 1 |
-action_result.data.\*.number | string | `servicenow ticket number` | INC0000001 |
-action_result.data.\*.opened_at | string | | 2016-08-10 16:14:29 |
 action_result.data.\*.order | string | | |
 action_result.data.\*.parent | string | | |
 action_result.data.\*.primary | string | | |
-action_result.data.\*.priority | string | | 3 |
 action_result.data.\*.production | string | | true |
 action_result.data.\*.reassignment_count | string | | 0 |
 action_result.data.\*.reopen_count | string | | 0 |
@@ -1782,8 +1786,6 @@ action_result.data.\*.reopened_by | string | | |
 action_result.data.\*.reopened_time | string | | |
 action_result.data.\*.resolved_at | string | | 2018-05-10 19:56:12 |
 action_result.data.\*.service_offering | string | | |
-action_result.data.\*.severity | string | | 3 |
-action_result.data.\*.short_description | string | | Unable to access team file share |
 action_result.data.\*.sla_due | string | | |
 action_result.data.\*.source | string | | true |
 action_result.data.\*.state | string | | 1 |
@@ -1792,7 +1794,6 @@ action_result.data.\*.sys_class_name | string | | incident |
 action_result.data.\*.sys_created_by | string | | admin |
 action_result.data.\*.sys_created_on | string | | 2016-08-10 16:14:29 |
 action_result.data.\*.sys_domain_path | string | `domain` | / |
-action_result.data.\*.sys_id | string | `servicenow ticket sysid` `md5` | |
 action_result.data.\*.sys_mod_count | string | | 0 |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_updated_by | string | | admin |

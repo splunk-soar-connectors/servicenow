@@ -109,7 +109,9 @@ class CreateTicketOutput(PermissiveActionOutput):
         column_name="SHORT DESCRIPTION",
         example_values=["phapp_servicenow, Multiple action need to be taken"],
     )
-    category: str | None = OutputField(column_name="CATEGORY", example_values=["inquiry"])
+    category: str | None = OutputField(
+        column_name="CATEGORY", example_values=["inquiry"]
+    )
     sys_id: str | None = OutputField(
         column_name="SYS ID",
         cef_types=["servicenow ticket sysid", "md5"],
