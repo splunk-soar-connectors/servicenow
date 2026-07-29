@@ -24,7 +24,6 @@ from bs4 import BeautifulSoup
 import httpx
 from soar_sdk.abstract import SOARClient
 from soar_sdk.auth import BasicAuth, OAuthBearerAuth
-from soar_sdk.auth.client import TokenExpiredError
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 
@@ -139,14 +138,6 @@ class ServiceNowClient:
         """
         Process HTTP response from ServiceNow API
         """
-        if response.status_code == 401:
-            try:
-                error_json = response.json()
-                if "error" in error_json and error_json["error"] == "invalid_token":
-                    raise TokenExpiredError("OAuth token is invalid or expired")
-            except (ValueError, TokenExpiredError):
-                raise
-
         # Try to parse response as JSON
         try:
             response_json = response.json()
@@ -181,6 +172,9 @@ class ServiceNowClient:
             detail = error.get("detail", "")
             if message:
                 return f"{message}{f': {detail}' if detail else ''}"
+        elif isinstance(error, str):
+            detail = response_json.get("error_description", "")
+            return f"{error}{f': {detail}' if detail else ''}"
 
         # Fallback: return whole response (truncated)
         error_str = str(response_json)

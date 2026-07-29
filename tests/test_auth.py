@@ -422,6 +422,31 @@ def test_helper_passes_verify_ssl_to_oauth_client(monkeypatch):
     assert captured["verify_ssl"] is False
 
 
+def test_process_response_reports_json_401_as_action_failure():
+    helper = ServiceNowClient(make_asset())
+    response = httpx.Response(
+        401,
+        json={"error": "invalid_token", "error_description": "Token expired"},
+    )
+
+    with pytest.raises(
+        ActionFailure,
+        match=r"ServiceNow API error \(HTTP 401\): invalid_token: Token expired",
+    ):
+        helper._process_response(response)
+
+
+def test_process_response_reports_non_json_401_as_action_failure():
+    helper = ServiceNowClient(make_asset())
+    response = httpx.Response(401, text="Unauthorized")
+
+    with pytest.raises(
+        ActionFailure,
+        match=r"ServiceNow API request failed \(HTTP 401\): Unauthorized",
+    ):
+        helper._process_response(response)
+
+
 def test_extract_error_from_response_simplifies_html_body():
     helper = ServiceNowClient(make_asset())
     response = httpx.Response(
