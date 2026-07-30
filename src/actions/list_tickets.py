@@ -76,13 +76,9 @@ class ListTicketOutput(PermissiveActionOutput):
     approval: str | None = ""
     approval_history: str | None = ""
     approval_set: str | None = ""
-    business_duration: str | None = OutputField(
-        example_values=["1970-01-22 21:46:21"]
-    )
+    business_duration: str | None = OutputField(example_values=["1970-01-22 21:46:21"])
     business_stc: str | None = OutputField(example_values=["1892781"])
-    calendar_duration: str | None = OutputField(
-        example_values=["1970-04-02 20:46:21"]
-    )
+    calendar_duration: str | None = OutputField(example_values=["1970-04-02 20:46:21"])
     calendar_stc: str | None = OutputField(example_values=["7937181"])
     category: str | None = OutputField(example_values=["network"])
     caused_by: str | None = ""
