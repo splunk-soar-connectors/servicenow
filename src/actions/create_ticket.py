@@ -323,7 +323,11 @@ def create_ticket(
             vault_failure_details = ", ".join(
                 f"{vid}: {err}" for vid, err in vault_errors.items()
             )
-            message = "Successfully created the ticket, but failed to add attachment(s)"
+            message = (
+                f"Successfully created ticket {created_ticket_id}, "
+                "but failed to add attachment(s)"
+            )
+            logger.error("%s: %s", message, vault_failure_details)
 
             soar.set_message(message)
             soar.set_summary(

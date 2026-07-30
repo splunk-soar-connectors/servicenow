@@ -45,97 +45,103 @@ class ListTicketsParams(Params):
 
 
 class ListTicketOutput(PermissiveActionOutput):
-    number: str = OutputField(
+    number: str | None = OutputField(
         column_name="TICKET NUMBER",
         cef_types=["servicenow ticket number"],
         example_values=["INC0000001"],
     )
-    description: str = OutputField(
+    description: str | None = OutputField(
         column_name="DESCRIPTION",
         example_values=["User can't access email on mail.company.com.<br>\t\t"],
     )
-    short_description: str = OutputField(
+    short_description: str | None = OutputField(
         column_name="SHORT DESCRIPTION",
         example_values=["phapp_servicenow_update, Run file reputation actions only"],
     )
-    sys_id: str = OutputField(
+    sys_id: str | None = OutputField(
         column_name="ID",
         cef_types=["servicenow ticket sysid", "md5"],
     )
-    severity: str = OutputField(column_name="SEVERITY", example_values=["1"])
-    priority: str = OutputField(column_name="PRIORITY", example_values=["1"])
-    opened_at: str = OutputField(
+    severity: str | None = OutputField(column_name="SEVERITY", example_values=["1"])
+    priority: str | None = OutputField(column_name="PRIORITY", example_values=["1"])
+    opened_at: str | None = OutputField(
         column_name="OPENED ON", example_values=["2018-02-07 23:09:51"]
     )
-    closed_at: str = OutputField(
+    closed_at: str | None = OutputField(
         column_name="CLOSED ON", example_values=["2018-02-08 23:10:06"]
     )
-    active: str = OutputField(example_values=["false"])
-    activity_due: str = ""
-    additional_assignee_list: str = ""
-    approval: str = ""
-    approval_history: str = ""
-    approval_set: str = ""
-    business_duration: str = OutputField(example_values=["1970-01-22 21:46:21"])
-    business_stc: str = OutputField(example_values=["1892781"])
-    calendar_duration: str = OutputField(example_values=["1970-04-02 20:46:21"])
-    calendar_stc: str = OutputField(example_values=["7937181"])
-    category: str = OutputField(example_values=["network"])
-    caused_by: str = ""
-    child_incidents: str = ""
-    close_code: str = OutputField(example_values=["Closed/Resolved by Caller"])
-    close_notes: str = OutputField(
+    active: str | None = OutputField(example_values=["false"])
+    activity_due: str | None = ""
+    additional_assignee_list: str | None = ""
+    approval: str | None = ""
+    approval_history: str | None = ""
+    approval_set: str | None = ""
+    business_duration: str | None = OutputField(
+        example_values=["1970-01-22 21:46:21"]
+    )
+    business_stc: str | None = OutputField(example_values=["1892781"])
+    calendar_duration: str | None = OutputField(
+        example_values=["1970-04-02 20:46:21"]
+    )
+    calendar_stc: str | None = OutputField(example_values=["7937181"])
+    category: str | None = OutputField(example_values=["network"])
+    caused_by: str | None = ""
+    child_incidents: str | None = ""
+    close_code: str | None = OutputField(example_values=["Closed/Resolved by Caller"])
+    close_notes: str | None = OutputField(
         example_values=["Closed before close notes were made mandatory<br>\t\t"]
     )
-    comments: str = ""
-    comments_and_work_notes: str = ""
-    contact_type: str = ""
-    correlation_display: str = ""
-    correlation_id: str = ""
-    delivery_plan: str = ""
-    delivery_task: str = ""
-    due_date: str = ""
-    escalation: str = OutputField(example_values=["0"])
-    expected_start: str = ""
-    follow_up: str = ""
-    group_list: str = ""
-    hold_reason: str = ""
-    impact: str = OutputField(example_values=["1"])
-    incident_state: str = OutputField(example_values=["7"])
-    knowledge: str = OutputField(example_values=["false"])
-    made_sla: str = OutputField(example_values=["false"])
-    notify: str = OutputField(example_values=["1"])
-    order: str = ""
-    parent: str = ""
-    reassignment_count: str = OutputField(example_values=["1"])
-    reopen_count: str = ""
-    reopened_by: str = ""
-    reopened_time: str = ""
-    resolved_at: str = OutputField(example_values=["2018-05-10 19:56:12"])
-    sc_item_option: str = ""
-    service_offering: str = ""
-    sla_due: str = ""
-    state: str = OutputField(example_values=["7"])
-    subcategory: str = ""
-    sys_class_name: str = OutputField(example_values=["incident"])
-    sys_created_by: str = OutputField(example_values=["pat"])
-    sys_created_on: str = OutputField(example_values=["2016-09-08 18:24:13"])
-    sys_domain_path: str = OutputField(cef_types=["domain"], example_values=["/"])
-    sys_mod_count: str = OutputField(example_values=["22"])
-    sys_tags: str = ""
-    sys_updated_by: str = OutputField(example_values=["admin"])
-    sys_updated_on: str = OutputField(example_values=["2018-11-21 05:51:32"])
-    time_worked: str = ""
-    u_short_description: str = ""
-    upon_approval: str = ""
-    upon_reject: str = ""
-    urgency: str = OutputField(example_values=["1"])
-    user_input: str = ""
-    watch_list: str = ""
-    work_end: str = ""
-    work_notes: str = ""
-    work_notes_list: str = ""
-    work_start: str = ""
+    comments: str | None = ""
+    comments_and_work_notes: str | None = ""
+    contact_type: str | None = ""
+    correlation_display: str | None = ""
+    correlation_id: str | None = ""
+    delivery_plan: str | None = ""
+    delivery_task: str | None = ""
+    due_date: str | None = ""
+    escalation: str | None = OutputField(example_values=["0"])
+    expected_start: str | None = ""
+    follow_up: str | None = ""
+    group_list: str | None = ""
+    hold_reason: str | None = ""
+    impact: str | None = OutputField(example_values=["1"])
+    incident_state: str | None = OutputField(example_values=["7"])
+    knowledge: str | None = OutputField(example_values=["false"])
+    made_sla: str | None = OutputField(example_values=["false"])
+    notify: str | None = OutputField(example_values=["1"])
+    order: str | None = ""
+    parent: str | None = ""
+    reassignment_count: str | None = OutputField(example_values=["1"])
+    reopen_count: str | None = ""
+    reopened_by: str | None = ""
+    reopened_time: str | None = ""
+    resolved_at: str | None = OutputField(example_values=["2018-05-10 19:56:12"])
+    sc_item_option: str | None = ""
+    service_offering: str | None = ""
+    sla_due: str | None = ""
+    state: str | None = OutputField(example_values=["7"])
+    subcategory: str | None = ""
+    sys_class_name: str | None = OutputField(example_values=["incident"])
+    sys_created_by: str | None = OutputField(example_values=["pat"])
+    sys_created_on: str | None = OutputField(example_values=["2016-09-08 18:24:13"])
+    sys_domain_path: str | None = OutputField(
+        cef_types=["domain"], example_values=["/"]
+    )
+    sys_mod_count: str | None = OutputField(example_values=["22"])
+    sys_tags: str | None = ""
+    sys_updated_by: str | None = OutputField(example_values=["admin"])
+    sys_updated_on: str | None = OutputField(example_values=["2018-11-21 05:51:32"])
+    time_worked: str | None = ""
+    u_short_description: str | None = ""
+    upon_approval: str | None = ""
+    upon_reject: str | None = ""
+    urgency: str | None = OutputField(example_values=["1"])
+    user_input: str | None = ""
+    watch_list: str | None = ""
+    work_end: str | None = ""
+    work_notes: str | None = ""
+    work_notes_list: str | None = ""
+    work_start: str | None = ""
 
 
 class ListTicketsSummary(ActionOutput):

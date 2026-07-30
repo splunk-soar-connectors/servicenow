@@ -37,69 +37,75 @@ class QueryUsersParams(Params):
 
 
 class QueryUserOutput(PermissiveActionOutput):
-    user_name: str = OutputField(column_name="USER NAME", example_values=["admin"])
-    name: str = OutputField(column_name="NAME", example_values=["System Administrator"])
-    email: str = OutputField(
+    user_name: str | None = OutputField(
+        column_name="USER NAME", example_values=["admin"]
+    )
+    name: str | None = OutputField(
+        column_name="NAME", example_values=["System Administrator"]
+    )
+    email: str | None = OutputField(
         column_name="EMAIL", cef_types=["email"], example_values=["abc@pqr.us"]
     )
-    active: str = OutputField(column_name="ACTIVE", example_values=["true"])
-    title: str = OutputField(
+    active: str | None = OutputField(column_name="ACTIVE", example_values=["true"])
+    title: str | None = OutputField(
         column_name="TITLE", example_values=["System Administrator"]
     )
-    first_name: str = OutputField(column_name="FIRST NAME", example_values=["System"])
-    last_name: str = OutputField(
+    first_name: str | None = OutputField(
+        column_name="FIRST NAME", example_values=["System"]
+    )
+    last_name: str | None = OutputField(
         column_name="LAST NAME", example_values=["Administrator"]
     )
-    sys_id: str = OutputField(column_name="SYS ID", cef_types=["md5"])
-    last_login: str = OutputField(
+    sys_id: str | None = OutputField(column_name="SYS ID", cef_types=["md5"])
+    last_login: str | None = OutputField(
         column_name="LAST LOGIN", example_values=["2022-06-24"]
     )
-    avatar: str = OutputField(cef_types=["md5"])
-    building: str
-    calendar_integration: str = OutputField(example_values=["1"])
-    city: str
-    company: str
-    cost_center: str
-    country: str
-    date_format: str
-    default_perspective: str
-    employee_number: str
-    enable_multifactor_authn: str = OutputField(example_values=["false"])
-    failed_attempts: str = OutputField(example_values=["0"])
-    gender: str
-    home_phone: str
-    internal_integration_user: str = OutputField(example_values=["false"])
-    introduction: str
-    last_login_time: str = OutputField(example_values=["2022-06-24 22:32:15"])
-    ldap_server: str
-    location: str
-    locked_out: str = OutputField(example_values=["false"])
-    manager: str
-    middle_name: str
-    mobile_phone: str
-    notification: str = OutputField(example_values=["2"])
-    password_needs_reset: str = OutputField(example_values=["false"])
-    phone: str
-    photo: str
-    preferred_language: str
-    roles: str = OutputField(example_values=["admin"])
-    schedule: str
-    source: str
-    state: str
-    street: str
-    sys_class_name: str = OutputField(example_values=["sys_user"])
-    sys_created_by: str = OutputField(example_values=["fred.luddy"])
-    sys_created_on: str = OutputField(example_values=["2007-07-03 18:48:47"])
-    sys_domain_path: str = OutputField(cef_types=["domain"])
-    sys_mod_count: str = OutputField(example_values=["110"])
-    sys_tags: str
-    sys_updated_by: str = OutputField(example_values=["system"])
-    sys_updated_on: str = OutputField(example_values=["2022-06-24 22:32:28"])
-    time_format: str
-    time_zone: str
-    vip: str = OutputField(example_values=["false"])
-    web_service_access_only: str = OutputField(example_values=["false"])
-    zip: str
+    avatar: str | None = OutputField(cef_types=["md5"])
+    building: str | None = None
+    calendar_integration: str | None = OutputField(example_values=["1"])
+    city: str | None = None
+    company: str | None = None
+    cost_center: str | None = None
+    country: str | None = None
+    date_format: str | None = None
+    default_perspective: str | None = None
+    employee_number: str | None = None
+    enable_multifactor_authn: str | None = OutputField(example_values=["false"])
+    failed_attempts: str | None = OutputField(example_values=["0"])
+    gender: str | None = None
+    home_phone: str | None = None
+    internal_integration_user: str | None = OutputField(example_values=["false"])
+    introduction: str | None = None
+    last_login_time: str | None = OutputField(example_values=["2022-06-24 22:32:15"])
+    ldap_server: str | None = None
+    location: str | None = None
+    locked_out: str | None = OutputField(example_values=["false"])
+    manager: str | None = None
+    middle_name: str | None = None
+    mobile_phone: str | None = None
+    notification: str | None = OutputField(example_values=["2"])
+    password_needs_reset: str | None = OutputField(example_values=["false"])
+    phone: str | None = None
+    photo: str | None = None
+    preferred_language: str | None = None
+    roles: str | None = OutputField(example_values=["admin"])
+    schedule: str | None = None
+    source: str | None = None
+    state: str | None = None
+    street: str | None = None
+    sys_class_name: str | None = OutputField(example_values=["sys_user"])
+    sys_created_by: str | None = OutputField(example_values=["fred.luddy"])
+    sys_created_on: str | None = OutputField(example_values=["2007-07-03 18:48:47"])
+    sys_domain_path: str | None = OutputField(cef_types=["domain"])
+    sys_mod_count: str | None = OutputField(example_values=["110"])
+    sys_tags: str | None = None
+    sys_updated_by: str | None = OutputField(example_values=["system"])
+    sys_updated_on: str | None = OutputField(example_values=["2022-06-24 22:32:28"])
+    time_format: str | None = None
+    time_zone: str | None = None
+    vip: str | None = OutputField(example_values=["false"])
+    web_service_access_only: str | None = OutputField(example_values=["false"])
+    zip: str | None = None
 
 
 class QueryUsersSummary(ActionOutput):

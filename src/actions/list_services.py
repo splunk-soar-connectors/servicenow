@@ -51,87 +51,91 @@ class ListServicesParams(Params):
 class ServiceItemOutput(PermissiveActionOutput):
     """ServiceNow catalog item details"""
 
-    name: str = OutputField(
+    name: str | None = OutputField(
         column_name="Name", example_values=["Retire a Standard Change Template"]
     )
-    short_description: str = OutputField(column_name="Short Description")
-    sys_id: str = OutputField(column_name="Item SYS ID", cef_types=["md5"])
+    short_description: str | None = OutputField(column_name="Short Description")
+    sys_id: str | None = OutputField(column_name="Item SYS ID", cef_types=["md5"])
     catalogs: list[str] | None = OutputField(
         column_name="Catalog SYS ID", cef_types=["md5"]
     )
-    active: str = OutputField(example_values=["true"])
-    availability: str = OutputField(example_values=["on_desktop"])
-    billable: str = OutputField(example_values=["false"])
-    cost: str = OutputField(example_values=["0"])
-    custom_cart: str = ""
-    delivery_plan_script: str = ""
-    delivery_time: str = OutputField(example_values=["1970-01-03 00:00:00"])
-    description: str = OutputField(
+    active: str | None = OutputField(example_values=["true"])
+    availability: str | None = OutputField(example_values=["on_desktop"])
+    billable: str | None = OutputField(example_values=["false"])
+    cost: str | None = OutputField(example_values=["0"])
+    custom_cart: str | None = ""
+    delivery_plan_script: str | None = ""
+    delivery_time: str | None = OutputField(example_values=["1970-01-03 00:00:00"])
+    description: str | None = OutputField(
         example_values=[
             '<p class="p1"><font size="2"><span class="s1">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. This will be confirmed by your Change Management team.</span></font></p>'
         ]
     )
-    display_price_property: str = OutputField(example_values=["non_zero"])
-    entitlement_script: str = ""
-    group: str = ""
-    hide_sp: str = OutputField(example_values=["true"])
-    icon: str = ""
-    ignore_price: str = OutputField(example_values=["true"])
-    image: str = ""
-    list_price: str = OutputField(example_values=["0"])
-    location: str = ""
-    mandatory_attachment: str = OutputField(example_values=["false"])
-    meta: str = ""
-    mobile_hide_price: str = OutputField(example_values=["false"])
-    mobile_picture: str = ""
-    mobile_picture_type: str = OutputField(example_values=["use_desktop_picture"])
-    no_attachment_v2: str = OutputField(example_values=["false"])
-    no_cart: str = OutputField(example_values=["false"])
-    no_cart_v2: str = OutputField(example_values=["false"])
-    no_delivery_time_v2: str = OutputField(example_values=["false"])
-    no_order: str = OutputField(example_values=["false"])
-    no_order_now: str = OutputField(example_values=["false"])
-    no_proceed_checkout: str = OutputField(example_values=["false"])
-    no_quantity: str = OutputField(example_values=["false"])
-    no_quantity_v2: str = OutputField(example_values=["false"])
-    no_search: str = OutputField(example_values=["false"])
-    no_wishlist_v2: str = OutputField(example_values=["false"])
-    omit_price: str = OutputField(example_values=["false"])
-    order: str = OutputField(example_values=["30"])
-    ordered_item_link: str = ""
-    picture: str = ""
-    preview: str = OutputField(
+    display_price_property: str | None = OutputField(example_values=["non_zero"])
+    entitlement_script: str | None = ""
+    group: str | None = ""
+    hide_sp: str | None = OutputField(example_values=["true"])
+    icon: str | None = ""
+    ignore_price: str | None = OutputField(example_values=["true"])
+    image: str | None = ""
+    list_price: str | None = OutputField(example_values=["0"])
+    location: str | None = ""
+    mandatory_attachment: str | None = OutputField(example_values=["false"])
+    meta: str | None = ""
+    mobile_hide_price: str | None = OutputField(example_values=["false"])
+    mobile_picture: str | None = ""
+    mobile_picture_type: str | None = OutputField(
+        example_values=["use_desktop_picture"]
+    )
+    no_attachment_v2: str | None = OutputField(example_values=["false"])
+    no_cart: str | None = OutputField(example_values=["false"])
+    no_cart_v2: str | None = OutputField(example_values=["false"])
+    no_delivery_time_v2: str | None = OutputField(example_values=["false"])
+    no_order: str | None = OutputField(example_values=["false"])
+    no_order_now: str | None = OutputField(example_values=["false"])
+    no_proceed_checkout: str | None = OutputField(example_values=["false"])
+    no_quantity: str | None = OutputField(example_values=["false"])
+    no_quantity_v2: str | None = OutputField(example_values=["false"])
+    no_search: str | None = OutputField(example_values=["false"])
+    no_wishlist_v2: str | None = OutputField(example_values=["false"])
+    omit_price: str | None = OutputField(example_values=["false"])
+    order: str | None = OutputField(example_values=["30"])
+    ordered_item_link: str | None = ""
+    picture: str | None = ""
+    preview: str | None = OutputField(
         example_values=[
             'JavaScript: popupOpenStandard("com.glideapp.servicecatalog_cat_item_view.do?v=1&sysparm_id=011f117a9f3002002920bde8132e7020&sysparm_preview=true", "summary");'
         ]
     )
-    price: str = OutputField(example_values=["0"])
-    recurring_frequency: str = ""
-    recurring_price: str = OutputField(example_values=["0"])
-    request_method: str = ""
-    roles: str = ""
-    sc_catalogs: str = OutputField(cef_types=["md5"])
-    sc_ic_item_staging: str = ""
-    sc_ic_version: str = ""
-    show_variable_help_on_load: str = OutputField(example_values=["false"])
-    start_closed: str = OutputField(example_values=["false"])
-    sys_class_name: str = OutputField(example_values=["sc_cat_item_producer"])
-    sys_created_by: str = OutputField(example_values=["admin"])
-    sys_created_on: str = OutputField(example_values=["2015-06-25 20:19:46"])
-    sys_mod_count: str = OutputField(example_values=["21"])
-    sys_name: str = OutputField(example_values=["Retire a Standard Change Template"])
-    sys_policy: str = ""
-    sys_tags: str = ""
-    sys_update_name: str = OutputField(
+    price: str | None = OutputField(example_values=["0"])
+    recurring_frequency: str | None = ""
+    recurring_price: str | None = OutputField(example_values=["0"])
+    request_method: str | None = ""
+    roles: str | None = ""
+    sc_catalogs: str | None = OutputField(cef_types=["md5"])
+    sc_ic_item_staging: str | None = ""
+    sc_ic_version: str | None = ""
+    show_variable_help_on_load: str | None = OutputField(example_values=["false"])
+    start_closed: str | None = OutputField(example_values=["false"])
+    sys_class_name: str | None = OutputField(example_values=["sc_cat_item_producer"])
+    sys_created_by: str | None = OutputField(example_values=["admin"])
+    sys_created_on: str | None = OutputField(example_values=["2015-06-25 20:19:46"])
+    sys_mod_count: str | None = OutputField(example_values=["21"])
+    sys_name: str | None = OutputField(
+        example_values=["Retire a Standard Change Template"]
+    )
+    sys_policy: str | None = ""
+    sys_tags: str | None = ""
+    sys_update_name: str | None = OutputField(
         example_values=["sc_cat_item_producer_011f117a9f3002002920bde8132e7020"]
     )
-    sys_updated_by: str = OutputField(example_values=["admin"])
-    sys_updated_on: str = OutputField(example_values=["2017-11-02 22:38:21"])
-    type: str = OutputField(example_values=["item"])
-    use_sc_layout: str = OutputField(example_values=["true"])
-    visible_bundle: str = OutputField(example_values=["true"])
-    visible_guide: str = OutputField(example_values=["true"])
-    visible_standalone: str = OutputField(example_values=["true"])
+    sys_updated_by: str | None = OutputField(example_values=["admin"])
+    sys_updated_on: str | None = OutputField(example_values=["2017-11-02 22:38:21"])
+    type: str | None = OutputField(example_values=["item"])
+    use_sc_layout: str | None = OutputField(example_values=["true"])
+    visible_bundle: str | None = OutputField(example_values=["true"])
+    visible_guide: str | None = OutputField(example_values=["true"])
+    visible_standalone: str | None = OutputField(example_values=["true"])
 
 
 class ListServicesSummary(ActionOutput):

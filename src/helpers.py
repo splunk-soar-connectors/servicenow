@@ -132,10 +132,6 @@ class ServiceNowClient:
             "(2) username and password for Basic Auth"
         )
 
-    def _get_auth(self) -> httpx.Auth:
-        """Compatibility alias for older internal call sites."""
-        return self.get_auth()
-
     def _process_response(self, response: httpx.Response) -> dict:
         """
         Process HTTP response from ServiceNow API
@@ -399,7 +395,7 @@ class ServiceNowClient:
         filename: str,
         file_content: bytes,
         mime_type: Optional[str],
-    ) -> Optional[dict]:
+    ) -> tuple[bool, dict | None, str | None]:
         """
         Upload a file attachment to ServiceNow
         """
@@ -412,7 +408,9 @@ class ServiceNowClient:
             base_url = self._normalize_base_url()
             url = f"{base_url}{API_URI}{endpoint}"
 
-            with httpx.Client(auth=self.get_auth(), timeout=self.timeout) as client:
+            # Match legacy attachment behavior: ServiceNow may take longer than
+            # the default API timeout for large files.
+            with httpx.Client(auth=self.get_auth(), timeout=None) as client:  # noqa: S113
                 response = client.post(
                     url,
                     headers={"Content-Type": content_type},
@@ -422,21 +420,30 @@ class ServiceNowClient:
 
             # Process response
             if response.status_code >= 400:
-                logger.error(
-                    f"Failed to upload attachment: HTTP {response.status_code}"
+                try:
+                    error_message = self._extract_error_from_json(response.json())
+                except Exception:
+                    error_message = self._extract_error_from_response(response)
+
+                error_message = (
+                    f"Failed to upload attachment: HTTP {response.status_code}: "
+                    f"{error_message}"
                 )
-                return None
+                logger.error(error_message)
+                return False, None, error_message
 
             try:
                 response_json = response.json()
-                return response_json.get("result", {})
-            except Exception:
-                logger.error("Failed to parse attachment upload response")
-                return None
+                return True, response_json.get("result", {}), None
+            except Exception as e:
+                error_message = f"Failed to parse attachment upload response: {e}"
+                logger.error(error_message)
+                return False, None, error_message
 
         except Exception as e:
-            logger.error(f"Error uploading attachment: {e}")
-            return None
+            error_message = f"Error uploading attachment: {e}"
+            logger.error(error_message)
+            return False, None, error_message
 
 
 class ServiceNowActionHelper:
@@ -453,7 +460,11 @@ class ServiceNowActionHelper:
         """
         Handle uploading SOAR vault files as ServiceNow attachments.
         """
-        vault_ids = [vid.strip() for vid in vault_ids_str.split(",") if vid.strip()]
+        vault_ids = list(
+            dict.fromkeys(
+                vid.strip() for vid in vault_ids_str.split(",") if vid.strip()
+            )
+        )
 
         if not vault_ids:
             return [], {}
@@ -475,17 +486,32 @@ class ServiceNowActionHelper:
                 with vault_file.open("rb") as f:
                     file_content = f.read()
 
-                attachment_result = self.client.upload_attachment(
-                    table,
-                    ticket_id,
-                    vault_file.name,
-                    file_content,
-                    vault_file.mime_type,
+                upload_success, attachment_result, upload_error = (
+                    self.client.upload_attachment(
+                        table,
+                        ticket_id,
+                        vault_file.name,
+                        file_content,
+                        vault_file.mime_type,
+                    )
                 )
 
-                if attachment_result:
+                if upload_success and attachment_result is not None:
                     attachment_details.append(attachment_result)
                     logger.info(f"Successfully attached file: {vault_file.name}")
+                else:
+                    error_msg = (
+                        upload_error
+                        or f"Attachment upload failed for file: {vault_file.name}"
+                    )
+                    vault_errors[vault_id] = error_msg
+                    logger.error(
+                        "Attachment upload failed for ticket %s, vault_id %s, file %s: %s",
+                        ticket_id,
+                        vault_id,
+                        vault_file.name,
+                        error_msg,
+                    )
 
             except Exception as e:
                 error_msg = f"Error attaching vault_id {vault_id}: {e}"
