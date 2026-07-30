@@ -299,7 +299,6 @@ def get_ticket(
             )
         except TicketNotFoundException:
             # Ticket not found - use legacy error message
-            # This matches legacy behavior at line 934 of servicenow_connector.py
             raise ActionFailure(SERVICENOW_TICKET_ID_MESSAGE) from None
         # Other exceptions (ActionFailure for auth/network errors) propagate naturally
 

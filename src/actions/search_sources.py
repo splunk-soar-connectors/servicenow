@@ -172,7 +172,6 @@ def search_sources(
         helper, sysparm_term, sysparm_search_sources_str
     )
 
-    # Set summary to match legacy behavior (matches servicenow.json expectation)
     total_records = int(result_data.get("result_count", 0))
     logger.info(f"Search completed successfully. Total records: {total_records}")
     soar.set_summary(SearchSourcesSummary(total_records=total_records))
