@@ -95,14 +95,12 @@ def _format_service_now_time(timestamp: float, timezone_value: Any = None) -> st
     return dt.strftime(SERVICENOW_DATETIME_FORMAT)
 
 
-def _format_time_query(operator: str, value: str, timezone_value: Any = None) -> str:
-    if timezone_value:
-        query_date, query_time = value.split(" ")
-        return (
-            f"^sys_updated_on{operator}"
-            f"javascript:gs.dateGenerate('{query_date}','{query_time}')"
-        )
-    return f"^sys_updated_on{operator}{value}"
+def _format_time_query(operator: str, value: str) -> str:
+    query_date, query_time = value.split(" ")
+    return (
+        f"^sys_updated_on{operator}"
+        f"javascript:gs.dateGenerate('{query_date}','{query_time}')"
+    )
 
 
 def _strip_format_controls(value: Any) -> Any:
@@ -159,14 +157,6 @@ def migrate_legacy_ingest_state(asset: Asset) -> None:
         state["first_run"] = legacy_state["first_run"]
     elif needs_first_run and legacy_last_time is not None:
         state["first_run"] = False
-
-
-# TODO: duplication container handling.
-
-"""
-Does the SDK automatically dedupe containers by source_data_identifier (and/or label)? The docs dont state it explicitly; if it doesnt, duplicates are likely with inclusive time filters.
-Are start_time/end_time populated for scheduled polls in your environment? If so, ignoring them can cause overlap or gaps.
-"""
 
 
 @app.on_poll()
@@ -234,7 +224,7 @@ def on_poll(
             start_time_str = _format_service_now_time(
                 params.start_time / 1000.0, timezone_value
             )
-            query += _format_time_query(">=", start_time_str, timezone_value)
+            query += _format_time_query(">=", start_time_str)
             logger.info(f"Using provided start_time: {start_time_str}")
 
         # If end_time provided (epoch milliseconds), add upper bound filter
@@ -242,7 +232,7 @@ def on_poll(
             end_time_str = _format_service_now_time(
                 params.end_time / 1000.0, timezone_value
             )
-            query += _format_time_query("<=", end_time_str, timezone_value)
+            query += _format_time_query("<=", end_time_str)
             logger.info(f"Using provided end_time: {end_time_str}")
 
     elif state.get("first_run", True):
@@ -254,7 +244,7 @@ def on_poll(
         # Subsequent scheduled polls
         if last_time and len(last_time.split(" ")) == 2:
             # Add time-based filter from state
-            query += _format_time_query(">=", last_time, timezone_value)
+            query += _format_time_query(">=", last_time)
             max_tickets = int(asset.max_container)
             logger.info(
                 f"Scheduled poll: fetching up to {max_tickets} tickets updated after {last_time}"
@@ -270,6 +260,7 @@ def on_poll(
     table_name = (
         asset.on_poll_table if asset.on_poll_table else SERVICENOW_DEFAULT_TABLE
     )
+    table_name = table_name.lower()
     table_name = validate_path_segment("on_poll_table", table_name)
     endpoint = TABLE_ENDPOINT.format(table_name)
 

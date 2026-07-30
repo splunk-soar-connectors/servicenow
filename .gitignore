@@ -55,6 +55,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Local live-test credentials
+tests/integration/*.local.json
+
 # Translations
 *.mo
 *.pot

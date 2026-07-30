@@ -45,6 +45,11 @@ output-format = "full"  # <full|concise>
 fix = true
 target-version = "py39"
 
+[tool.pytest.ini_options]
+markers = [
+    "integration: tests that require live ServiceNow credentials",
+]
+
 [tool.ruff.lint]
 select = [
     "ERA",  # commented out code

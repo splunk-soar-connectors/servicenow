@@ -26,11 +26,60 @@ from soar_sdk.auth.client import (
 )
 from soar_sdk.auth.models import OAuthConfig, OAuthToken
 from soar_sdk.logging import getLogger
+from soar_sdk.shims.phantom.encryption_helper import encryption_helper
 
 if TYPE_CHECKING:
     from soar_sdk.asset_state import AssetState
 
 logger = getLogger()
+
+
+def migrate_legacy_oauth_state(asset: Any) -> None:
+    """Seed SDK auth state from legacy flat OAuth token state after upgrade."""
+    auth_state = asset.auth_state
+    current_state = auth_state.get_all()
+
+    current_oauth = current_state.get("oauth")
+    if isinstance(current_oauth, dict) and current_oauth.get("token"):
+        return
+
+    legacy_state = auth_state.backend.load_state() or {}
+    legacy_token = legacy_state.get("oauth_token")
+    if not isinstance(legacy_token, dict):
+        return
+
+    access_token = legacy_token.get("access_token")
+    refresh_token = legacy_token.get("refresh_token")
+
+    if legacy_state.get("is_encrypted"):
+        if access_token:
+            access_token = encryption_helper.decrypt(access_token, auth_state.asset_id)
+        if refresh_token:
+            refresh_token = encryption_helper.decrypt(
+                refresh_token, auth_state.asset_id
+            )
+
+    if not access_token and not refresh_token:
+        return
+
+    sdk_token: dict[str, Any] = {
+        "access_token": access_token or "",
+        "token_type": legacy_token.get("token_type") or "Bearer",
+    }
+
+    if refresh_token:
+        sdk_token["refresh_token"] = refresh_token
+        sdk_token["expires_at"] = 0
+
+    if scope := legacy_token.get("scope"):
+        sdk_token["scope"] = scope
+
+    migrated_state = dict(current_state)
+    migrated_state["oauth"] = {
+        "token": sdk_token,
+        "client_id": asset.client_id,
+    }
+    auth_state.put_all(migrated_state)
 
 
 class ServiceNowOAuthClient(SOARAssetOAuthClient):

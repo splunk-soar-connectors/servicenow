@@ -38,6 +38,7 @@ from .consts import (
 )
 from .oauth_client import (
     create_servicenow_oauth_client,
+    migrate_legacy_oauth_state,
     ServiceNowOAuthClient,
 )
 
@@ -85,6 +86,7 @@ class ServiceNowClient:
 
     def _get_oauth_client(self) -> ServiceNowOAuthClient:
         if self._oauth_client is None:
+            migrate_legacy_oauth_state(self.asset)
             self._oauth_client = create_servicenow_oauth_client(
                 base_url=self._normalize_base_url(),
                 client_id=self.asset.client_id,
