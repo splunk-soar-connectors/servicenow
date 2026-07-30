@@ -23,7 +23,6 @@ from soar_sdk.exceptions import ActionFailure
 from ..app import app, Asset
 from ..consts import SEARCH_SOURCES_ENDPOINT, SEARCH_DEFAULT_PAGE, SEARCH_MAX_LIMIT
 from ..helpers import ServiceNowClient
-from ..output_models import DisplayValueOutput
 
 logger = getLogger()
 
@@ -50,6 +49,11 @@ class FieldsOutput(PermissiveActionOutput):
     name: str | None = OutputField(example_values=["number"])
     reference: str | None = OutputField(example_values=["sys_user_group"])
     type: str | None = OutputField(example_values=["string"])
+
+
+class DisplayValueOutput(PermissiveActionOutput):
+    display: str | None = None
+    value: str | None = None
 
 
 class DataOutput(PermissiveActionOutput):
