@@ -58,6 +58,31 @@ def validate_path_segment(name: str, value: object) -> str:
     return str(value)
 
 
+def validate_positive_integer(name: str, value: Optional[object], default: int) -> int:
+    if value is None:
+        return default
+
+    try:
+        if not float(value).is_integer():
+            raise ValueError
+        integer_value = int(value)
+    except (TypeError, ValueError) as e:
+        raise ActionFailure(
+            f"Please provide a valid integer value in the {name} parameter"
+        ) from e
+
+    if integer_value < 0:
+        raise ActionFailure(
+            f"Please provide a valid non-negative integer value in the {name} parameter"
+        )
+    if integer_value == 0:
+        raise ActionFailure(
+            f"Please provide a positive integer value in the {name} parameter"
+        )
+
+    return integer_value
+
+
 class ServiceNowClient:
     """Client for ServiceNow API operations."""
 

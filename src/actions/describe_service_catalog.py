@@ -23,7 +23,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import SC_CATALOG_ENDPOINT, SC_CATEGORY_ENDPOINT, DEFAULT_MAX_LIMIT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_positive_integer
 
 logger = getLogger()
 
@@ -265,7 +265,9 @@ def describe_service_catalog(
     logger.debug(f"Found {len(categories)} categories")
 
     # 3. Fetch items for this catalog
-    limit = params.max_results if params.max_results else DEFAULT_MAX_LIMIT
+    limit = validate_positive_integer(
+        "max_results", params.max_results, DEFAULT_MAX_LIMIT
+    )
     logger.debug(f"Fetching up to {limit} catalog items")
 
     items = helper.fetch_catalog_items(

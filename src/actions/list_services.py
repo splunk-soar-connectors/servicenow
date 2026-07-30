@@ -21,7 +21,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_positive_integer
 
 logger = getLogger()
 
@@ -167,7 +167,9 @@ def list_services(
     helper = ServiceNowClient(asset)
 
     # Get the limit from parameters
-    limit = params.max_results if params.max_results else DEFAULT_MAX_LIMIT
+    limit = validate_positive_integer(
+        "max_results", params.max_results, DEFAULT_MAX_LIMIT
+    )
 
     # Use helper function to fetch catalog items
     services = helper.fetch_catalog_items(

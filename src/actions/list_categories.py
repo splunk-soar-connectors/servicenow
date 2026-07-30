@@ -21,7 +21,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import SC_CATEGORY_ENDPOINT, DEFAULT_MAX_LIMIT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_positive_integer
 
 logger = getLogger()
 
@@ -107,7 +107,9 @@ def list_categories(
 
     helper = ServiceNowClient(asset)
 
-    limit = params.max_results if params.max_results else DEFAULT_MAX_LIMIT
+    limit = validate_positive_integer(
+        "max_results", params.max_results, DEFAULT_MAX_LIMIT
+    )
 
     logger.debug(f"Fetching categories from endpoint: {SC_CATEGORY_ENDPOINT}")
     service_categories = helper.paginator(SC_CATEGORY_ENDPOINT, limit=limit)

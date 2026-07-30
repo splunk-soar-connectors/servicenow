@@ -21,7 +21,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import SC_CATALOG_ENDPOINT, DEFAULT_MAX_LIMIT
-from ..helpers import ServiceNowClient
+from ..helpers import ServiceNowClient, validate_positive_integer
 
 logger = getLogger()
 
@@ -93,7 +93,9 @@ def list_service_catalogs(
     logger.progress(f"Listing service catalogs with max_results: {params.max_results}")
 
     helper = ServiceNowClient(asset)
-    limit = params.max_results if params.max_results else DEFAULT_MAX_LIMIT
+    limit = validate_positive_integer(
+        "max_results", params.max_results, DEFAULT_MAX_LIMIT
+    )
 
     service_catalogs = helper.paginator(SC_CATALOG_ENDPOINT, limit=limit)
     if not service_catalogs:
