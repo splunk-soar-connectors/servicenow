@@ -458,11 +458,12 @@ class ServicenowConnector(BaseConnector):
 
         try:
             r = requests.post(
-                f"{self._base_url}{self._api_uri}{endpoint}",  # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
+                f"{self._base_url}{self._api_uri}{endpoint}",
                 auth=auth,
                 data=data,
                 headers=headers,
                 params=params,
+                timeout=SERVICENOW_DEFAULT_REQUEST_TIMEOUT,
             )
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
@@ -478,7 +479,7 @@ class ServicenowConnector(BaseConnector):
 
         try:
             request_url = "{}{}".format(self._base_url, "/oauth_token.do")
-            r = requests.post(request_url, data=data)  # nosemgrep
+            r = requests.post(request_url, data=data, timeout=SERVICENOW_DEFAULT_REQUEST_TIMEOUT)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             return (
@@ -504,7 +505,14 @@ class ServicenowConnector(BaseConnector):
             action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_API_UNSUPPORTED_METHOD, method=method)
 
         try:
-            r = request_func(f"{self._base_url}{self._api_uri}{endpoint}", auth=auth, json=data, headers=headers, params=params)
+            r = request_func(
+                f"{self._base_url}{self._api_uri}{endpoint}",
+                auth=auth,
+                json=data,
+                headers=headers,
+                params=params,
+                timeout=SERVICENOW_DEFAULT_REQUEST_TIMEOUT,
+            )
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             return (
