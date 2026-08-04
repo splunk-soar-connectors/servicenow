@@ -317,8 +317,8 @@ class ServicenowConnector(BaseConnector):
         # Initialize the default error_details
         error_details = {"message": "Not Found", "detail": "Not supplied"}
 
-        # Handle if resp_json unavailable
-        if not resp_json:
+        # Error responses are expected to be JSON objects.
+        if not isinstance(resp_json, dict):
             return error_details
 
         # Handle if resp_json contains "error" key and corresponding non-none and non-empty value or not
@@ -405,7 +405,7 @@ class ServicenowConnector(BaseConnector):
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         if r.status_code == 401 and self._try_oauth:
-            if resp_json.get("error") == "invalid_token":
+            if isinstance(resp_json, dict) and resp_json.get("error") == "invalid_token":
                 raise UnauthorizedOAuthTokenException
 
         if r.status_code != requests.codes.ok:  # pylint: disable=E1101
