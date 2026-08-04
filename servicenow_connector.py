@@ -1773,7 +1773,7 @@ class ServicenowConnector(BaseConnector):
         return checkpoint
 
     def _on_poll(self, param):
-        URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\\x00-\\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+        URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#~]|[!*\\(\\),]|[^\\x00-\\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
         HASH_REGEX = "\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b"
         IP_REGEX = "(?<![0-9A-Za-z_.-])\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(?![0-9A-Za-z_.-])"
         IPV6_REGEX = "(?<![0-9A-Za-z:])((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
