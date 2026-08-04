@@ -591,8 +591,16 @@ class ServicenowConnector(BaseConnector):
             self._access_token, self._refresh_token = None, None
             return RetVal(action_result.set_status(phantom.APP_ERROR, f"Error in token request. Error: {error_message}"), None)
 
-        self._access_token = response_json[SERVICENOW_ACCESS_TOKEN_STRING]
-        self._refresh_token = response_json[SERVICENOW_REFRESH_TOKEN_STRING]
+        if not isinstance(response_json, dict):
+            self._access_token, self._refresh_token = None, None
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Token endpoint returned a non-object JSON response"), None)
+
+        self._access_token = response_json.get(SERVICENOW_ACCESS_TOKEN_STRING)
+        self._refresh_token = response_json.get(SERVICENOW_REFRESH_TOKEN_STRING)
+        if not self._access_token or not self._refresh_token:
+            self._access_token, self._refresh_token = None, None
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Token endpoint response is missing required tokens"), None)
+
         self._state["oauth_token"] = response_json
         self._state["retrieval_time"] = datetime.now().strftime(DT_STR_FORMAT)
 
