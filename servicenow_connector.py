@@ -23,7 +23,6 @@ try:
 except:
     pass
 import ast
-import codecs
 import ipaddress
 import json
 import re
@@ -738,11 +737,10 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_ONE_PARAM_REQ)
 
         if short_desc:
-            data.update({"short_description": codecs.decode(short_desc, "unicode_escape")})
+            data.update({"short_description": short_desc})
 
         if desc:
-            json_description = codecs.decode(desc, "unicode_escape")
-            data.update({"description": f"{json_description}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
+            data.update({"description": f"{desc}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
         elif "description" in fields:
             field_description = fields.get(SERVICENOW_JSON_DESCRIPTION, "")
             data.update({"description": f"{field_description}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
@@ -1335,7 +1333,7 @@ class ServicenowConnector(BaseConnector):
         work_note = param.get("work_note")
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
-        data = {"work_notes": work_note.replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"').replace("\\b", "\b")}
+        data = {"work_notes": work_note}
 
         request_params = {}
         request_params["sysparm_display_value"] = True
@@ -1477,7 +1475,7 @@ class ServicenowConnector(BaseConnector):
 
         comment = param.get("comment")
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
-        data = {"comments": comment.replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"').replace("\\b", "\b")}
+        data = {"comments": comment}
 
         request_params = {}
         request_params["sysparm_display_value"] = True
