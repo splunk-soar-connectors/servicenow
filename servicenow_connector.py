@@ -532,9 +532,11 @@ class ServicenowConnector(BaseConnector):
             self.debug_print("UnauthorizedOAuthTokenException")
             if self._try_oauth:
                 self._try_oauth = False
-                ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
+                ret_val, auth, refreshed_headers = self._get_authorization_credentials(action_result, force_new=True)
                 if phantom.is_fail(ret_val):
                     return RetVal(phantom.APP_ERROR, None)
+                headers = dict(headers)
+                headers.update(refreshed_headers)
                 return self._make_rest_call_helper(action_result, endpoint, params=params, data=data, headers=headers, method=method, auth=auth)
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
 
@@ -547,9 +549,11 @@ class ServicenowConnector(BaseConnector):
             self.debug_print("UnauthorizedOAuthTokenException")
             if self._try_oauth:
                 self._try_oauth = False
-                ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
+                ret_val, auth, refreshed_headers = self._get_authorization_credentials(action_result, force_new=True)
                 if phantom.is_fail(ret_val):
                     return RetVal(phantom.APP_ERROR, None)
+                headers = dict(headers)
+                headers.update(refreshed_headers)
                 return self._upload_file_helper(action_result, endpoint, params=params, data=data, headers=headers, auth=auth)
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
 

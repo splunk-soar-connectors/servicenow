@@ -6,3 +6,4 @@
 * Preserves RFC-valid tildes when extracting URL artifacts from polled tickets.
 * Adds a 30-second timeout to upstream ServiceNow API, OAuth, and attachment requests.
 * Handles malformed ServiceNow OAuth token responses without crashing connector actions.
+* Preserves attachment content types when OAuth authorization is refreshed during upload retries.
