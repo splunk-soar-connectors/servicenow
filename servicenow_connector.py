@@ -825,17 +825,20 @@ class ServicenowConnector(BaseConnector):
             return RetVal(phantom.APP_SUCCESS, {})
 
         try:
-            fields = ast.literal_eval(fields)
-        except Exception as e:
-            error_message = self._get_error_message_from_exception(e)
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    f"Error building fields dictionary: {error_message}. \
-                        Please ensure that provided input is in valid JSON format",
-                ),
-                None,
-            )
+            fields = json.loads(fields)
+        except json.JSONDecodeError:
+            try:
+                fields = ast.literal_eval(fields)
+            except Exception as e:
+                error_message = self._get_error_message_from_exception(e)
+                return RetVal(
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        f"Error building fields dictionary: {error_message}. \
+                            Please ensure that provided input is in valid JSON format",
+                    ),
+                    None,
+                )
 
         if not isinstance(fields, dict):
             return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)

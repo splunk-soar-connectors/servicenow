@@ -7,3 +7,4 @@
 * Adds a 30-second timeout to upstream ServiceNow API, OAuth, and attachment requests.
 * Handles malformed ServiceNow OAuth token responses without crashing connector actions.
 * Preserves attachment content types when OAuth authorization is refreshed during upload retries.
+* Accepts JSON boolean and null values in create-ticket and update-ticket fields.
