@@ -1758,6 +1758,20 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _sanitize_checkpoint_time(self, checkpoint, timezone_name=None):
+        try:
+            checkpoint_time = datetime.strptime(checkpoint, SERVICENOW_DATETIME_FORMAT)
+        except (TypeError, ValueError):
+            return None
+
+        checkpoint_timezone = ZoneInfo(timezone_name) if timezone_name else timezone.utc
+        checkpoint_time = checkpoint_time.replace(tzinfo=checkpoint_timezone)
+        current_time = datetime.now(checkpoint_timezone)
+        if checkpoint_time > current_time:
+            self.debug_print(f"ServiceNow checkpoint {checkpoint} is in the future; clamping it to the current time")
+            return current_time.strftime(SERVICENOW_DATETIME_FORMAT)
+        return checkpoint
+
     def _on_poll(self, param):
         URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\\x00-\\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
         HASH_REGEX = "\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b"
@@ -1815,6 +1829,14 @@ class ServicenowConnector(BaseConnector):
 
         if last_time and isinstance(last_time, float):
             last_time = datetime.fromtimestamp(last_time, timezone.utc).strftime(SERVICENOW_DATETIME_FORMAT)
+
+        if last_time:
+            sanitized_last_time = self._sanitize_checkpoint_time(last_time, config.get("timezone"))
+            if sanitized_last_time is None:
+                self._state.pop("last_time", None)
+            elif sanitized_last_time != last_time:
+                self._state["last_time"] = sanitized_last_time
+            last_time = sanitized_last_time
 
         # Build the query for the issue search (sysparm_query)
         query = "ORDERBYsys_updated_on"
@@ -1971,7 +1993,9 @@ class ServicenowConnector(BaseConnector):
                 if last_persisted_updated_on is None:
                     return action_result.set_status(phantom.APP_ERROR, "No updated time in last ingested incident.")
 
-                updated_time = last_persisted_updated_on
+                updated_time = self._sanitize_checkpoint_time(last_persisted_updated_on)
+                if updated_time is None:
+                    return action_result.set_status(phantom.APP_ERROR, "Invalid updated time in last ingested incident.")
 
                 if config.get("timezone"):
                     dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT).replace(tzinfo=timezone.utc)
