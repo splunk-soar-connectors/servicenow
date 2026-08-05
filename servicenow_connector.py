@@ -165,6 +165,29 @@ class ServicenowConnector(BaseConnector):
             return [ServicenowConnector._strip_format_controls(item) for item in value]
         return value
 
+    def _prepare_oauth_state(self):
+        previous_grant_type = self._state.get(SERVICENOW_STATE_OAUTH_GRANT_TYPE)
+        previous_client_id = self._state.get(SERVICENOW_STATE_OAUTH_CLIENT_ID)
+        oauth_configuration_changed = (previous_grant_type is not None and previous_grant_type != self._oauth_grant_type) or (
+            previous_client_id is not None and previous_client_id != self._client_id
+        )
+
+        # Older app versions did not record the grant type. Discard their token state
+        # when client credentials is selected so a password-flow refresh token cannot
+        # choose the wrong OAuth flow after an upgrade.
+        legacy_state_with_client_credentials = (
+            previous_grant_type is None
+            and self._oauth_grant_type == SERVICENOW_OAUTH_GRANT_TYPE_CLIENT_CREDENTIALS
+            and SERVICENOW_TOKEN_STRING in self._state
+        )
+        if oauth_configuration_changed or legacy_state_with_client_credentials:
+            self._state.pop(SERVICENOW_TOKEN_STRING, None)
+            self._state.pop(SERVICENOW_STATE_IS_ENCRYPTED, None)
+            self._state.pop("retrieval_time", None)
+
+        self._state[SERVICENOW_STATE_OAUTH_GRANT_TYPE] = self._oauth_grant_type
+        self._state[SERVICENOW_STATE_OAUTH_CLIENT_ID] = self._client_id
+
     def initialize(self):
         # Load all the asset configuration in global variables
         self._state = self.load_state()
@@ -205,6 +228,15 @@ class ServicenowConnector(BaseConnector):
 
         self._client_id = config.get(SERVICENOW_JSON_CLIENT_ID, None)
         if self._client_id:
+            self._oauth_grant_type = config.get(
+                SERVICENOW_JSON_OAUTH_GRANT_TYPE,
+                SERVICENOW_OAUTH_GRANT_TYPE_PASSWORD,
+            )
+            if self._oauth_grant_type not in SERVICENOW_OAUTH_GRANT_TYPES:
+                return self.set_status(
+                    phantom.APP_ERROR,
+                    f"Unsupported OAuth grant type: {self._oauth_grant_type}",
+                )
             try:
                 self._client_secret = config[SERVICENOW_JSON_CLIENT_SECRET]
                 self._use_token = True
@@ -212,6 +244,7 @@ class ServicenowConnector(BaseConnector):
                 self.save_progress("Missing Client Secret")
                 return phantom.APP_ERROR
         if self._use_token:
+            self._prepare_oauth_state()
             self._access_token = self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_ACCESS_TOKEN_STRING)
             self._refresh_token = self._state.get(SERVICENOW_TOKEN_STRING, {}).get(SERVICENOW_REFRESH_TOKEN_STRING)
             if self._state.get(SERVICENOW_STATE_IS_ENCRYPTED):
@@ -558,11 +591,14 @@ class ServicenowConnector(BaseConnector):
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
 
     def _get_new_oauth_token(self, action_result, first_try=True):
-        """Generate a new oauth token using the refresh token, if available"""
-        params = {}
-        params["client_id"] = self._client_id
-        params["client_secret"] = self._client_secret
-        if self._refresh_token:
+        """Generate an OAuth token using the configured grant type."""
+        params = {
+            "client_id": self._client_id,
+            "client_secret": self._client_secret,
+        }
+        if self._oauth_grant_type == SERVICENOW_OAUTH_GRANT_TYPE_CLIENT_CREDENTIALS:
+            params["grant_type"] = SERVICENOW_OAUTH_GRANT_TYPE_CLIENT_CREDENTIALS
+        elif self._refresh_token:
             params["refresh_token"] = self._refresh_token
             params["grant_type"] = "refresh_token"
         else:
@@ -571,7 +607,7 @@ class ServicenowConnector(BaseConnector):
             if config.get(SERVICENOW_JSON_USERNAME) and config.get(SERVICENOW_JSON_PASSWORD):
                 params["username"] = config[SERVICENOW_JSON_USERNAME]
                 params["password"] = config[SERVICENOW_JSON_PASSWORD]
-                params["grant_type"] = "password"
+                params["grant_type"] = SERVICENOW_OAUTH_GRANT_TYPE_PASSWORD
             else:
                 return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_BASIC_AUTH_NOT_GIVEN_FIRST_TIME), None)
 
@@ -588,6 +624,7 @@ class ServicenowConnector(BaseConnector):
                 self._state = {}
 
             # Try again, using a password
+            self._refresh_token = None
             return self._get_new_oauth_token(action_result, first_try=False)
 
         if phantom.is_fail(ret_val):
@@ -601,7 +638,8 @@ class ServicenowConnector(BaseConnector):
 
         self._access_token = response_json.get(SERVICENOW_ACCESS_TOKEN_STRING)
         self._refresh_token = response_json.get(SERVICENOW_REFRESH_TOKEN_STRING)
-        if not self._access_token or not self._refresh_token:
+        refresh_token_required = params["grant_type"] != SERVICENOW_OAUTH_GRANT_TYPE_CLIENT_CREDENTIALS
+        if not self._access_token or (refresh_token_required and not self._refresh_token):
             self._access_token, self._refresh_token = None, None
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Token endpoint response is missing required tokens"), None)
 

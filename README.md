@@ -92,15 +92,12 @@ This app integrates with ServiceNow to perform investigative and generic actions
 
   - **Case 1: If Client ID & Client Secret are provided:**
 
-    - Step1: While running the test connectivity, the system will check if the refresh token
-      is present or not in the state file.
-    - Step2(a): If a refresh token is present then the system will make the API call to fetch
-      a new token. Using new token the test connectivity will get passed.
-    - Step2(b): If the refresh token is not present then the system will check for the
-      Username and Password. Using Username & Password system will make an API call to fetch a
-      new token and test connectivity will get passed.
-    - Step3: If the refresh token is not present and Username and Password are not provided
-      then the system will return an error and the action will fail.
+    - Step1: The system will use the OAuth grant type selected in the asset configuration.
+    - Step2(a): For the password grant, the system will use a stored refresh token when one is
+      available. Otherwise, it will use the configured Username and Password to fetch a new
+      access and refresh token.
+    - Step2(b): For the client credentials grant, the system will use the Client ID and Client
+      Secret to fetch a new access token. Username, Password, and refresh tokens are not used.
 
   - **Case 2: If Client ID & Client Secret are not provided:**
 
@@ -138,6 +135,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **on_poll_filter** | optional | string | Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name) |
 **client_id** | optional | string | Client ID. OAuth will be preferred if provided |
 **client_secret** | optional | password | Client Secret. Required with Client ID |
+**oauth_grant_type** | optional | string | OAuth grant type. Password requires username and password; client_credentials uses only the client ID and client secret (Default: password) |
 **password** | optional | password | Password |
 **first_run_container** | optional | numeric | Max container (For first run of schedule polling) |
 **max_container** | optional | numeric | Max container (For other runs of schedule polling) |
