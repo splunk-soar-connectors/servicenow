@@ -38,12 +38,12 @@
             "description": "Device URL including the port, e.g. https://myservicenow.enterprise.com:8080"
         },
         "on_poll_table": {
-            "order": 6,
+            "order": 7,
             "data_type": "string",
             "description": "Table to ingest issues from"
         },
         "on_poll_filter": {
-            "order": 7,
+            "order": 8,
             "data_type": "string",
             "description": "Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name)"
         },
@@ -57,25 +57,35 @@
             "data_type": "password",
             "description": "Client Secret. Required with Client ID"
         },
+        "oauth_grant_type": {
+            "order": 6,
+            "data_type": "string",
+            "description": "OAuth grant type. Password requires username and password; client_credentials uses only the client ID and client secret",
+            "default": "password",
+            "value_list": [
+                "password",
+                "client_credentials"
+            ]
+        },
         "password": {
             "order": 3,
             "data_type": "password",
             "description": "Password"
         },
         "first_run_container": {
-            "order": 8,
+            "order": 9,
             "data_type": "numeric",
             "description": "Max container (For first run of schedule polling)",
             "default": 10000
         },
         "max_container": {
-            "order": 9,
+            "order": 10,
             "data_type": "numeric",
             "description": "Max container (For other runs of schedule polling)",
             "default": 100
         },
         "severity": {
-            "order": 10,
+            "order": 11,
             "description": "Severity to apply to Containers and Artifacts ingested via On Poll (Automation user must have System Settings permissions)",
             "data_type": "string"
         }
