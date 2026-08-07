@@ -29,12 +29,14 @@ from soar_sdk.logging import getLogger
 
 from .consts import (
     API_URI,
+    BASIC_AUTH_TYPE,
     DEFAULT_OFFSET,
     DEFAULT_LIMIT,
     MAX_PAGES,
     SC_CAT_ITEMS_ENDPOINT,
     TABLE_ENDPOINT,
     TicketNotFoundException,
+    PASSWORD_GRANT_AUTH_TYPE,
 )
 from .oauth_client import (
     create_servicenow_oauth_client,
@@ -63,19 +65,18 @@ def validate_positive_integer(name: str, value: Optional[object], default: int) 
         return default
 
     try:
-        if not float(value).is_integer():
-            raise ValueError
         integer_value = int(value)
     except (TypeError, ValueError) as e:
         raise ActionFailure(
             f"Please provide a valid integer value in the {name} parameter"
         ) from e
 
-    if integer_value < 0:
+    if integer_value != value and not isinstance(value, str):
         raise ActionFailure(
-            f"Please provide a valid non-negative integer value in the {name} parameter"
+            f"Please provide a valid integer value in the {name} parameter"
         )
-    if integer_value == 0:
+
+    if integer_value <= 0:
         raise ActionFailure(
             f"Please provide a positive integer value in the {name} parameter"
         )
@@ -111,7 +112,10 @@ class ServiceNowClient:
 
     def _get_oauth_client(self) -> ServiceNowOAuthClient:
         if self._oauth_client is None:
-            migrate_legacy_oauth_state(self.asset)
+            oauth_grant_type = getattr(
+                self.asset, "oauth_grant_type", PASSWORD_GRANT_AUTH_TYPE
+            )
+            migrate_legacy_oauth_state(self.asset, oauth_grant_type)
             self._oauth_client = create_servicenow_oauth_client(
                 base_url=self._normalize_base_url(),
                 client_id=self.asset.client_id,
@@ -119,6 +123,7 @@ class ServiceNowClient:
                 auth_state=self.asset.auth_state,
                 username=self.asset.username or None,
                 password=self.asset.password or None,
+                grant_type=oauth_grant_type,
                 verify_ssl=self.verify_ssl,
                 timeout=self.timeout,
             )
@@ -134,15 +139,29 @@ class ServiceNowClient:
         client_secret = self.asset.client_secret
         username = self.asset.username
         password = self.asset.password
+        auth_type = getattr(self.asset, "oauth_grant_type", PASSWORD_GRANT_AUTH_TYPE)
+
+        if auth_type == BASIC_AUTH_TYPE:
+            if username and password:
+                logger.info("Using Basic Auth authentication")
+                return BasicAuth(username, password)
+            raise ActionFailure(
+                "Basic Auth requires username and password. Provide both values or "
+                "select an OAuth authentication type."
+            )
 
         if client_id or client_secret:
             if not client_id:
-                raise ValueError(
-                    "client_id is required when client_secret is configured"
+                raise ActionFailure(
+                    "OAuth configuration is incomplete: client_id is required when "
+                    "client_secret is configured. To use Basic Auth, select basic_auth "
+                    "as the authentication type."
                 )
             if not client_secret:
-                raise ValueError(
-                    "client_secret is required when client_id is configured"
+                raise ActionFailure(
+                    "OAuth configuration is incomplete: client_secret is required when "
+                    "client_id is configured. To use Basic Auth, select basic_auth as "
+                    "the authentication type."
                 )
             logger.info("Using OAuth authentication")
             return OAuthBearerAuth(self._get_oauth_client(), auto_refresh=True)
@@ -151,7 +170,7 @@ class ServiceNowClient:
             logger.info("Using Basic Auth authentication")
             return BasicAuth(username, password)
 
-        raise ValueError(
+        raise ActionFailure(
             "Authentication credentials required. Provide either: "
             "(1) client_id and client_secret for OAuth, or "
             "(2) username and password for Basic Auth"
@@ -251,6 +270,8 @@ class ServiceNowClient:
                     params=params,
                 )
             self._response_headers = dict(response.headers)
+        except ActionFailure:
+            raise
         except httpx.RequestError as e:
             raise ActionFailure(f"Error connecting to server: {e}") from e
         except Exception as e:

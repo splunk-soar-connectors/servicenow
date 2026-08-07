@@ -275,11 +275,7 @@ class GetTicketSummary(ActionOutput):
 def get_ticket(
     params: GetTicketParams, soar: SOARClient[GetTicketSummary], asset: Asset
 ) -> GetTicketOutput:
-    """Get ticket/record information from ServiceNow.
-
-    This action retrieves detailed information about a ticket/record including
-    attachments, comments, and work notes.
-    """
+    """Get a ServiceNow record with attachments, comments, and work notes."""
     table_name = validate_path_segment("table", params.table)
     ticket_id = params.id
     is_sys_id = params.is_sys_id or False
@@ -288,12 +284,12 @@ def get_ticket(
         f"Getting ticket from table '{table_name}', id='{ticket_id}', is_sys_id={is_sys_id}"
     )
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     sys_id = ticket_id
     if not is_sys_id:
         try:
-            sys_id = helper.get_sys_id_from_ticket_number(
+            sys_id = client.get_sys_id_from_ticket_number(
                 table_name=table_name,
                 ticket_number=ticket_id,
             )
@@ -308,7 +304,7 @@ def get_ticket(
     )
     sys_id = validate_path_segment("sys_id", sys_id)
     endpoint = f"/table/{table_name}/{sys_id}"
-    response = helper.make_rest_call(endpoint=endpoint)
+    response = client.make_rest_call(endpoint=endpoint)
 
     if not response.get("result"):
         # Use legacy error message for invalid/missing ticket
@@ -322,7 +318,7 @@ def get_ticket(
     logger.debug(f"Fetching attachments for ticket sys_id '{ticket_sys_id}'")
     attachment_params = {"sysparm_query": f"table_sys_id={ticket_sys_id}"}
     try:
-        attach_response = helper.make_rest_call(
+        attach_response = client.make_rest_call(
             endpoint="/attachment",
             params=attachment_params,
         )
@@ -353,7 +349,7 @@ def get_ticket(
     journal_response = {}
 
     try:
-        journal_response = helper.make_rest_call(
+        journal_response = client.make_rest_call(
             endpoint="/table/sys_journal_field",
             params=journal_params,
         )
@@ -383,7 +379,6 @@ def get_ticket(
     ticket["comments_section"] = comments_section
     ticket["worknotes_section"] = worknotes_section
 
-    # Set summary and message
     ticket_number = ticket.get("number", ticket_sys_id)
     soar.set_summary(GetTicketSummary(queried_ticket_id=ticket_sys_id))
     soar.set_message(f"Successfully retrieved ticket {ticket_number}")

@@ -116,6 +116,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **on_poll_filter** | optional | string | Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name) |
 **client_id** | optional | string | Client ID. OAuth will be preferred if provided |
 **client_secret** | optional | password | Client Secret. Required with Client ID |
+**oauth_grant_type** | optional | string | Authentication type. Basic Auth uses username and password; password_grant and client_credentials use OAuth |
 **password** | optional | password | Password |
 **first_run_container** | optional | numeric | Max container (For first run of schedule polling) |
 **max_container** | optional | numeric | Max container (For other runs of schedule polling) |
@@ -138,26 +139,13 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 [list services](#action-list-services) - Get a list of items <br>
 [list tickets](#action-list-tickets) - Get a list of tickets/records <br>
 [make request](#action-make-request) - Execute an arbitrary HTTP request against the ServiceNow instance. <br>
-[on poll](#action-on-poll) - Scheduled and manual ingestion of ServiceNow records into Splunk SOAR containers.
-
-Fetches tickets/records from ServiceNow, creates containers, and extracts artifacts
-including optional IOCs (IPs, hashes, URLs).
-
-Yields Container and Artifact objects. The SDK handles creation automatically.
-When a Container is yielded first, subsequent Artifacts without a container_id
-will be automatically associated with that container. <br>
+[on poll](#action-on-poll) - Ingest ServiceNow records as SOAR containers and optional IOC artifacts. <br>
 [query users](#action-query-users) - Gets user data according to the specified query, username, or system ID <br>
 [request catalog item](#action-request-catalog-item) - Requests a catalog item <br>
 [run query](#action-run-query) - Gets object data according to the specified query <br>
 [search sources](#action-search-sources) - Search for records across multiple tables <br>
-[test connectivity](#action-test-connectivity) - Test connectivity to ServiceNow instance by querying a single incident
-
-This validates:
-
-- Network connectivity to ServiceNow
-- Authentication credentials (OAuth or Basic Auth)
-- API access permissions <br>
-  [update ticket](#action-update-ticket) - Update ticket/record information
+[test connectivity](#action-test-connectivity) - Test ServiceNow connectivity by querying a single incident. <br>
+[update ticket](#action-update-ticket) - Update ticket/record information
 
 ## action: 'add comment'
 
@@ -708,14 +696,6 @@ action_result.data.\*.categories.\*.sys_id | string | `servicenow category sys i
 action_result.data.\*.categories.\*.title | string | | Can We Help You? |
 action_result.data.\*.category.sys_id | string | `servicenow category sys id` `md5` | |
 action_result.data.\*.category.title | string | | Can We Help You? |
-action_result.data.\*.client_script.onLoad.\*.appliesTo | string | | item |
-action_result.data.\*.client_script.onLoad.\*.condition | string | | |
-action_result.data.\*.client_script.onLoad.\*.fieldName | string | | |
-action_result.data.\*.client_script.onLoad.\*.script | string | | function onLoad() {<br> var stdChangeProducerSysId = getParmVal('std_change_producer');<br> if (stdChangeProducerSysId) {<br> g_form.setValue('variables.std_change_producer', stdChangeProducerSysId);<br> }<br>}<br>function getParmVal(name) {<br>name = name.replace(/\[\\[]/, "\\\\\\\[").replace(/[\\]\]/, "\\\\\\\]");<br> var regexS = "[\\\\?&]" + name + "=([^&#]\*)";<br> var regex = new RegExp(regexS);<br> var results = regex.exec(window.location.href);<br> if (results) {<br> return unescape(results[1]);<br> } else {<br> return '';<br> }<br>}<br> |
-action_result.data.\*.client_script.onLoad.\*.sys_id | string | | |
-action_result.data.\*.client_script.onLoad.\*.type | string | | onLoad |
-action_result.data.\*.client_script.onLoad.\*.ui_type | string | | Desktop |
-action_result.data.\*.client_script.onLoad.\*.variable_set | string | | |
 action_result.data.\*.content_type | string | | |
 action_result.data.\*.description | string | | <p>Here you can request a new Knowledge Base to be used. A Knowledge Base can be used to store Knowledge in an organization and anyone can request for a new one to be created.</p> |
 action_result.data.\*.icon | string | | images/icons/catalog_item.gifx |
@@ -1462,7 +1442,7 @@ Read only: **False**
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **http_method** | optional | The HTTP method to use for the request. | string | |
-**endpoint** | required | ServiceNow API endpoint path appended to the base URL. Do not include the base URL itself. Examples: '/api/now/table/incident', '/api/sn_sc/servicecatalog/items/{sys_id}', '/api/now/table/sys_user?sysparm_query=user_name=admin'. | string | |
+**endpoint** | required | ServiceNow API endpoint path appended to the base URL. Do not include the base URL itself. Examples: '/api/now/table/incident' | string | |
 **headers** | optional | The headers to send with the request (JSON object). An example is {'Content-Type': 'application/json'} | string | |
 **query_parameters** | optional | Parameters to append to the URL (JSON object or query string). An example is ?key=value&key2=value2 | string | |
 **body** | optional | The request body to send. When Content-Type contains 'json', this must be a JSON object. For other content types, the body is sent as raw text. | string | |
@@ -1489,14 +1469,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 ## action: 'on poll'
 
-Scheduled and manual ingestion of ServiceNow records into Splunk SOAR containers.
-
-Fetches tickets/records from ServiceNow, creates containers, and extracts artifacts
-including optional IOCs (IPs, hashes, URLs).
-
-Yields Container and Artifact objects. The SDK handles creation automatically.
-When a Container is yielded first, subsequent Artifacts without a container_id
-will be automatically associated with that container.
+Ingest ServiceNow records as SOAR containers and optional IOC artifacts.
 
 Type: **ingest** <br>
 Read only: **True**
@@ -1895,13 +1868,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 ## action: 'test connectivity'
 
-Test connectivity to ServiceNow instance by querying a single incident
-
-This validates:
-
-- Network connectivity to ServiceNow
-- Authentication credentials (OAuth or Basic Auth)
-- API access permissions
+Test ServiceNow connectivity by querying a single incident.
 
 Type: **test** <br>
 Read only: **True**

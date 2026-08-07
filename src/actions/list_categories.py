@@ -105,14 +105,14 @@ def list_categories(
     """List service categories from ServiceNow"""
     logger.info(f"Listing categories with max_results: {params.max_results}")
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     limit = validate_positive_integer(
         "max_results", params.max_results, DEFAULT_MAX_LIMIT
     )
 
     logger.debug(f"Fetching categories from endpoint: {SC_CATEGORY_ENDPOINT}")
-    service_categories = helper.paginator(SC_CATEGORY_ENDPOINT, limit=limit)
+    service_categories = client.paginator(SC_CATEGORY_ENDPOINT, limit=limit)
 
     if not service_categories:
         logger.info("No categories found")
@@ -122,9 +122,7 @@ def list_categories(
 
     logger.info(f"Successfully retrieved {len(service_categories)} categories")
 
-    # Set summary and message
     soar.set_summary(ListCategoriesSummary(categories_returned=len(service_categories)))
     soar.set_message(f"Successfully retrieved {len(service_categories)} categories")
 
-    # Convert raw data to CategoryOutput objects and wrap in response
     return [CategoryOutput(**cat) for cat in service_categories]

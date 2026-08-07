@@ -86,7 +86,7 @@ def get_variables(
     """
     logger.info(f"Getting variables for request item sys_id: {params.sys_id}")
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     # Step 1: Query sc_item_option_mtom table
     endpoint = TABLE_ENDPOINT.format(ITEM_OPT_MTOM_TABLE)
@@ -98,7 +98,7 @@ def get_variables(
     logger.debug(f"Querying {endpoint} with params: {request_params}")
 
     try:
-        response = helper.make_rest_call(
+        response = client.make_rest_call(
             endpoint=endpoint,
             params=request_params,
         )
@@ -127,7 +127,7 @@ def get_variables(
 
         # Fetch variable value and question ID from sc_item_option table
         variable_value, question_id = _fetch_variable_details(
-            helper=helper,
+            client=client,
             item_option_value=item_option_value,
             sys_id=params.sys_id,
         )
@@ -135,7 +135,7 @@ def get_variables(
         # Fetch question text from item_option_new table (if question_id is not empty)
         if question_id:
             question_text = _fetch_question_text(
-                helper=helper,
+                client=client,
                 question_id=question_id,
                 item_option_value=item_option_value,
                 sys_id=params.sys_id,
@@ -163,7 +163,7 @@ def _extract_reference_value(reference: Any) -> str:
 
 
 def _fetch_variable_details(
-    helper: ServiceNowClient,
+    client: ServiceNowClient,
     item_option_value: str,
     sys_id: str,
 ) -> tuple[str, str]:
@@ -173,7 +173,7 @@ def _fetch_variable_details(
     logger.debug(f"Fetching variable details from: {endpoint}")
 
     try:
-        response = helper.make_rest_call(
+        response = client.make_rest_call(
             endpoint=endpoint,
             params={"sysparm_display_value": "all"},
         )
@@ -214,7 +214,7 @@ def _fetch_variable_details(
 
 
 def _fetch_question_text(
-    helper: ServiceNowClient,
+    client: ServiceNowClient,
     question_id: str,
     item_option_value: str,
     sys_id: str,
@@ -225,7 +225,7 @@ def _fetch_question_text(
     logger.debug(f"Fetching question text from: {endpoint}")
 
     try:
-        response = helper.make_rest_call(endpoint=endpoint)
+        response = client.make_rest_call(endpoint=endpoint)
     except Exception as e:
         raise ActionFailure(f"Failed to fetch question text: {e}") from e
 

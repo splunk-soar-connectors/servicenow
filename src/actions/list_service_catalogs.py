@@ -92,12 +92,12 @@ def list_service_catalogs(
     """List service catalogs from ServiceNow"""
     logger.progress(f"Listing service catalogs with max_results: {params.max_results}")
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
     limit = validate_positive_integer(
         "max_results", params.max_results, DEFAULT_MAX_LIMIT
     )
 
-    service_catalogs = helper.paginator(SC_CATALOG_ENDPOINT, limit=limit)
+    service_catalogs = client.paginator(SC_CATALOG_ENDPOINT, limit=limit)
     if not service_catalogs:
         logger.info("No service catalogs found")
         soar.set_summary(ListServiceCatalogsSummary(service_catalogs_returned=0))
@@ -106,11 +106,9 @@ def list_service_catalogs(
 
     logger.info(f"Successfully retrieved {len(service_catalogs)} service catalogs")
 
-    # Set summary and message
     soar.set_summary(
         ListServiceCatalogsSummary(service_catalogs_returned=len(service_catalogs))
     )
     soar.set_message(f"Successfully retrieved {len(service_catalogs)} service catalogs")
 
-    # Convert raw data to ServiceCatalogOutput objects and wrap in response
     return [ServiceCatalogOutput(**catalog) for catalog in service_catalogs]

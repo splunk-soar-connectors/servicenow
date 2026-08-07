@@ -20,6 +20,7 @@ import httpx
 from soar_sdk.auth.client import (
     SOARAssetOAuthClient,
     OAuthClientError,
+    ConfigurationChangedError,
     TokenExpiredError,
     AuthorizationRequiredError,
     TokenRefreshError,
@@ -28,19 +29,44 @@ from soar_sdk.auth.models import OAuthConfig, OAuthToken
 from soar_sdk.logging import getLogger
 from soar_sdk.shims.phantom.encryption_helper import encryption_helper
 
+from .consts import (
+    CLIENT_CREDENTIALS_GRANT_TYPE,
+    OAUTH_GRANT_TYPE_STATE_KEY,
+    PASSWORD_GRANT_AUTH_TYPE,
+    PASSWORD_GRANT_TYPE,
+    VALID_GRANT_TYPES,
+)
+
 if TYPE_CHECKING:
     from soar_sdk.asset_state import AssetState
 
 logger = getLogger()
 
 
-def migrate_legacy_oauth_state(asset: Any) -> None:
+def _normalize_grant_type(grant_type: str | None) -> str:
+    if grant_type in {None, PASSWORD_GRANT_TYPE}:
+        return PASSWORD_GRANT_AUTH_TYPE
+    return grant_type
+
+
+def migrate_legacy_oauth_state(
+    asset: Any, grant_type: str = PASSWORD_GRANT_AUTH_TYPE
+) -> None:
     """Seed SDK auth state from legacy flat OAuth token state after upgrade."""
+    grant_type = _normalize_grant_type(grant_type)
     auth_state = asset.auth_state
     current_state = auth_state.get_all()
 
     current_oauth = current_state.get("oauth")
     if isinstance(current_oauth, dict) and current_oauth.get("token"):
+        if OAUTH_GRANT_TYPE_STATE_KEY not in current_state:
+            migrated_state = dict(current_state)
+            # Existing SDK OAuth state predates grant tracking; it can only be password grant.
+            migrated_state[OAUTH_GRANT_TYPE_STATE_KEY] = PASSWORD_GRANT_AUTH_TYPE
+            auth_state.put_all(migrated_state)
+        return
+
+    if grant_type != PASSWORD_GRANT_AUTH_TYPE:
         return
 
     legacy_state = auth_state.backend.load_state() or {}
@@ -79,6 +105,7 @@ def migrate_legacy_oauth_state(asset: Any) -> None:
         "token": sdk_token,
         "client_id": asset.client_id,
     }
+    migrated_state[OAUTH_GRANT_TYPE_STATE_KEY] = PASSWORD_GRANT_AUTH_TYPE
     auth_state.put_all(migrated_state)
 
 
@@ -96,11 +123,55 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
         *args: Any,
         username: str | None = None,
         password: str | None = None,
+        grant_type: str = PASSWORD_GRANT_AUTH_TYPE,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
+        grant_type = _normalize_grant_type(grant_type)
+        if grant_type not in VALID_GRANT_TYPES:
+            raise OAuthClientError(
+                "Unsupported OAuth grant type configured. Supported values are: "
+                f"{', '.join(sorted(VALID_GRANT_TYPES))}."
+            )
         self._username = username
         self._password = password
+        self._grant_type = grant_type
+
+    def _clear_token_if_grant_type_changed(self) -> None:
+        current_state = self._auth_state.get_all()
+        oauth_state = current_state.get("oauth")
+        if not isinstance(oauth_state, dict) or not oauth_state.get("token"):
+            return
+
+        stored_grant_type = current_state.get(OAUTH_GRANT_TYPE_STATE_KEY)
+        if stored_grant_type is None:
+            stored_grant_type = PASSWORD_GRANT_AUTH_TYPE
+        stored_grant_type = _normalize_grant_type(stored_grant_type)
+
+        if stored_grant_type != self._grant_type:
+            logger.info(
+                "OAuth grant type changed from %s to %s; clearing stored token",
+                stored_grant_type,
+                self._grant_type,
+            )
+            self._clear_tokens()
+
+    def get_stored_token(self) -> OAuthToken | None:
+        self._clear_token_if_grant_type_changed()
+        return super().get_stored_token()
+
+    def _store_token(self, token: OAuthToken) -> None:
+        # Extend SDK token storage with the ServiceNow grant type that produced it.
+        super()._store_token(token)
+
+        current_state = self._auth_state.get_all()
+        oauth_state = current_state.get("oauth")
+        if not isinstance(oauth_state, dict):
+            return
+
+        current_state["oauth"] = oauth_state
+        current_state[OAUTH_GRANT_TYPE_STATE_KEY] = self._grant_type
+        self._auth_state.put_all(current_state)
 
     def get_valid_token(self, *, auto_refresh: bool = True) -> OAuthToken:
         """
@@ -108,9 +179,38 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
 
         Overrides the SDK base to support the password grant flow for legacy instances.
         """
+        if self._grant_type == CLIENT_CREDENTIALS_GRANT_TYPE:
+            return self._get_valid_client_credentials_token(auto_refresh=auto_refresh)
+
+        return self._get_valid_password_grant_token(auto_refresh=auto_refresh)
+
+    def _get_valid_client_credentials_token(
+        self, *, auto_refresh: bool = True
+    ) -> OAuthToken:
+        try:
+            token = self.get_stored_token()
+        except ConfigurationChangedError:
+            token = None
+
+        if token and not token.is_expired():
+            return token
+        if token and not auto_refresh:
+            raise TokenExpiredError("Access token has expired.")
+
+        logger.info("Fetching new token with client credentials grant")
+        return self.fetch_token_with_client_credentials()
+
+    def _get_valid_password_grant_token(
+        self, *, auto_refresh: bool = True
+    ) -> OAuthToken:
         try:
             return super().get_valid_token(auto_refresh=auto_refresh)
-        except (TokenExpiredError, AuthorizationRequiredError, TokenRefreshError) as e:
+        except (
+            TokenExpiredError,
+            AuthorizationRequiredError,
+            TokenRefreshError,
+            ConfigurationChangedError,
+        ) as e:
             if not (self._username and self._password):
                 raise OAuthClientError(
                     "OAuth authentication requires username and password to generate a "
@@ -121,9 +221,10 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
             return self.fetch_token_with_password(self._username, self._password)
 
     def refresh_token(self, refresh_token: str) -> OAuthToken:
-        """
-        Refresh an OAuth token, falling back to password grant for legacy compatibility.
-        """
+        if self._grant_type == CLIENT_CREDENTIALS_GRANT_TYPE:
+            logger.info("Fetching new token with client credentials grant")
+            return self.fetch_token_with_client_credentials()
+
         try:
             return super().refresh_token(refresh_token)
         except TokenRefreshError:
@@ -137,7 +238,14 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
         """
         Fetch a fresh OAuth token without discarding the stored refresh token.
         """
-        token = self.get_stored_token()
+        if self._grant_type == CLIENT_CREDENTIALS_GRANT_TYPE:
+            logger.info("Fetching new token with client credentials grant")
+            return self.fetch_token_with_client_credentials()
+
+        try:
+            token = self.get_stored_token()
+        except ConfigurationChangedError:
+            token = None
 
         if token and token.refresh_token:
             return self.refresh_token(token.refresh_token)
@@ -165,7 +273,7 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
         logger.debug("Fetching OAuth token with legacy password grant")
 
         data: dict[str, Any] = {
-            "grant_type": "password",
+            "grant_type": PASSWORD_GRANT_TYPE,
             "client_id": self._config.client_id,
             "username": username,
             "password": password,
@@ -200,6 +308,11 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
             raise OAuthClientError(f"Password grant token request failed: {e}") from e
 
         token = OAuthToken.model_validate(token_data)
+        if not token.refresh_token:
+            raise OAuthClientError(
+                "Password grant token response is missing a refresh token."
+            )
+
         self._store_token(token)
         logger.debug("OAuth token fetched and stored successfully")
 
@@ -214,6 +327,7 @@ def create_servicenow_oauth_client(
     *,
     username: str | None = None,
     password: str | None = None,
+    grant_type: str = PASSWORD_GRANT_AUTH_TYPE,
     verify_ssl: bool = True,
     timeout: float = 30.0,
 ) -> ServiceNowOAuthClient:
@@ -234,6 +348,7 @@ def create_servicenow_oauth_client(
         auth_state=auth_state,
         username=username,
         password=password,
+        grant_type=grant_type,
         verify_ssl=verify_ssl,
         timeout=timeout,
     )

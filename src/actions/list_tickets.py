@@ -20,8 +20,8 @@ from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionO
 from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
-from ..consts import TABLE_ENDPOINT
-from ..helpers import ServiceNowClient, validate_path_segment
+from ..consts import DEFAULT_MAX_LIMIT, TABLE_ENDPOINT
+from ..helpers import ServiceNowClient, validate_path_segment, validate_positive_integer
 
 logger = getLogger()
 
@@ -162,13 +162,15 @@ def list_tickets(
         f"Listing tickets from table: {params.table} with max_results: {params.max_results}"
     )
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
     table = validate_path_segment("table", params.table)
     endpoint = TABLE_ENDPOINT.format(table)
 
     request_params = {"sysparm_query": params.filter}
-    limit = params.max_results
-    tickets = helper.paginator(endpoint, payload=request_params, limit=limit)
+    limit = validate_positive_integer(
+        "max_results", params.max_results, DEFAULT_MAX_LIMIT
+    )
+    tickets = client.paginator(endpoint, payload=request_params, limit=limit)
 
     if not tickets:
         logger.info("No tickets found")
@@ -176,7 +178,6 @@ def list_tickets(
         soar.set_message("No tickets found")
         return []
 
-    # Set summary and message
     soar.set_summary(ListTicketsSummary(total_tickets=len(tickets)))
     soar.set_message(f"Successfully retrieved {len(tickets)} tickets")
 

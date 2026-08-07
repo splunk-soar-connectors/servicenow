@@ -132,10 +132,8 @@ def query_users(
         f"Querying users with params: query={params.query}, user_id={params.user_id}, username={params.username}, max_results={params.max_results}"
     )
 
-    # Initialize helper
-    helper = helpers.ServiceNowClient(asset)
+    client = helpers.ServiceNowClient(asset)
 
-    # Build the query parameter based on input
     query_param = params.query or ""
 
     if not query_param:
@@ -147,10 +145,8 @@ def query_users(
             query_param = f"sysparm_query=user_name={params.username}"
             logger.debug(f"Building query from username: {query_param}")
 
-    # Set up the endpoint for sys_user table
     endpoint = TABLE_ENDPOINT.format("sys_user")
 
-    # Build payload with query if present
     payload = {}
     if query_param:
         # Extract the query part from sysparm_query=... format if needed
@@ -163,12 +159,10 @@ def query_users(
             payload["sysparm_query"] = query_param
             logger.debug(f"Using query: {query_param}")
 
-    # Get the limit from parameters
     limit = int(params.max_results) if params.max_results else 100
 
-    # Use paginator to fetch users
     logger.debug(f"Fetching users from endpoint: {endpoint} with limit: {limit}")
-    users = helper.paginator(endpoint, payload=payload, limit=limit)
+    users = client.paginator(endpoint, payload=payload, limit=limit)
 
     if not users:
         logger.info("No users found")
@@ -182,7 +176,6 @@ def query_users(
 
     logger.info(f"Successfully retrieved {len(users)} users")
 
-    # Set summary and message
     soar.set_summary(QueryUsersSummary(total_users=len(users)))
     soar.set_message(f"Total users: {len(users)}")
 

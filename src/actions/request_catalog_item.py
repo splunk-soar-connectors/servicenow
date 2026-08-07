@@ -149,7 +149,7 @@ def request_catalog_item(
     """
     logger.info("Starting request_catalog_item action")
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
     if params.quantity < 1:
         raise ActionFailure("Quantity must be a positive integer")
     variables_dict = _parse_variables(params.variables)
@@ -160,14 +160,13 @@ def request_catalog_item(
     endpoint = CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
     try:
-        response = helper.make_rest_call(
+        response = client.make_rest_call(
             endpoint,
             api_uri=SC_API_URI,
         )
     except Exception as e:
         raise ActionFailure(f"Failed to fetch catalog item details: {e}") from e
 
-    # Validate response
     if not response.get("result"):
         raise ActionFailure(f"No data found for catalog item with sys_id: {sys_id}")
 
@@ -209,14 +208,13 @@ def request_catalog_item(
     logger.info(f"Ordering catalog item with quantity: {params.quantity}")
     order_endpoint = CATALOG_ORDER_NOW_ENDPOINT.format(sys_id)
 
-    # Build order request data
     order_data = {"sysparm_quantity": params.quantity}
 
     if variables_dict:
         order_data["variables"] = variables_dict
 
     try:
-        order_response = helper.make_rest_call(
+        order_response = client.make_rest_call(
             order_endpoint,
             data=order_data,
             method="post",
@@ -225,7 +223,6 @@ def request_catalog_item(
     except Exception as e:
         raise ActionFailure(f"Failed to order catalog item: {e}") from e
 
-    # Validate order response
     if not order_response.get("result"):
         raise ActionFailure("Invalid response from ServiceNow - no order result data")
 
@@ -247,14 +244,13 @@ def request_catalog_item(
     ticket_endpoint = TICKET_ENDPOINT.format(table, request_sys_id)
 
     try:
-        ticket_response = helper.make_rest_call(
+        ticket_response = client.make_rest_call(
             ticket_endpoint,
             api_uri=API_URI,
         )
     except Exception as e:
         raise ActionFailure(f"Failed to fetch request details: {e}") from e
 
-    # Validate ticket response
     if not ticket_response.get("result"):
         raise ActionFailure("Failed to get request details from ServiceNow")
 
@@ -263,7 +259,6 @@ def request_catalog_item(
     logger.info("Catalog item requested successfully")
     soar.set_message("The item has been requested")
 
-    # Convert result to output model
     return RequestCatalogItemOutput(**result)
 
 

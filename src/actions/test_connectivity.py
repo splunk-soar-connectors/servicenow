@@ -20,6 +20,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import (
+    BASIC_AUTH_TYPE,
     TEST_CONNECTIVITY_ENDPOINT,
     TEST_CONNECTIVITY_SUCCESS,
     TEST_CONNECTIVITY_FAIL,
@@ -31,27 +32,24 @@ logger = getLogger()
 
 @app.test_connectivity()
 def test_connectivity(soar: SOARClient, asset: Asset) -> None:
-    """
-    Test connectivity to ServiceNow instance by querying a single incident
-
-    This validates:
-    - Network connectivity to ServiceNow
-    - Authentication credentials (OAuth or Basic Auth)
-    - API access permissions
-    """
+    """Test ServiceNow connectivity by querying a single incident."""
     logger.info("Testing connectivity to ServiceNow")
 
     # Log SDK version for troubleshooting
     sdk_version = getattr(soar_sdk, "__version__", "unknown")
     logger.info(f"soar_sdk version: {sdk_version}")
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     # Force a fresh token fetch so we validate credentials are currently valid
     try:
-        if helper.asset.client_id and helper.asset.client_secret:
-            helper.force_new_oauth_token()
+        auth_type = getattr(client.asset, "oauth_grant_type", None)
+        if (
+            auth_type != BASIC_AUTH_TYPE
+            and client.asset.client_id
+            and client.asset.client_secret
+        ):
+            client.force_new_oauth_token()
     except Exception as e:
         error_msg = (
             f"{TEST_CONNECTIVITY_FAIL}: Failed to initialize authentication: {e}"
@@ -64,7 +62,7 @@ def test_connectivity(soar: SOARClient, asset: Asset) -> None:
     logger.info("Querying a single Incident to check credentials")
 
     try:
-        _response = helper.make_rest_call(
+        _response = client.make_rest_call(
             TEST_CONNECTIVITY_ENDPOINT,
             params=request_params,
         )

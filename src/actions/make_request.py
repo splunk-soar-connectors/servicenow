@@ -17,7 +17,7 @@
 import json
 
 import httpx
-from soar_sdk.action_results import OutputField, PermissiveActionOutput
+from soar_sdk.action_results import ActionOutput, OutputField
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 from soar_sdk.params import MakeRequestParams, Param
@@ -41,8 +41,7 @@ class ServiceNowMakeRequestParams(MakeRequestParams):
         description=(
             "ServiceNow API endpoint path appended to the base URL. "
             "Do not include the base URL itself. "
-            "Examples: '/api/now/table/incident', '/api/sn_sc/servicecatalog/items/{sys_id}', "
-            "'/api/now/table/sys_user?sysparm_query=user_name=admin'."
+            "Examples: '/api/now/table/incident'"
         ),
     )
     verify_ssl: bool = Param(
@@ -59,32 +58,15 @@ class ServiceNowMakeRequestParams(MakeRequestParams):
     )
 
 
-class ServiceNowMakeRequestOutput(PermissiveActionOutput):
-    """Output for make_request action.
-
-    Merges top-level JSON object fields so they are individually accessible in
-    downstream playbook logic while preserving raw response metadata.
-    """
+class ServiceNowMakeRequestOutput(ActionOutput):
+    """Make request output with raw response metadata."""
 
     status_code: int = OutputField(example_values=[200, 404, 500])
     response_body: str = OutputField(example_values=['{"key": "value"}'])
 
     @classmethod
     def from_response(cls, response: httpx.Response) -> "ServiceNowMakeRequestOutput":
-        """Build output from an httpx Response, merging JSON keys when possible."""
-        data: dict = {
-            "status_code": response.status_code,
-            "response_body": response.text,
-        }
-
-        try:
-            json_response = response.json()
-            if isinstance(json_response, dict):
-                data.update(json_response)
-        except Exception as e:
-            logger.warning(f"Response is not JSON; skipping field merge: {e!s}")
-
-        return cls(**data)
+        return cls(status_code=response.status_code, response_body=response.text)
 
 
 @app.make_request()
@@ -125,7 +107,6 @@ def make_request(
 
     merged_headers: dict[str, str] = {"Content-Type": "application/json"}
 
-    # query parameters
     query_params: dict | None = None
     if params.query_parameters:
         try:
@@ -139,7 +120,6 @@ def make_request(
             separator = "&" if "?" in url else "?"
             url += f"{separator}{query_string}"
 
-    # custom headers
     if params.headers:
         try:
             parsed_headers = json.loads(params.headers)
@@ -149,7 +129,6 @@ def make_request(
             raise ActionFailure("Invalid JSON headers: expected a JSON object")
         merged_headers.update(parsed_headers)
 
-    # request body
     json_body: dict | None = None
     raw_body: str | None = None
     if params.body:

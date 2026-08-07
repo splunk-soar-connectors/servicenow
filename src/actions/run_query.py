@@ -46,13 +46,7 @@ class RunQuerySummary(ActionOutput):
 
 
 class RunQueryOutput(PermissiveActionOutput):
-    """
-    Output model for run_query action.
-
-    ServiceNow Table API returns different fields depending on the table being queried.
-    All fields are optional as they may not be present in all tables or records.
-    Raw ServiceNow fields are preserved for compatibility with arbitrary query tables.
-    """
+    """Flexible output for records returned from arbitrary ServiceNow tables."""
 
     number: str | None = OutputField(
         column_name="TICKET NUMBER",
@@ -198,27 +192,18 @@ def run_query(
             "Please provide a positive integer value in the max_results parameter"
         )
 
-    # Build endpoint with raw query string
-    # The query parameter contains the full query string including "sysparm_query=" prefix
-    # Format: /table/{table}?{query}
-    # Example: /table/sys_user?sysparm_query=sys_id=abc123
     table = validate_path_segment("query_table", params.query_table)
     query_string = params.query
 
-    # Construct endpoint with query string appended directly
-    # Note: This is different from normal table queries where query params are passed separately
+    # Preserve legacy behavior: params.query is a raw query string.
     endpoint = f"/table/{table}?{query_string}"
 
     logger.info(f"Executing query on table '{table}' with endpoint: {endpoint}")
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     try:
-        # Use paginator to fetch results with limit
-        # Note: The endpoint already has the query string, so we pass empty payload
-        # The paginator will add sysparm_offset and sysparm_limit as additional params
-        records = helper.paginator(endpoint, payload={}, limit=params.max_results)
+        records = client.paginator(endpoint, payload={}, limit=params.max_results)
 
         if records is None:
             raise ActionFailure("Invalid parameters or query execution failed")
@@ -227,7 +212,6 @@ def run_query(
             RunQueryOutput(**_strip_sensitive_props(record)) for record in records
         ]
 
-        # Set summary
         soar.set_summary(RunQuerySummary(total_tickets=len(output_records)))
 
         logger.info(

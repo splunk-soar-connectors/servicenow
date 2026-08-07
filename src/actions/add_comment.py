@@ -245,13 +245,13 @@ def add_comment(
 ) -> AddCommentOutput:
     logger.progress("adding comment to servicenow record")
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     sys_id = params.id
     table_name = validate_path_segment("table_name", params.table_name)
     is_sys_id = params.is_sys_id if params.is_sys_id is not None else False
     if not is_sys_id:
-        sys_id = helper.get_sys_id_from_ticket_number(
+        sys_id = client.get_sys_id_from_ticket_number(
             table_name=table_name,
             ticket_number=params.id,
         )
@@ -267,7 +267,7 @@ def add_comment(
     endpoint = TICKET_ENDPOINT.format(table_name, sys_id)
     data = {"comments": processed_comment}
     request_params = {"sysparm_display_value": True}
-    response = helper.make_rest_call(
+    response = client.make_rest_call(
         endpoint=endpoint,
         params=request_params,
         data=data,

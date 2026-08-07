@@ -17,7 +17,12 @@
 from pydantic import Field
 from soar_sdk.abstract import SOARClient
 from soar_sdk.params import Param, Params
-from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionOutput
+from soar_sdk.action_results import (
+    ActionOutput,
+    ActionResult,
+    OutputField,
+    PermissiveActionOutput,
+)
 from soar_sdk.logging import getLogger
 from soar_sdk.exceptions import ActionFailure
 
@@ -244,6 +249,47 @@ class UpdateTicketSummary(ActionOutput):
     )
 
 
+def _build_legacy_vault_failure_details(
+    vault_errors: dict[str, str],
+) -> dict[str, list[str]]:
+    vault_failure_details: dict[str, list[str]] = {}
+    for vault_id, error in vault_errors.items():
+        vault_failure_details.setdefault(error, []).append(vault_id)
+    return vault_failure_details
+
+
+def _build_failed_attachment_result(
+    params: UpdateTicketParams,
+    result: dict,
+    fields_updated: bool,
+    successfully_added_attachments_count: int | None,
+    vault_errors: dict[str, str],
+) -> ActionResult:
+    vault_failure_details = _build_legacy_vault_failure_details(vault_errors)
+    message = next(reversed(vault_failure_details), "Failed to attach files")
+    if fields_updated:
+        message = (
+            f"{message} Successfully updated the ticket, but failed to add "
+            "attachment(s)"
+        )
+
+    action_result = ActionResult(
+        status=False,
+        message=message,
+        param=params.model_dump(mode="json"),
+    )
+    if fields_updated:
+        action_result.add_data(result)
+    action_result.set_summary(
+        {
+            "fields_updated": fields_updated,
+            "successfully_added_attachments_count": successfully_added_attachments_count,
+            "vault_failure_details": vault_failure_details,
+        }
+    )
+    return action_result
+
+
 @app.action(
     description="Update ticket/record information",
     action_type="generic",
@@ -260,31 +306,26 @@ def update_ticket(
     """
     logger.info("Starting update_ticket action")
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     table = validate_path_segment("table", params.table)
     ticket_id = params.id
     is_sys_id = params.is_sys_id if params.is_sys_id is not None else False
 
-    # If not sys_id, convert ticket number to sys_id
     if not is_sys_id:
         logger.info(f"Converting ticket number to sys_id: {ticket_id}")
-        ticket_id = helper.get_sys_id_from_ticket_number(
+        ticket_id = client.get_sys_id_from_ticket_number(
             table_name=table,
             ticket_number=ticket_id,
         )
 
-    # Parse fields parameter if provided
     fields = parse_fields_json(params.fields)
 
-    # Validate that at least one parameter is provided
     if not fields and not params.vault_id:
         raise ActionFailure(
             "Please specify at least one of: fields or vault_id parameter"
         )
 
-    # Build the endpoint for updating ticket
     ticket_id = validate_path_segment("sys_id", ticket_id)
     endpoint = TICKET_ENDPOINT.format(table, ticket_id)
 
@@ -293,11 +334,10 @@ def update_ticket(
     successfully_added_attachments_count = None
     vault_failure_details = None
 
-    # Update ticket with fields if provided
     if fields:
         logger.info("Updating ticket with the provided fields")
         try:
-            response = helper.make_rest_call(
+            response = client.make_rest_call(
                 endpoint,
                 data=fields,
                 method="put",
@@ -305,7 +345,6 @@ def update_ticket(
         except Exception as e:
             raise ActionFailure(f"Failed to update ticket: {e}") from e
 
-        # Validate response
         if not response.get("result"):
             raise ActionFailure("Invalid response from ServiceNow - no result data")
 
@@ -313,40 +352,26 @@ def update_ticket(
         logger.info(f"Ticket updated successfully with sys_id: {ticket_id}")
         soar.set_message("Ticket updated successfully")
 
-    # Handle vault attachments if provided
     if params.vault_id:
         logger.info("Processing vault attachments")
-        action_helper = ServiceNowActionHelper(soar, helper)
+        action_helper = ServiceNowActionHelper(soar, client)
         attachment_details, vault_errors = action_helper.handle_vault_attachments(
             table, ticket_id, params.vault_id
         )
         successfully_added_attachments_count = len(attachment_details)
 
-        # Add attachment details to result if successful
-        if attachment_details:
-            result["attachment_details"] = attachment_details
-
         # Handle attachment failures - always fail to match legacy behavior
         if vault_errors:
-            vault_failure_details = "; ".join(
-                [f"{vid}: {err}" for vid, err in vault_errors.items()]
+            return _build_failed_attachment_result(
+                params,
+                result,
+                fields_updated,
+                successfully_added_attachments_count,
+                vault_errors,
             )
-            if fields:
-                # Set message indicating partial success before failing
-                soar.set_message(
-                    "Successfully updated the ticket, but failed to add attachment(s)"
-                )
-            soar.set_summary(
-                UpdateTicketSummary(
-                    fields_updated=fields_updated,
-                    successfully_added_attachments_count=successfully_added_attachments_count,
-                    vault_failure_details=vault_failure_details,
-                )
-            )
-            # Always raise exception when attachments fail (matches legacy behavior)
-            raise ActionFailure(
-                f"Failed to attach files. Errors: {vault_failure_details}"
-            )
+
+        if attachment_details:
+            result["attachment_details"] = attachment_details
 
     soar.set_summary(
         UpdateTicketSummary(
@@ -356,5 +381,4 @@ def update_ticket(
         )
     )
 
-    # Convert result to output model
     return UpdateTicketOutput(**result)

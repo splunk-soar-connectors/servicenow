@@ -41,6 +41,23 @@ SEARCH_SOURCES_ENDPOINT = "/search/sources/textsearch"
 SEARCH_DEFAULT_PAGE = 1
 SEARCH_MAX_LIMIT = 20
 
+# Authentication configuration
+BASIC_AUTH_TYPE = "basic_auth"
+PASSWORD_GRANT_TYPE = "password"  # noqa: S105  # pragma: allowlist secret
+PASSWORD_GRANT_AUTH_TYPE = "password_grant"  # noqa: S105  # pragma: allowlist secret
+CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials"
+VALID_GRANT_TYPES = {
+    PASSWORD_GRANT_AUTH_TYPE,
+    PASSWORD_GRANT_TYPE,
+    CLIENT_CREDENTIALS_GRANT_TYPE,
+}
+AUTH_TYPE_VALUES = [
+    BASIC_AUTH_TYPE,
+    PASSWORD_GRANT_AUTH_TYPE,
+    CLIENT_CREDENTIALS_GRANT_TYPE,
+]
+OAUTH_GRANT_TYPE_STATE_KEY = "oauth_grant_type"
+
 SERVICENOW_SENSITIVE_PROPS = [
     "admin_password",  # pragma: allowlist secret
     "database_password",  # pragma: allowlist secret

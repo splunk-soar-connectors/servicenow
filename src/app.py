@@ -19,6 +19,8 @@ from soar_sdk.app import App
 from soar_sdk.asset import BaseAsset, AssetField, FieldCategory
 from soar_sdk.logging import getLogger
 
+from .consts import AUTH_TYPE_VALUES, PASSWORD_GRANT_AUTH_TYPE
+
 logger = getLogger()
 
 
@@ -59,6 +61,13 @@ class Asset(BaseAsset):
         required=False,
         description="Client Secret. Required with Client ID",
         sensitive=True,
+        category=FieldCategory.CONNECTIVITY,
+    )
+    oauth_grant_type: str = AssetField(
+        required=False,
+        description="Authentication type. Basic Auth uses username and password; password_grant and client_credentials use OAuth",
+        default=PASSWORD_GRANT_AUTH_TYPE,
+        value_list=AUTH_TYPE_VALUES,
         category=FieldCategory.CONNECTIVITY,
     )
     password: str = AssetField(

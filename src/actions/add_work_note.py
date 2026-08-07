@@ -234,12 +234,12 @@ def add_work_note(
     """Add a work note to a ServiceNow record"""
     logger.progress(f"Adding work note to table {params.table_name}, ID: {params.id}")
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     sys_id = params.id
     table_name = validate_path_segment("table_name", params.table_name)
     if not params.is_sys_id:
-        sys_id = helper.get_sys_id_from_ticket_number(
+        sys_id = client.get_sys_id_from_ticket_number(
             table_name=table_name,
             ticket_number=sys_id,
         )
@@ -256,7 +256,7 @@ def add_work_note(
     endpoint = TICKET_ENDPOINT.format(table_name, sys_id)
     request_params = {"sysparm_display_value": True}
 
-    response = helper.make_rest_call(
+    response = client.make_rest_call(
         endpoint, data=data, params=request_params, method="put"
     )
     if not (result := response.get("result", {})):

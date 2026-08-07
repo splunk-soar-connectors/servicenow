@@ -257,7 +257,6 @@ def create_ticket(
     table = validate_path_segment("table", table)
     endpoint = TABLE_ENDPOINT.format(table)
 
-    # Parse fields parameter if provided
     fields = parse_fields_json(params.fields)
 
     data = dict()
@@ -286,10 +285,10 @@ def create_ticket(
     else:
         data["description"] = footnote
 
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     try:
-        response = helper.make_rest_call(
+        response = client.make_rest_call(
             endpoint,
             data=data,
             method="post",
@@ -309,12 +308,11 @@ def create_ticket(
     vault_failure_details = None
 
     if params.vault_id:
-        action_helper = ServiceNowActionHelper(soar, helper)
+        action_helper = ServiceNowActionHelper(soar, client)
         attachment_details, vault_errors = action_helper.handle_vault_attachments(
             table, created_ticket_id, params.vault_id
         )
 
-        # Add attachment details to result if successful
         if attachment_details:
             result["attachment_details"] = attachment_details
         successfully_added_attachments_count = len(attachment_details)

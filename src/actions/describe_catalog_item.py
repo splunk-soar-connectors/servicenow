@@ -14,8 +14,6 @@
 
 """Describe Catalog Item Action"""
 
-from typing import Any
-from pydantic import Field, field_validator
 from soar_sdk.abstract import SOARClient
 from soar_sdk.params import Param, Params
 from soar_sdk.action_results import OutputField, PermissiveActionOutput
@@ -45,8 +43,6 @@ class CatalogsOutput(PermissiveActionOutput):
 
 
 class CategoryOutput(PermissiveActionOutput):
-    """Category reference without active field (for top-level category)"""
-
     sys_id: str | None = OutputField(
         cef_types=["servicenow category sys id", "md5"],
     )
@@ -54,8 +50,6 @@ class CategoryOutput(PermissiveActionOutput):
 
 
 class CategoryWithActiveOutput(PermissiveActionOutput):
-    """Category reference with active field (for nested categories)"""
-
     active: bool | None = None
     sys_id: str | None = OutputField(
         cef_types=["servicenow category sys id", "md5"],
@@ -70,35 +64,6 @@ class CategoriesOutput(PermissiveActionOutput):
         cef_types=["servicenow category sys id", "md5"],
     )
     title: str | None = OutputField(example_values=["Can We Help You?"])
-
-
-class OnloadOutput(PermissiveActionOutput):
-    appliesTo: str | None = OutputField(example_values=["item"])
-    condition: str | None = None
-    fieldName: str | None = None
-    script: str | None = OutputField(
-        example_values=[
-            'function onLoad() {<br>\tvar stdChangeProducerSysId = getParmVal(\'std_change_producer\');<br>\tif (stdChangeProducerSysId) {<br>\t\tg_form.setValue(\'variables.std_change_producer\', stdChangeProducerSysId);<br>\t}<br>}<br>function getParmVal(name) {<br>name = name.replace(/[\\[]/, "\\\\\\[").replace(/[\\]]/, "\\\\\\]");<br>\tvar regexS = "[\\\\?&]" + name + "=([^&#]*)";<br>\tvar regex = new RegExp(regexS);<br>\tvar results = regex.exec(window.location.href);<br>\tif (results) {<br>\t\treturn unescape(results[1]);<br>\t} else {<br>\t\treturn \'\';<br>\t}<br>}<br>'
-        ]
-    )
-    sys_id: str | None = None
-    type: str | None = OutputField(example_values=["onLoad"])
-    ui_type: str | None = OutputField(example_values=["Desktop"])
-    variable_set: str | None = None
-
-
-class ClientScriptOutput(PermissiveActionOutput):
-    onLoad: list[OnloadOutput] = Field(default_factory=list)
-
-    @field_validator("onLoad", mode="before")
-    @classmethod
-    def normalize_list_field(cls, v: Any) -> list:
-        if isinstance(v, list):
-            return v
-        elif v:
-            return [v] if isinstance(v, dict) else []
-        else:
-            return []
 
 
 class ChildrenOutput(PermissiveActionOutput):
@@ -125,7 +90,7 @@ class VariablesOutput(PermissiveActionOutput):
     attributes: str | None = OutputField(
         example_values=["edge_encryption_enabled=true"]
     )
-    children: list[ChildrenOutput] = Field(default_factory=list)
+    children: list[ChildrenOutput] | None = None
     display_type: str | None = OutputField(example_values=["Multi Line Text"])
     displayvalue: str | None = None
     friendly_type: str | None = OutputField(example_values=["multi_line_text"])
@@ -145,26 +110,11 @@ class VariablesOutput(PermissiveActionOutput):
     type: int | None = OutputField(example_values=[2])
     value: str | None = None
 
-    @field_validator("children", mode="before")
-    @classmethod
-    def normalize_list_field(cls, v: Any) -> list:
-        """
-        Normalize list field.
-        Handles list, dict, or empty input formats from the API.
-        """
-        if isinstance(v, list):
-            return v
-        elif v:
-            return [v] if isinstance(v, dict) else []
-        else:
-            return []
-
 
 class DescribeCatalogItemOutput(PermissiveActionOutput):
-    catalogs: list[CatalogsOutput] = Field(default_factory=list)
-    categories: list[CategoriesOutput] = Field(default_factory=list)
+    catalogs: list[CatalogsOutput] | None = None
+    categories: list[CategoriesOutput] | None = None
     category: CategoryOutput | None = None
-    client_script: ClientScriptOutput | None = None
     content_type: str | None = None
     description: str | None = OutputField(
         example_values=[
@@ -199,22 +149,8 @@ class DescribeCatalogItemOutput(PermissiveActionOutput):
     )
     type: str | None = OutputField(example_values=["record_producer"])
     url: str | None = None
-    variables: list[VariablesOutput] = Field(default_factory=list)
+    variables: list[VariablesOutput] | None = None
     visible_standalone: bool | None = None
-
-    @field_validator("catalogs", "categories", "variables", mode="before")
-    @classmethod
-    def normalize_list_field(cls, v: Any) -> list:
-        """
-        Normalize list field.
-        Handles list, dict, or empty input formats from the API.
-        """
-        if isinstance(v, list):
-            return v
-        elif v:
-            return [v] if isinstance(v, dict) else []
-        else:
-            return []
 
 
 @app.view_handler(template="servicenow_describe_catalog_item.html")
@@ -235,18 +171,16 @@ def describe_catalog_item(
     """Fetch details of a specific catalog item from ServiceNow"""
     logger.info(f"Fetching catalog item details for sys_id: {params.sys_id}")
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     sys_id = validate_path_segment("sys_id", params.sys_id)
     endpoint = CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
-    response = helper.make_rest_call(
+    response = client.make_rest_call(
         endpoint=endpoint,
         api_uri=SC_API_URI,
     )
 
-    # Extract result from response
     result = response.get("result")
 
     if not result:
@@ -260,10 +194,8 @@ def describe_catalog_item(
         f"Successfully retrieved catalog item details for sys_id: {params.sys_id}"
     )
 
-    # Set success message
     soar.set_message("Details fetched successfully")
 
-    # Convert result to DescribeCatalogItemOutput and return
     catalog_item = DescribeCatalogItemOutput(**result)
 
     return catalog_item

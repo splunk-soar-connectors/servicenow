@@ -232,19 +232,17 @@ def describe_service_catalog(
     """Describe a service catalog with its categories and items"""
     logger.info(f"Fetching catalog details for sys_id: {params.sys_id}")
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     # 1. Fetch catalog details
     logger.debug(f"Querying catalog endpoint with sys_id: {params.sys_id}")
     request_params = {"sysparm_query": f"sys_id={params.sys_id}"}
 
-    catalog_response = helper.make_rest_call(
+    catalog_response = client.make_rest_call(
         SC_CATALOG_ENDPOINT,
         params=request_params,
     )
 
-    # Validate catalog exists
     if not catalog_response.get("result"):
         raise ActionFailure("Please enter a valid value for 'sys_id' parameter")
 
@@ -256,7 +254,7 @@ def describe_service_catalog(
     logger.debug(f"Fetching categories for catalog: {params.sys_id}")
     categories_params = {"sysparm_query": f"sc_catalog={params.sys_id}"}
 
-    categories_response = helper.make_rest_call(
+    categories_response = client.make_rest_call(
         SC_CATEGORY_ENDPOINT,
         params=categories_params,
     )
@@ -270,7 +268,7 @@ def describe_service_catalog(
     )
     logger.debug(f"Fetching up to {limit} catalog items")
 
-    items = helper.fetch_catalog_items(
+    items = client.fetch_catalog_items(
         catalog_sys_id=params.sys_id,
         limit=limit,
         split_catalogs=False,

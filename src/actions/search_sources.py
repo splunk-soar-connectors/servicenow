@@ -21,7 +21,12 @@ from soar_sdk.logging import getLogger
 from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
-from ..consts import SEARCH_SOURCES_ENDPOINT, SEARCH_DEFAULT_PAGE, SEARCH_MAX_LIMIT
+from ..consts import (
+    SEARCH_SOURCES_ENDPOINT,
+    SEARCH_DEFAULT_PAGE,
+    SEARCH_MAX_LIMIT,
+    MAX_PAGES,
+)
 from ..helpers import ServiceNowClient
 
 logger = getLogger()
@@ -135,96 +140,43 @@ class SearchSourcesOutput(PermissiveActionOutput):
 def search_sources(
     params: SearchSourcesParams, soar: SOARClient[SearchSourcesSummary], asset: Asset
 ) -> SearchSourcesOutput:
-    """
-    Search for records across multiple tables using ServiceNow text search
-
-    Args:
-        params: Action parameters
-        soar: SOAR client for API interactions
-        asset: Asset configuration
-
-    Returns:
-        SearchSourcesOutput: Search results with sources and records
-
-    Raises:
-        ActionFailure: If search fails or parameters are invalid
-    """
+    """Search records across ServiceNow text search sources."""
     logger.info("Starting search_sources action")
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
-    # Get parameters
     sysparm_term = params.sysparm_term
     sysparm_search_sources = params.sysparm_search_sources
 
-    # Validate and process search sources (comma-separated list)
     search_sources_list = _parse_search_sources(sysparm_search_sources)
 
     if not search_sources_list:
         raise ActionFailure("Please provide valid inputs for sysparm_search_sources")
 
-    # Join back to comma-separated string
     sysparm_search_sources_str = ",".join(search_sources_list)
 
-    # Perform search with pagination
     result_data = _search_sources_with_pagination(
-        helper, sysparm_term, sysparm_search_sources_str
+        client, sysparm_term, sysparm_search_sources_str
     )
 
     total_records = int(result_data.get("result_count", 0))
     logger.info(f"Search completed successfully. Total records: {total_records}")
     soar.set_summary(SearchSourcesSummary(total_records=total_records))
 
-    # Convert result to output model
     return SearchSourcesOutput(**result_data)
 
 
 def _parse_search_sources(search_sources_str: str) -> list[str]:
-    """
-    Parse and validate search sources parameter
-
-    Handles comma-separated list of source IDs, removes duplicates
-    and empty values.
-
-    Args:
-        search_sources_str: Comma-separated list of source IDs
-
-    Returns:
-        list: Cleaned list of unique source IDs
-    """
+    """Parse a comma-separated source ID list."""
     # Split by comma, strip whitespace, remove empty values, remove duplicates
     sources = [x.strip() for x in set(search_sources_str.split(",")) if x.strip()]
     return sources
 
 
 def _search_sources_with_pagination(
-    helper: ServiceNowClient, sysparm_term: str, sysparm_search_sources: str
+    client: ServiceNowClient, sysparm_term: str, sysparm_search_sources: str
 ) -> dict:
-    """
-    Perform search with automatic pagination
-
-    This function handles paginated search results from ServiceNow's text search API.
-    It aggregates records across multiple pages and maintains the complete result set.
-
-    Pagination behavior:
-    - ServiceNow returns up to 20 records per page by default (SEARCH_MAX_LIMIT)
-    - Each search_results item has its own pagination metadata (limit, page)
-    - We remove these metadata fields from the response as they're internal
-    - Records are aggregated across pages for each search source
-
-    Args:
-        helper: ServiceNow helper instance
-        sysparm_term: Search term
-        sysparm_search_sources: Comma-separated source IDs
-
-    Returns:
-        dict: Complete search results with all pages aggregated
-
-    Raises:
-        ActionFailure: If API call fails
-    """
-    # Build query parameters
+    """Aggregate paginated ServiceNow text search results across sources."""
     params = {
         "sysparm_term": sysparm_term,
         "sysparm_search_sources": sysparm_search_sources,
@@ -241,22 +193,19 @@ def _search_sources_with_pagination(
 
     # Paginate through results
     while True:
-        # Make API call
         try:
-            response = helper.make_rest_call(
+            response = client.make_rest_call(
                 SEARCH_SOURCES_ENDPOINT,
                 params=params,
             )
         except Exception as e:
             raise ActionFailure(f"Failed to search sources: {e}") from e
 
-        # Extract result
         result = response.get("result", {})
 
         if not result:
             raise ActionFailure("Invalid response from ServiceNow - no result data")
 
-        # Get total count
         total_item_count = int(result.get("result_count", 0))
 
         # Process search results - remove page-local metadata
@@ -288,6 +237,7 @@ def _search_sources_with_pagination(
         if (
             total_item_count <= result_length
             or params["sysparm_page"] >= total_result_count_page_limit + 1
+            or params["sysparm_page"] >= MAX_PAGES
         ):
             break
 

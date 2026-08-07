@@ -163,16 +163,14 @@ def list_services(
         f"search_text: {params.search_text}"
     )
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     # Get the limit from parameters
     limit = validate_positive_integer(
         "max_results", params.max_results, DEFAULT_MAX_LIMIT
     )
 
-    # Use helper function to fetch catalog items
-    services = helper.fetch_catalog_items(
+    services = client.fetch_catalog_items(
         catalog_sys_id=params.catalog_sys_id,
         category_sys_id=params.category_sys_id,
         search_text=params.search_text,
@@ -195,9 +193,7 @@ def list_services(
 
     logger.info(f"Successfully retrieved {len(services)} services")
 
-    # Set summary and message
     soar.set_summary(ListServicesSummary(services_returned=len(services)))
     soar.set_message(f"Successfully retrieved {len(services)} services")
 
-    # Convert raw data to ServiceItemOutput objects and wrap in response
     return [ServiceItemOutput(**service) for service in services]

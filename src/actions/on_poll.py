@@ -163,16 +163,7 @@ def migrate_legacy_ingest_state(asset: Asset) -> None:
 def on_poll(
     params: OnPollParams, soar: SOARClient, asset: Asset
 ) -> Iterator[Union[Container, Artifact]]:
-    """
-    Scheduled and manual ingestion of ServiceNow records into Splunk SOAR containers.
-
-    Fetches tickets/records from ServiceNow, creates containers, and extracts artifacts
-    including optional IOCs (IPs, hashes, URLs).
-
-    Yields Container and Artifact objects. The SDK handles creation automatically.
-    When a Container is yielded first, subsequent Artifacts without a container_id
-    will be automatically associated with that container.
-    """
+    """Ingest ServiceNow records as SOAR containers and optional IOC artifacts."""
     logger.info("Starting On Poll action")
 
     # Compile regex patterns
@@ -182,8 +173,7 @@ def on_poll(
     ipv6_regexc = re.compile(IPV6_REGEX)
     timezone_value = getattr(asset, "timezone", None)
 
-    # Initialize helper
-    helper = ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     # Determine poll type before reading scheduled checkpoint state.
     is_manual_poll = params.is_manual_poll()
@@ -196,12 +186,10 @@ def on_poll(
     state = asset.ingest_state
     last_time = state.get("last_time")
 
-    # TODO: check when it will be float and if we can always have it in one way.
-    # Convert last_time from float to datetime string if needed
+    # Legacy state may have stored last_time as epoch seconds.
     if last_time and isinstance(last_time, float):
         last_time = _format_utc_timestamp(last_time)
 
-    # Build base query
     query = "ORDERBYsys_updated_on"
     scheduled_first_run = False
 
@@ -213,10 +201,8 @@ def on_poll(
     if is_manual_poll:
         # Manual polling (Poll Now) - use SDK's container_count parameter
         max_tickets = params.container_count
-        if (
-            max_tickets is None
-        ):  # TODO: test this and see if error returned is as expected.
-            raise ValueError("container_count is required for Poll Now")
+        if max_tickets is None:
+            raise ActionFailure("container_count is required for Poll Now")
         logger.info(f"Poll Now (manual): fetching up to {max_tickets} tickets")
 
         # If start_time provided (epoch milliseconds), use it for filtering
@@ -256,7 +242,6 @@ def on_poll(
             )
             max_tickets = int(asset.first_run_container)
 
-    # Get table name
     table_name = (
         asset.on_poll_table if asset.on_poll_table else SERVICENOW_DEFAULT_TABLE
     )
@@ -264,13 +249,11 @@ def on_poll(
     table_name = validate_path_segment("on_poll_table", table_name)
     endpoint = TABLE_ENDPOINT.format(table_name)
 
-    # Build query parameters
     params_dict = {"sysparm_query": query, "sysparm_exclude_reference_link": "true"}
 
-    # Fetch issues using paginator
     logger.info(f"Fetching issues from table: {table_name}")
     try:
-        issues = helper.paginator(endpoint, payload=params_dict, limit=max_tickets)
+        issues = client.paginator(endpoint, payload=params_dict, limit=max_tickets)
     except Exception as e:
         raise ActionFailure(f"Failed to fetch issues from ServiceNow: {e}") from e
 
@@ -386,7 +369,6 @@ def on_poll(
                     )
                     artifacts_created += 1
 
-    # TODO: container and artifact count total is generic. Either map container -> artifact count or just log containe count.
     logger.info(
         f"Yielded {containers_created} containers and {artifacts_created} artifacts"
     )
@@ -426,19 +408,7 @@ def on_poll(
 
 
 def _get_severity(soar: SOARClient, asset: Asset) -> str:
-    """
-    Get severity for containers and artifacts
-
-    Args:
-        soar: SOAR client
-        asset: Asset configuration
-
-    Returns:
-        Severity string
-
-    Raises:
-        Exception: If severity validation fails
-    """
+    """Resolve the severity to apply to ingested containers and artifacts."""
     severities = _get_container_severities(soar)
 
     if asset.severity:
@@ -458,12 +428,7 @@ def _get_severity(soar: SOARClient, asset: Asset) -> str:
 
 
 def _get_container_severities(soar: SOARClient) -> list[dict[str, Any]]:
-    """
-    Fetch severity options through container options.
-
-    The /rest/container_options endpoint exposes severities without requiring
-    system_settings view permissions.
-    """
+    """Fetch severity options without requiring system settings permissions."""
     response = soar.get("/rest/container_options").json()
 
     if not isinstance(response, dict):
@@ -484,31 +449,14 @@ def _get_container_severities(soar: SOARClient) -> list[dict[str, Any]]:
 
 
 def _validate_custom_severity(severities: list[dict[str, Any]], severity: str) -> None:
-    """
-    Validate that the custom severity exists in the SOAR platform
-
-    Args:
-        severities: Severity options from the SOAR platform
-        severity: Severity to validate
-
-    Raises:
-        Exception: If severity doesn't exist
-    """
+    """Validate that the configured severity exists in SOAR."""
     severity_names = [s.get("name", "").lower() for s in severities]
     if severity not in severity_names:
         raise Exception(f"Severity '{severity}' does not exist in SOAR platform")
 
 
 def _find_default_severity(severities: list[dict[str, Any]]) -> Optional[str]:
-    """
-    Find the default severity configured in the SOAR platform
-
-    Args:
-        severities: Severity options from the SOAR platform
-
-    Returns:
-        Default severity name or None if not found
-    """
+    """Find the default severity configured in SOAR."""
     for sev in severities:
         if sev.get("is_default", False):
             return sev.get("name")
