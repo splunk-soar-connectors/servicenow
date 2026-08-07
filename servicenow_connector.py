@@ -23,7 +23,6 @@ try:
 except:
     pass
 import ast
-import codecs
 import ipaddress
 import json
 import re
@@ -318,8 +317,8 @@ class ServicenowConnector(BaseConnector):
         # Initialize the default error_details
         error_details = {"message": "Not Found", "detail": "Not supplied"}
 
-        # Handle if resp_json unavailable
-        if not resp_json:
+        # Error responses are expected to be JSON objects.
+        if not isinstance(resp_json, dict):
             return error_details
 
         # Handle if resp_json contains "error" key and corresponding non-none and non-empty value or not
@@ -406,7 +405,7 @@ class ServicenowConnector(BaseConnector):
             return RetVal(phantom.APP_SUCCESS, resp_json)
 
         if r.status_code == 401 and self._try_oauth:
-            if resp_json.get("error") == "invalid_token":
+            if isinstance(resp_json, dict) and resp_json.get("error") == "invalid_token":
                 raise UnauthorizedOAuthTokenException
 
         if r.status_code != requests.codes.ok:  # pylint: disable=E1101
@@ -459,11 +458,12 @@ class ServicenowConnector(BaseConnector):
 
         try:
             r = requests.post(
-                f"{self._base_url}{self._api_uri}{endpoint}",  # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
+                f"{self._base_url}{self._api_uri}{endpoint}",
                 auth=auth,
                 data=data,
                 headers=headers,
                 params=params,
+                timeout=SERVICENOW_DEFAULT_REQUEST_TIMEOUT,
             )
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
@@ -479,7 +479,7 @@ class ServicenowConnector(BaseConnector):
 
         try:
             request_url = "{}{}".format(self._base_url, "/oauth_token.do")
-            r = requests.post(request_url, data=data)  # nosemgrep
+            r = requests.post(request_url, data=data, timeout=SERVICENOW_DEFAULT_REQUEST_TIMEOUT)
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             return (
@@ -505,7 +505,14 @@ class ServicenowConnector(BaseConnector):
             action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_API_UNSUPPORTED_METHOD, method=method)
 
         try:
-            r = request_func(f"{self._base_url}{self._api_uri}{endpoint}", auth=auth, json=data, headers=headers, params=params)
+            r = request_func(
+                f"{self._base_url}{self._api_uri}{endpoint}",
+                auth=auth,
+                json=data,
+                headers=headers,
+                params=params,
+                timeout=SERVICENOW_DEFAULT_REQUEST_TIMEOUT,
+            )
         except Exception as e:
             error_message = self._get_error_message_from_exception(e)
             return (
@@ -525,9 +532,11 @@ class ServicenowConnector(BaseConnector):
             self.debug_print("UnauthorizedOAuthTokenException")
             if self._try_oauth:
                 self._try_oauth = False
-                ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
+                ret_val, auth, refreshed_headers = self._get_authorization_credentials(action_result, force_new=True)
                 if phantom.is_fail(ret_val):
                     return RetVal(phantom.APP_ERROR, None)
+                headers = dict(headers)
+                headers.update(refreshed_headers)
                 return self._make_rest_call_helper(action_result, endpoint, params=params, data=data, headers=headers, method=method, auth=auth)
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
 
@@ -540,9 +549,11 @@ class ServicenowConnector(BaseConnector):
             self.debug_print("UnauthorizedOAuthTokenException")
             if self._try_oauth:
                 self._try_oauth = False
-                ret_val, auth, headers = self._get_authorization_credentials(action_result, force_new=True)
+                ret_val, auth, refreshed_headers = self._get_authorization_credentials(action_result, force_new=True)
                 if phantom.is_fail(ret_val):
                     return RetVal(phantom.APP_ERROR, None)
+                headers = dict(headers)
+                headers.update(refreshed_headers)
                 return self._upload_file_helper(action_result, endpoint, params=params, data=data, headers=headers, auth=auth)
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Unable to authorize with OAuth token"), None)
 
@@ -584,8 +595,16 @@ class ServicenowConnector(BaseConnector):
             self._access_token, self._refresh_token = None, None
             return RetVal(action_result.set_status(phantom.APP_ERROR, f"Error in token request. Error: {error_message}"), None)
 
-        self._access_token = response_json[SERVICENOW_ACCESS_TOKEN_STRING]
-        self._refresh_token = response_json[SERVICENOW_REFRESH_TOKEN_STRING]
+        if not isinstance(response_json, dict):
+            self._access_token, self._refresh_token = None, None
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Token endpoint returned a non-object JSON response"), None)
+
+        self._access_token = response_json.get(SERVICENOW_ACCESS_TOKEN_STRING)
+        self._refresh_token = response_json.get(SERVICENOW_REFRESH_TOKEN_STRING)
+        if not self._access_token or not self._refresh_token:
+            self._access_token, self._refresh_token = None, None
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Token endpoint response is missing required tokens"), None)
+
         self._state["oauth_token"] = response_json
         self._state["retrieval_time"] = datetime.now().strftime(DT_STR_FORMAT)
 
@@ -738,11 +757,10 @@ class ServicenowConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_ONE_PARAM_REQ)
 
         if short_desc:
-            data.update({"short_description": codecs.decode(short_desc, "unicode_escape")})
+            data.update({"short_description": short_desc})
 
         if desc:
-            json_description = codecs.decode(desc, "unicode_escape")
-            data.update({"description": f"{json_description}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
+            data.update({"description": f"{desc}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
         elif "description" in fields:
             field_description = fields.get(SERVICENOW_JSON_DESCRIPTION, "")
             data.update({"description": f"{field_description}\n\n{SERVICENOW_TICKET_FOOTNOTE}{self.get_container_id()}"})
@@ -807,17 +825,20 @@ class ServicenowConnector(BaseConnector):
             return RetVal(phantom.APP_SUCCESS, {})
 
         try:
-            fields = ast.literal_eval(fields)
-        except Exception as e:
-            error_message = self._get_error_message_from_exception(e)
-            return RetVal(
-                action_result.set_status(
-                    phantom.APP_ERROR,
-                    f"Error building fields dictionary: {error_message}. \
-                        Please ensure that provided input is in valid JSON format",
-                ),
-                None,
-            )
+            fields = json.loads(fields)
+        except json.JSONDecodeError:
+            try:
+                fields = ast.literal_eval(fields)
+            except Exception as e:
+                error_message = self._get_error_message_from_exception(e)
+                return RetVal(
+                    action_result.set_status(
+                        phantom.APP_ERROR,
+                        f"Error building fields dictionary: {error_message}. \
+                            Please ensure that provided input is in valid JSON format",
+                    ),
+                    None,
+                )
 
         if not isinstance(fields, dict):
             return RetVal(action_result.set_status(phantom.APP_ERROR, SERVICENOW_ERROR_FIELDS_JSON_PARSE), None)
@@ -1335,7 +1356,7 @@ class ServicenowConnector(BaseConnector):
         work_note = param.get("work_note")
 
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
-        data = {"work_notes": work_note.replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"').replace("\\b", "\b")}
+        data = {"work_notes": work_note}
 
         request_params = {}
         request_params["sysparm_display_value"] = True
@@ -1477,7 +1498,7 @@ class ServicenowConnector(BaseConnector):
 
         comment = param.get("comment")
         endpoint = SERVICENOW_TICKET_ENDPOINT.format(table_name, sys_id)
-        data = {"comments": comment.replace("\\n", "\n").replace("\\'", "'").replace('\\"', '"').replace("\\b", "\b")}
+        data = {"comments": comment}
 
         request_params = {}
         request_params["sysparm_display_value"] = True
@@ -1760,8 +1781,22 @@ class ServicenowConnector(BaseConnector):
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _sanitize_checkpoint_time(self, checkpoint, timezone_name=None):
+        try:
+            checkpoint_time = datetime.strptime(checkpoint, SERVICENOW_DATETIME_FORMAT)
+        except (TypeError, ValueError):
+            return None
+
+        checkpoint_timezone = ZoneInfo(timezone_name) if timezone_name else timezone.utc
+        checkpoint_time = checkpoint_time.replace(tzinfo=checkpoint_timezone)
+        current_time = datetime.now(checkpoint_timezone)
+        if checkpoint_time > current_time:
+            self.debug_print(f"ServiceNow checkpoint {checkpoint} is in the future; clamping it to the current time")
+            return current_time.strftime(SERVICENOW_DATETIME_FORMAT)
+        return checkpoint
+
     def _on_poll(self, param):
-        URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\\x00-\\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+        URI_REGEX = "[Hh][Tt][Tt][Pp][Ss]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#~]|[!*\\(\\),]|[^\\x00-\\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
         HASH_REGEX = "\\b[0-9a-fA-F]{32}\\b|\\b[0-9a-fA-F]{40}\\b|\\b[0-9a-fA-F]{64}\\b"
         IP_REGEX = "(?<![0-9A-Za-z_.-])\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}(?![0-9A-Za-z_.-])"
         IPV6_REGEX = "(?<![0-9A-Za-z:])((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
@@ -1817,6 +1852,14 @@ class ServicenowConnector(BaseConnector):
 
         if last_time and isinstance(last_time, float):
             last_time = datetime.fromtimestamp(last_time, timezone.utc).strftime(SERVICENOW_DATETIME_FORMAT)
+
+        if last_time:
+            sanitized_last_time = self._sanitize_checkpoint_time(last_time, config.get("timezone"))
+            if sanitized_last_time is None:
+                self._state.pop("last_time", None)
+            elif sanitized_last_time != last_time:
+                self._state["last_time"] = sanitized_last_time
+            last_time = sanitized_last_time
 
         # Build the query for the issue search (sysparm_query)
         query = "ORDERBYsys_updated_on"
@@ -1973,7 +2016,9 @@ class ServicenowConnector(BaseConnector):
                 if last_persisted_updated_on is None:
                     return action_result.set_status(phantom.APP_ERROR, "No updated time in last ingested incident.")
 
-                updated_time = last_persisted_updated_on
+                updated_time = self._sanitize_checkpoint_time(last_persisted_updated_on)
+                if updated_time is None:
+                    return action_result.set_status(phantom.APP_ERROR, "Invalid updated time in last ingested incident.")
 
                 if config.get("timezone"):
                     dt = datetime.strptime(updated_time, SERVICENOW_DATETIME_FORMAT).replace(tzinfo=timezone.utc)

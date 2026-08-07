@@ -162,46 +162,46 @@ and limitations under the License.
                       {{ catalog.sys_id }}
                       &nbsp;
                       <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                    </a>
-                  {% endfor %}
-                </td>
-                <td>
-                  <table class="wf-table-horizontal datatable">
-                    <thead>
-                      <tr>
-                        <th>Variable Name</th>
-                        <th>Variable ID</th>
-                        <th>Variable Value</th>
-                        <th>Mandatory</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for variable in data.variables %}
+                      </a>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    <table class="wf-table-horizontal datatable">
+                      <thead>
                         <tr>
-                          <td>{{ variable.name }}</td>
-                          <td>{{ variable.id }}</td>
-                          {% if variable.value %}
-                            <td>{{ variable.value }}</td>
-                          {% else %}
-                            <td>None</td>
-                          {% endif %}
-                          <td>{{ variable.mandatory }}</td>
+                          <th>Variable Name</th>
+                          <th>Variable ID</th>
+                          <th>Variable Value</th>
+                          <th>Mandatory</th>
                         </tr>
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% endif %}
-  {% endfor %}
-  <!-- loop for each result end -->
-</div>
-<!-- Main Div -->
-<script>
+                      </thead>
+                      <tbody>
+                        {% for variable in data.variables %}
+                          <tr>
+                            <td>{{ variable.name }}</td>
+                            <td>{{ variable.id }}</td>
+                            {% if variable.value %}
+                              <td>{{ variable.value }}</td>
+                            {% else %}
+                              <td>None</td>
+                            {% endif %}
+                            <td>{{ variable.mandatory }}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    {% endfor %}
+    <!-- loop for each result end -->
+  </div>
+  <!-- Main Div -->
+  <script>
     $.extend(true, $.fn.dataTable.defaults, {
         "searching": false,
         "bLengthChange": false,
@@ -219,6 +219,6 @@ and limitations under the License.
     });
     $.fn.DataTable.ext.pager.numbers_length = 5;
     $('.datatable').DataTable();
-</script>
+  </script>
 {% endblock %}
 <!-- Main Start Block -->
