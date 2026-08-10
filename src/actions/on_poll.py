@@ -103,14 +103,17 @@ def _format_time_query(operator: str, value: str) -> str:
     )
 
 
-def _sanitize_checkpoint_time(checkpoint: Any, timezone_value: Any = None) -> str | None:
+def _sanitize_checkpoint_time(
+    checkpoint: Any, timezone_value: Any = None
+) -> str | None:
+    checkpoint_timezone = _timezone_value(timezone_value) or timezone.utc
     try:
-        checkpoint_time = datetime.strptime(str(checkpoint), SERVICENOW_DATETIME_FORMAT)
+        checkpoint_time = datetime.strptime(
+            str(checkpoint), SERVICENOW_DATETIME_FORMAT
+        ).replace(tzinfo=checkpoint_timezone)
     except (TypeError, ValueError):
         return None
 
-    checkpoint_timezone = _timezone_value(timezone_value) or timezone.utc
-    checkpoint_time = checkpoint_time.replace(tzinfo=checkpoint_timezone)
     current_time = datetime.now(checkpoint_timezone)
     if checkpoint_time > current_time:
         logger.info(
