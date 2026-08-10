@@ -29,6 +29,8 @@ from soar_sdk.exceptions import ActionFailure
 from ..app import app, Asset
 from ..consts import TICKET_ENDPOINT
 from ..helpers import (
+    build_failed_attachment_result,
+    build_legacy_vault_failure_details,
     ServiceNowActionHelper,
     ServiceNowClient,
     parse_fields_json,
@@ -249,15 +251,6 @@ class UpdateTicketSummary(ActionOutput):
     )
 
 
-def _build_legacy_vault_failure_details(
-    vault_errors: dict[str, str],
-) -> dict[str, list[str]]:
-    vault_failure_details: dict[str, list[str]] = {}
-    for vault_id, error in vault_errors.items():
-        vault_failure_details.setdefault(error, []).append(vault_id)
-    return vault_failure_details
-
-
 def _build_failed_attachment_result(
     params: UpdateTicketParams,
     result: dict,
@@ -265,7 +258,7 @@ def _build_failed_attachment_result(
     successfully_added_attachments_count: int | None,
     vault_errors: dict[str, str],
 ) -> ActionResult:
-    vault_failure_details = _build_legacy_vault_failure_details(vault_errors)
+    vault_failure_details = build_legacy_vault_failure_details(vault_errors)
     message = next(reversed(vault_failure_details), "Failed to attach files")
     if fields_updated:
         message = (
@@ -273,21 +266,16 @@ def _build_failed_attachment_result(
             "attachment(s)"
         )
 
-    action_result = ActionResult(
-        status=False,
+    return build_failed_attachment_result(
+        params=params,
         message=message,
-        param=params.model_dump(mode="json"),
-    )
-    if fields_updated:
-        action_result.add_data(result)
-    action_result.set_summary(
-        {
+        result=result if fields_updated else None,
+        summary={
             "fields_updated": fields_updated,
             "successfully_added_attachments_count": successfully_added_attachments_count,
             "vault_failure_details": vault_failure_details,
-        }
+        },
     )
-    return action_result
 
 
 @app.action(

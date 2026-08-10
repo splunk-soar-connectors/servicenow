@@ -18,13 +18,20 @@ import codecs
 from pydantic import Field
 from soar_sdk.abstract import SOARClient
 from soar_sdk.params import Param, Params
-from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionOutput
+from soar_sdk.action_results import (
+    ActionOutput,
+    ActionResult,
+    OutputField,
+    PermissiveActionOutput,
+)
 from soar_sdk.logging import getLogger
 from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
 from ..consts import TABLE_ENDPOINT
 from ..helpers import (
+    build_failed_attachment_result,
+    build_legacy_vault_failure_details,
     ServiceNowActionHelper,
     ServiceNowClient,
     parse_fields_json,
@@ -237,6 +244,31 @@ class CreateTicketOutput(PermissiveActionOutput):
     work_start: str | None = None
 
 
+def _build_failed_attachment_result(
+    params: CreateTicketParams,
+    result: dict,
+    created_ticket_id: str,
+    successfully_added_attachments_count: int | None,
+    vault_errors: dict[str, str],
+) -> ActionResult:
+    vault_failure_details = build_legacy_vault_failure_details(vault_errors)
+    message = (
+        f"Successfully created ticket {created_ticket_id}, "
+        "but failed to add attachment(s)"
+    )
+
+    return build_failed_attachment_result(
+        params=params,
+        message=message,
+        result=result,
+        summary={
+            "created_ticket_id": created_ticket_id,
+            "successfully_added_attachments_count": successfully_added_attachments_count,
+            "vault_failure_details": vault_failure_details,
+        },
+    )
+
+
 @app.action(
     description="Create a new ticket/record",
     action_type="generic",
@@ -318,24 +350,22 @@ def create_ticket(
         successfully_added_attachments_count = len(attachment_details)
 
         if vault_errors:
-            vault_failure_details = ", ".join(
-                f"{vid}: {err}" for vid, err in vault_errors.items()
-            )
             message = (
                 f"Successfully created ticket {created_ticket_id}, "
                 "but failed to add attachment(s)"
             )
-            logger.error("%s: %s", message, vault_failure_details)
-
-            soar.set_message(message)
-            soar.set_summary(
-                CreateTicketSummary(
-                    created_ticket_id=created_ticket_id,
-                    successfully_added_attachments_count=successfully_added_attachments_count,
-                    vault_failure_details=vault_failure_details,
-                )
+            logger.error(
+                "%s: %s",
+                message,
+                ", ".join(f"{vid}: {err}" for vid, err in vault_errors.items()),
             )
-            raise ActionFailure(message)
+            return _build_failed_attachment_result(
+                params,
+                result,
+                created_ticket_id,
+                successfully_added_attachments_count,
+                vault_errors,
+            )
 
     soar.set_message(message)
     soar.set_summary(

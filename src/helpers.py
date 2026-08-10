@@ -17,12 +17,13 @@
 import ast
 import json
 import re
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 import httpx
 from soar_sdk.abstract import SOARClient
+from soar_sdk.action_results import ActionResult
 from soar_sdk.auth import BasicAuth, OAuthBearerAuth
 from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
@@ -565,6 +566,32 @@ class ServiceNowActionHelper:
                 logger.error(error_msg)
 
         return attachment_details, vault_errors
+
+
+def build_legacy_vault_failure_details(
+    vault_errors: dict[str, str],
+) -> dict[str, list[str]]:
+    vault_failure_details: dict[str, list[str]] = {}
+    for vault_id, error in vault_errors.items():
+        vault_failure_details.setdefault(error, []).append(vault_id)
+    return vault_failure_details
+
+
+def build_failed_attachment_result(
+    params: Any,
+    message: str,
+    summary: dict,
+    result: dict | None = None,
+) -> ActionResult:
+    action_result = ActionResult(
+        status=False,
+        message=message,
+        param=params.model_dump(mode="json"),
+    )
+    if result:
+        action_result.add_data(result)
+    action_result.set_summary(summary)
+    return action_result
 
 
 # Module-level utility functions for JSON field parsing
