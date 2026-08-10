@@ -204,10 +204,14 @@ class ServiceNowClient:
 
         return response_json
 
-    def _extract_error_from_json(self, response_json: dict) -> str:
+    def _extract_error_from_json(self, response_json: Any) -> str:
         """
         Extract error message from ServiceNow JSON error response
         """
+        if not isinstance(response_json, dict):
+            error_str = str(response_json)
+            return error_str[:200] + "..." if len(error_str) > 200 else error_str
+
         # Standard ServiceNow REST API error format
         error = response_json.get("error", {})
         if isinstance(error, dict):

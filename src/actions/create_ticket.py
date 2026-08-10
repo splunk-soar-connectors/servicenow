@@ -14,7 +14,6 @@
 
 """Create Ticket Action"""
 
-import codecs
 from pydantic import Field
 from soar_sdk.abstract import SOARClient
 from soar_sdk.params import Param, Params
@@ -301,16 +300,13 @@ def create_ticket(
         )
 
     if params.short_description is not None:
-        data["short_description"] = codecs.decode(
-            params.short_description, "unicode_escape"
-        )
+        data["short_description"] = params.short_description
 
     container_id = soar.get_executing_container_id()
     footnote = f"\n\nAdded by Phantom for container id: {container_id}"
 
     if params.description:
-        decoded_desc = codecs.decode(params.description, "unicode_escape")
-        data["description"] = f"{decoded_desc}{footnote}"
+        data["description"] = f"{params.description}{footnote}"
     elif "description" in fields:
         field_description = fields.get("description", "")
         data["description"] = f"{field_description}{footnote}"

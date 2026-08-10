@@ -244,13 +244,7 @@ def add_work_note(
             ticket_number=sys_id,
         )
 
-    work_note = (
-        params.work_note.replace("\\n", "\n")
-        .replace("\\'", "'")
-        .replace('\\"', '"')
-        .replace("\\b", "\b")
-    )
-    data = {"work_notes": work_note}
+    data = {"work_notes": params.work_note}
 
     sys_id = validate_path_segment("sys_id", sys_id)
     endpoint = TICKET_ENDPOINT.format(table_name, sys_id)

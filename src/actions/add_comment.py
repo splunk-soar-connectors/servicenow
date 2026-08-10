@@ -255,17 +255,9 @@ def add_comment(
             table_name=table_name,
             ticket_number=params.id,
         )
-    # Replace: \n -> newline, \' -> ', \" -> ", \b -> backspace
-    processed_comment = (
-        params.comment.replace("\\n", "\n")
-        .replace("\\'", "'")
-        .replace('\\"', '"')
-        .replace("\\b", "\b")
-    )
-
     sys_id = validate_path_segment("sys_id", sys_id)
     endpoint = TICKET_ENDPOINT.format(table_name, sys_id)
-    data = {"comments": processed_comment}
+    data = {"comments": params.comment}
     request_params = {"sysparm_display_value": True}
     response = client.make_rest_call(
         endpoint=endpoint,

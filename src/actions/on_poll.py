@@ -36,7 +36,7 @@ from ..helpers import ServiceNowClient, validate_path_segment
 logger = getLogger()
 
 # Regex patterns for artifact extraction
-URI_REGEX = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#]|[!*\\(\\),]|[^\x00-\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
+URI_REGEX = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+#~]|[!*\\(\\),]|[^\x00-\x7f]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 HASH_REGEX = r"\b[0-9a-fA-F]{32}\b|\b[0-9a-fA-F]{40}\b|\b[0-9a-fA-F]{64}\b"
 IP_REGEX = r"(?<![0-9A-Za-z_.-])\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?![0-9A-Za-z_.-])"
 IPV6_REGEX = "(?<![0-9A-Za-z:])((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|"
@@ -101,6 +101,23 @@ def _format_time_query(operator: str, value: str) -> str:
         f"^sys_updated_on{operator}"
         f"javascript:gs.dateGenerate('{query_date}','{query_time}')"
     )
+
+
+def _sanitize_checkpoint_time(checkpoint: Any, timezone_value: Any = None) -> str | None:
+    try:
+        checkpoint_time = datetime.strptime(str(checkpoint), SERVICENOW_DATETIME_FORMAT)
+    except (TypeError, ValueError):
+        return None
+
+    checkpoint_timezone = _timezone_value(timezone_value) or timezone.utc
+    checkpoint_time = checkpoint_time.replace(tzinfo=checkpoint_timezone)
+    current_time = datetime.now(checkpoint_timezone)
+    if checkpoint_time > current_time:
+        logger.info(
+            f"ServiceNow checkpoint {checkpoint} is in the future; clamping it to the current time"
+        )
+        return current_time.strftime(SERVICENOW_DATETIME_FORMAT)
+    return str(checkpoint)
 
 
 def _strip_format_controls(value: Any) -> Any:
@@ -189,6 +206,14 @@ def on_poll(
     # Legacy state may have stored last_time as epoch seconds.
     if last_time and isinstance(last_time, float):
         last_time = _format_utc_timestamp(last_time)
+
+    if last_time:
+        sanitized_last_time = _sanitize_checkpoint_time(last_time, timezone_value)
+        if sanitized_last_time is None:
+            state.pop("last_time", None)
+        elif sanitized_last_time != last_time:
+            state["last_time"] = sanitized_last_time
+        last_time = sanitized_last_time
 
     query = "ORDERBYsys_updated_on"
     scheduled_first_run = False
@@ -379,7 +404,9 @@ def on_poll(
         if "sys_updated_on" not in issues[-1]:
             raise Exception("No updated time in last ingested incident.")
 
-        updated_time = issues[-1]["sys_updated_on"]
+        updated_time = _sanitize_checkpoint_time(issues[-1]["sys_updated_on"])
+        if updated_time is None:
+            raise Exception("Invalid updated time in last ingested incident.")
 
         # Apply timezone conversion if configured
         if timezone_value:
