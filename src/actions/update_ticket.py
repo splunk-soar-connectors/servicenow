@@ -324,14 +324,11 @@ def update_ticket(
 
     if fields:
         logger.info("Updating ticket with the provided fields")
-        try:
-            response = client.make_rest_call(
-                endpoint,
-                data=fields,
-                method="put",
-            )
-        except Exception as e:
-            raise ActionFailure(f"Failed to update ticket: {e}") from e
+        response = client.make_rest_call(
+            endpoint,
+            data=fields,
+            method="put",
+        )
 
         if not response.get("result"):
             raise ActionFailure("Invalid response from ServiceNow - no result data")

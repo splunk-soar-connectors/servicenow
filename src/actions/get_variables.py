@@ -92,18 +92,14 @@ def get_variables(
     endpoint = TABLE_ENDPOINT.format(ITEM_OPT_MTOM_TABLE)
     request_params = {
         "sysparm_query": f"request_item={params.sys_id}",
-        "sysparm_display_value": "all",
     }
 
     logger.debug(f"Querying {endpoint} with params: {request_params}")
 
-    try:
-        response = client.make_rest_call(
-            endpoint=endpoint,
-            params=request_params,
-        )
-    except Exception as e:
-        raise ActionFailure(f"Failed to query {ITEM_OPT_MTOM_TABLE}: {e}") from e
+    response = client.make_rest_call(
+        endpoint=endpoint,
+        params=request_params,
+    )
 
     # Check if results were returned
     if not response.get("result"):
@@ -172,13 +168,9 @@ def _fetch_variable_details(
     endpoint = TICKET_ENDPOINT.format(ITEM_OPT_TABLE, item_option_value)
     logger.debug(f"Fetching variable details from: {endpoint}")
 
-    try:
-        response = client.make_rest_call(
-            endpoint=endpoint,
-            params={"sysparm_display_value": "all"},
-        )
-    except Exception as e:
-        raise ActionFailure(f"Failed to fetch variable details: {e}") from e
+    response = client.make_rest_call(
+        endpoint=endpoint,
+    )
 
     # Check if result and value are present
     if not response.get("result") or response["result"].get("value") is None:
@@ -206,10 +198,6 @@ def _fetch_variable_details(
         logger.debug("No question available for this variable")
         return variable_value, ""
 
-    logger.debug(
-        f"Found variable_value: '{variable_value}', question_id: '{question_id}'"
-    )
-
     return variable_value, question_id
 
 
@@ -224,10 +212,7 @@ def _fetch_question_text(
     endpoint = TICKET_ENDPOINT.format(ITEM_OPT_NEW_TABLE, question_id)
     logger.debug(f"Fetching question text from: {endpoint}")
 
-    try:
-        response = client.make_rest_call(endpoint=endpoint)
-    except Exception as e:
-        raise ActionFailure(f"Failed to fetch question text: {e}") from e
+    response = client.make_rest_call(endpoint=endpoint)
 
     # Check if result and question_text are present
     if not response.get("result") or response["result"].get("question_text") is None:
@@ -238,7 +223,4 @@ def _fetch_question_text(
         )
         raise ActionFailure(error_msg)
 
-    question_text = response["result"]["question_text"]
-    logger.debug(f"Found question_text: '{question_text}'")
-
-    return question_text
+    return response["result"]["question_text"]

@@ -315,14 +315,11 @@ def create_ticket(
 
     client = ServiceNowClient(asset)
 
-    try:
-        response = client.make_rest_call(
-            endpoint,
-            data=data,
-            method="post",
-        )
-    except Exception as e:
-        raise ActionFailure(f"Failed to create ticket: {e}") from e
+    response = client.make_rest_call(
+        endpoint,
+        data=data,
+        method="post",
+    )
 
     if not (result := response.get("result")):
         raise ActionFailure("Invalid response from ServiceNow - no result data")

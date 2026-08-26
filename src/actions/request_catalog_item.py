@@ -159,13 +159,10 @@ def request_catalog_item(
     logger.info(f"Fetching catalog item details for sys_id: {sys_id}")
     endpoint = CATALOG_ITEMS_ENDPOINT.format(sys_id)
 
-    try:
-        response = client.make_rest_call(
-            endpoint,
-            api_uri=SC_API_URI,
-        )
-    except Exception as e:
-        raise ActionFailure(f"Failed to fetch catalog item details: {e}") from e
+    response = client.make_rest_call(
+        endpoint,
+        api_uri=SC_API_URI,
+    )
 
     if not response.get("result"):
         raise ActionFailure(f"No data found for catalog item with sys_id: {sys_id}")
@@ -213,15 +210,12 @@ def request_catalog_item(
     if variables_dict:
         order_data["variables"] = variables_dict
 
-    try:
-        order_response = client.make_rest_call(
-            order_endpoint,
-            data=order_data,
-            method="post",
-            api_uri=SC_API_URI,
-        )
-    except Exception as e:
-        raise ActionFailure(f"Failed to order catalog item: {e}") from e
+    order_response = client.make_rest_call(
+        order_endpoint,
+        data=order_data,
+        method="post",
+        api_uri=SC_API_URI,
+    )
 
     if not order_response.get("result"):
         raise ActionFailure("Invalid response from ServiceNow - no order result data")
@@ -243,13 +237,10 @@ def request_catalog_item(
     request_sys_id = validate_path_segment("sys_id", request_sys_id)
     ticket_endpoint = TICKET_ENDPOINT.format(table, request_sys_id)
 
-    try:
-        ticket_response = client.make_rest_call(
-            ticket_endpoint,
-            api_uri=API_URI,
-        )
-    except Exception as e:
-        raise ActionFailure(f"Failed to fetch request details: {e}") from e
+    ticket_response = client.make_rest_call(
+        ticket_endpoint,
+        api_uri=API_URI,
+    )
 
     if not ticket_response.get("result"):
         raise ActionFailure("Failed to get request details from ServiceNow")
@@ -276,7 +267,7 @@ def _parse_variables(variables_str: Optional[str]) -> Optional[dict]:
         # Fall back to ast.literal_eval for backward compatibility
         try:
             variables = ast.literal_eval(variables_str)
-        except Exception as e:
+        except (ValueError, SyntaxError) as e:
             raise ActionFailure(
                 f"Error parsing variables parameter: {e}. "
                 "Please ensure the input is valid JSON format"

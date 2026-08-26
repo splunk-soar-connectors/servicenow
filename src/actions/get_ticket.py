@@ -22,7 +22,7 @@ from soar_sdk.logging import getLogger
 from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
-from ..helpers import ServiceNowClient, validate_path_segment
+from ..helpers import ServiceNowAPIError, ServiceNowClient, validate_path_segment
 from ..consts import (
     SERVICENOW_TICKET_ID_MESSAGE,
     SERVICENOW_INVALID_PARAMETER_MESSAGE,
@@ -294,7 +294,6 @@ def get_ticket(
                 ticket_number=ticket_id,
             )
         except TicketNotFoundException:
-            # Ticket not found - use legacy error message
             raise ActionFailure(SERVICENOW_TICKET_ID_MESSAGE) from None
         # Other exceptions (ActionFailure for auth/network errors) propagate naturally
 
@@ -307,7 +306,6 @@ def get_ticket(
     response = client.make_rest_call(endpoint=endpoint)
 
     if not response.get("result"):
-        # Use legacy error message for invalid/missing ticket
         raise ActionFailure(SERVICENOW_INVALID_PARAMETER_MESSAGE)
 
     ticket = response["result"]
@@ -322,17 +320,19 @@ def get_ticket(
             endpoint="/attachment",
             params=attachment_params,
         )
-
+    except ServiceNowAPIError as error:
+        if error.status_code != 404:
+            raise
+        logger.warning(
+            "Attachment endpoint returned HTTP 404; continuing without attachments"
+        )
+    else:
         if attach_response.get("result"):
             attachment_count = len(attach_response["result"])
             ticket["attachment_details"] = attach_response["result"]
             logger.debug(f"Retrieved {attachment_count} attachment(s)")
         else:
             logger.debug("No attachments found for this ticket")
-    except Exception as e:
-        # Some versions of ServiceNow may fail the attachment query if not present
-        # This is not a fatal error, so we just skip it
-        logger.warning(f"Failed to retrieve attachments: {e!s}")
 
     # Get comments and work notes from sys_journal_field
     # Note: The legacy action fetches these, but they may already be in the
@@ -353,14 +353,12 @@ def get_ticket(
             endpoint="/table/sys_journal_field",
             params=journal_params,
         )
-
-    except Exception as e:
-        # Match legacy behavior: log the error but don't fail the action
+    except ServiceNowAPIError as error:
+        if error.status_code != 404:
+            raise
         logger.warning(
-            f"Unable to fetch comments and work_notes for ticket sys_id '{ticket_sys_id}'. Error: {e}"
+            "Journal endpoint returned HTTP 404; continuing without comments and work notes"
         )
-        # Process journal entries into comments_section and worknotes_section arrays
-        # This matches legacy behavior even though these fields are not in the manifest
     if journal_response.get("result"):
         for item in journal_response.get("result", []):
             if item.get("element") == "comments":

@@ -25,7 +25,8 @@ import httpx
 from soar_sdk.abstract import SOARClient
 from soar_sdk.action_results import ActionResult
 from soar_sdk.auth import BasicAuth, OAuthBearerAuth
-from soar_sdk.exceptions import ActionFailure
+from soar_sdk.auth.client import OAuthClientError
+from soar_sdk.exceptions import ActionFailure, SoarAPIError
 from soar_sdk.logging import getLogger
 
 from .consts import (
@@ -51,6 +52,14 @@ if TYPE_CHECKING:
 logger = getLogger()
 
 PATH_SEGMENT_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
+
+
+class ServiceNowAPIError(ActionFailure):
+    """A non-success response returned by the ServiceNow API."""
+
+    def __init__(self, status_code: int, message: str):
+        self.status_code = status_code
+        super().__init__(message)
 
 
 def validate_path_segment(name: str, value: object) -> str:
@@ -184,13 +193,14 @@ class ServiceNowClient:
         # Try to parse response as JSON
         try:
             response_json = response.json()
-        except Exception as e:
+        except json.JSONDecodeError as e:
             # Non-JSON response - check for error status codes
             if response.status_code >= 400:
                 # Extract a clean error message from HTML or text response
                 error_message = self._extract_error_from_response(response)
-                raise ActionFailure(
-                    f"ServiceNow API request failed (HTTP {response.status_code}): {error_message}"
+                raise ServiceNowAPIError(
+                    response.status_code,
+                    f"ServiceNow API request failed (HTTP {response.status_code}): {error_message}",
                 ) from e
             # Non-error non-JSON response (e.g., 204 No Content)
             return {}
@@ -198,8 +208,9 @@ class ServiceNowClient:
         # Handle error status codes with JSON responses
         if response.status_code >= 400:
             error_msg = self._extract_error_from_json(response_json)
-            raise ActionFailure(
-                f"ServiceNow API error (HTTP {response.status_code}): {error_msg}"
+            raise ServiceNowAPIError(
+                response.status_code,
+                f"ServiceNow API error (HTTP {response.status_code}): {error_msg}",
             )
 
         return response_json
@@ -279,8 +290,8 @@ class ServiceNowClient:
             raise
         except httpx.RequestError as e:
             raise ActionFailure(f"Error connecting to server: {e}") from e
-        except Exception as e:
-            raise ActionFailure(f"Error connecting to server: {e}") from e
+        except OAuthClientError as e:
+            raise ActionFailure(f"ServiceNow authentication failed: {e}") from e
 
         return self._process_response(response)
 
@@ -473,7 +484,7 @@ class ServiceNowClient:
             if response.status_code >= 400:
                 try:
                     error_message = self._extract_error_from_json(response.json())
-                except Exception:
+                except json.JSONDecodeError:
                     error_message = self._extract_error_from_response(response)
 
                 error_message = (
@@ -486,12 +497,16 @@ class ServiceNowClient:
             try:
                 response_json = response.json()
                 return True, response_json.get("result", {}), None
-            except Exception as e:
+            except json.JSONDecodeError as e:
                 error_message = f"Failed to parse attachment upload response: {e}"
                 logger.error(error_message)
                 return False, None, error_message
 
-        except Exception as e:
+        except OAuthClientError as e:
+            error_message = f"ServiceNow authentication failed: {e}"
+            logger.error(error_message)
+            return False, None, error_message
+        except httpx.RequestError as e:
             error_message = f"Error uploading attachment: {e}"
             logger.error(error_message)
             return False, None, error_message
@@ -564,7 +579,7 @@ class ServiceNowActionHelper:
                         error_msg,
                     )
 
-            except Exception as e:
+            except (SoarAPIError, OSError) as e:
                 error_msg = f"Error attaching vault_id {vault_id}: {e}"
                 vault_errors[vault_id] = str(e)
                 logger.error(error_msg)
@@ -621,7 +636,7 @@ def parse_fields_json(fields_str: Optional[str]) -> dict:
         # Fall back to ast.literal_eval for backward compatibility
         try:
             fields = ast.literal_eval(fields_str)
-        except Exception as e:
+        except (ValueError, SyntaxError) as e:
             raise ActionFailure(
                 f"Error parsing fields parameter: {e}. "
                 "Please ensure the input is valid JSON format"
