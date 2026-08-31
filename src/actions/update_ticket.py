@@ -32,10 +32,10 @@ from ..helpers import (
     build_failed_attachment_result,
     build_legacy_vault_failure_details,
     ServiceNowActionHelper,
-    ServiceNowClient,
     parse_fields_json,
     validate_path_segment,
 )
+from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 

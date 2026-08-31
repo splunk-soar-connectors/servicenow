@@ -19,9 +19,9 @@ from soar_sdk.params import Param, Params
 from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionOutput
 from soar_sdk.logging import getLogger
 
-from .. import helpers
 from ..app import app, Asset
 from ..consts import TABLE_ENDPOINT
+from ..servicenow_client import ServiceNowClient
 
 
 class QueryUsersParams(Params):
@@ -132,7 +132,7 @@ def query_users(
         f"Querying users with params: query={params.query}, user_id={params.user_id}, username={params.username}, max_results={params.max_results}"
     )
 
-    client = helpers.ServiceNowClient(asset)
+    client = ServiceNowClient(asset)
 
     query_param = params.query or ""
 

@@ -23,7 +23,7 @@ from soar_sdk.logging import getLogger
 from soar_sdk.params import MakeRequestParams, Param
 
 from ..app import Asset, app
-from ..helpers import ServiceNowClient
+from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 

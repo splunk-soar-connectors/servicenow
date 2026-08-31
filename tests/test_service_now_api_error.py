@@ -23,8 +23,8 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from src.consts import BASIC_AUTH_TYPE
-import src.helpers as helpers
-from src.helpers import ServiceNowAPIError, ServiceNowClient
+import src.servicenow_client as servicenow_client
+from src.servicenow_client import ServiceNowAPIError, ServiceNowClient
 
 
 class BasicAuthAsset:
@@ -50,7 +50,7 @@ def test_non_success_response_preserves_service_now_status_code(monkeypatch):
         def request(self, **_kwargs):
             return httpx.Response(403, json={"error": {"message": "Forbidden"}})
 
-    monkeypatch.setattr(helpers.httpx, "Client", MockClient)
+    monkeypatch.setattr(servicenow_client.httpx, "Client", MockClient)
 
     with pytest.raises(ServiceNowAPIError) as exc_info:
         ServiceNowClient(BasicAuthAsset()).make_rest_call("/table/incident")

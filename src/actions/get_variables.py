@@ -24,7 +24,8 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import TABLE_ENDPOINT, TICKET_ENDPOINT
-from ..helpers import ServiceNowClient, validate_path_segment
+from ..helpers import validate_path_segment
+from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 

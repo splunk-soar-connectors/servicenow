@@ -23,7 +23,8 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import SC_CATALOG_ENDPOINT, SC_CATEGORY_ENDPOINT, DEFAULT_MAX_LIMIT
-from ..helpers import ServiceNowClient, validate_positive_integer
+from ..helpers import validate_positive_integer
+from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 

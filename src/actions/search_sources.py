@@ -27,7 +27,7 @@ from ..consts import (
     SEARCH_MAX_LIMIT,
     MAX_PAGES,
 )
-from ..helpers import ServiceNowClient
+from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 

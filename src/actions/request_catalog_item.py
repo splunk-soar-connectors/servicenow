@@ -31,7 +31,8 @@ from ..consts import (
     SC_API_URI,
     API_URI,
 )
-from ..helpers import ServiceNowClient, validate_path_segment
+from ..helpers import validate_path_segment
+from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 

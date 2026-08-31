@@ -25,7 +25,7 @@ from ..consts import (
     TEST_CONNECTIVITY_SUCCESS,
     TEST_CONNECTIVITY_FAIL,
 )
-from ..helpers import ServiceNowClient
+from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 

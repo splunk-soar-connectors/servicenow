@@ -22,12 +22,13 @@ from soar_sdk.logging import getLogger
 from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
-from ..helpers import ServiceNowAPIError, ServiceNowClient, validate_path_segment
+from ..helpers import validate_path_segment
 from ..consts import (
     SERVICENOW_TICKET_ID_MESSAGE,
     SERVICENOW_INVALID_PARAMETER_MESSAGE,
     TicketNotFoundException,
 )
+from ..servicenow_client import ServiceNowAPIError, ServiceNowClient
 
 logger = getLogger()
 
