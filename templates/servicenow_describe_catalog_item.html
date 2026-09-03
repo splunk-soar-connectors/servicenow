@@ -91,7 +91,8 @@ and limitations under the License.
     }
 
   </style>
-  <div class="servicenow"
+  <div id="servicenow-{{ this_widget_uuid }}"
+       class="servicenow"
        style="overflow: auto;
               width: 100%;
               height: 100%;
@@ -218,7 +219,7 @@ and limitations under the License.
         }
     });
     $.fn.DataTable.ext.pager.numbers_length = 5;
-    $('.datatable').DataTable();
+    $('#servicenow-{{ this_widget_uuid }}').find('.datatable').DataTable();
   </script>
 {% endblock %}
 <!-- Main Start Block -->

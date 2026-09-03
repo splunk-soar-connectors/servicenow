@@ -105,7 +105,9 @@ def make_request(
     except Exception as e:
         raise ActionFailure(f"Authentication configuration error: {e}") from e
 
-    merged_headers: dict[str, str] = {"Content-Type": "application/json"}
+    # HTTP header names are case-insensitive. httpx.Headers preserves that
+    # contract when user-supplied headers override the default.
+    merged_headers = httpx.Headers({"Content-Type": "application/json"})
 
     query_params: dict | None = None
     if params.query_parameters:
@@ -132,7 +134,7 @@ def make_request(
     json_body: dict | None = None
     raw_body: str | None = None
     if params.body:
-        content_type = merged_headers.get("Content-Type", "").lower()
+        content_type = merged_headers.get("content-type", "").lower()
         if "json" in content_type:
             try:
                 json_body = json.loads(params.body)

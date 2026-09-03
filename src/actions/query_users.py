@@ -20,7 +20,8 @@ from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionO
 from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
-from ..consts import TABLE_ENDPOINT
+from ..consts import DEFAULT_MAX_LIMIT, TABLE_ENDPOINT
+from ..helpers import validate_positive_integer
 from ..servicenow_client import ServiceNowClient
 
 
@@ -31,7 +32,7 @@ class QueryUsersParams(Params):
     )
     user_id: str = Param(description="Query by user system ID", required=False)
     username: str = Param(description="Query by username", required=False)
-    max_results: float = Param(
+    max_results: int = Param(
         description="Max number of records to return", required=False, default=100
     )
 
@@ -159,7 +160,9 @@ def query_users(
             payload["sysparm_query"] = query_param
             logger.debug(f"Using query: {query_param}")
 
-    limit = int(params.max_results) if params.max_results else 100
+    limit = validate_positive_integer(
+        "max_results", params.max_results, DEFAULT_MAX_LIMIT
+    )
 
     logger.debug(f"Fetching users from endpoint: {endpoint} with limit: {limit}")
     users = client.paginator(endpoint, payload=payload, limit=limit)

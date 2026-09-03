@@ -61,7 +61,7 @@ repos:
         exclude: "README.md"
   # Central hooks
   - repo: https://github.com/phantomcyber/dev-cicd-tools
-    rev: v2.2.9
+    rev: ed8965bcf0102232d4c45b0775ff1e1ad2fedc99  # pragma: allowlist secret
     hooks:
       - id: build-docs
         language: python

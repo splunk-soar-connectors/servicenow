@@ -73,12 +73,37 @@ IPV6_REGEX += (
 
 SERVICENOW_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 SERVICENOW_DEFAULT_TABLE = "incident"
+UTC_CHECKPOINT_FIELD = "last_time_epoch_ms"
 
 
 def _format_utc_timestamp(timestamp: float) -> str:
     return datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime(
         SERVICENOW_DATETIME_FORMAT
     )
+
+
+def _format_epoch_checkpoint(checkpoint: Any) -> str | None:
+    """Format a UTC epoch-millisecond checkpoint for a ServiceNow query."""
+    if isinstance(checkpoint, bool):
+        return None
+    try:
+        checkpoint_ms = int(checkpoint)
+    except (TypeError, ValueError):
+        return None
+    if checkpoint_ms <= 0:
+        return None
+    return _format_utc_timestamp(checkpoint_ms / 1000.0)
+
+
+def _parse_utc_checkpoint(timestamp: str) -> int | None:
+    """Convert a UTC ServiceNow timestamp into epoch milliseconds."""
+    try:
+        parsed = datetime.strptime(timestamp, SERVICENOW_DATETIME_FORMAT).replace(
+            tzinfo=timezone.utc
+        )
+    except (TypeError, ValueError):
+        return None
+    return int(parsed.timestamp() * 1000)
 
 
 def _timezone_value(timezone_value: Any) -> ZoneInfo | None:
@@ -89,14 +114,17 @@ def _timezone_value(timezone_value: Any) -> ZoneInfo | None:
     return ZoneInfo(str(timezone_value))
 
 
-def _format_service_now_time(timestamp: float, timezone_value: Any = None) -> str:
-    dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
-    if timezone_obj := _timezone_value(timezone_value):
-        dt = dt.astimezone(timezone_obj)
-    return dt.strftime(SERVICENOW_DATETIME_FORMAT)
+def _format_service_now_time(timestamp: float) -> str:
+    """Format an SDK epoch timestamp as a UTC ServiceNow query value."""
+    return datetime.fromtimestamp(timestamp, tz=timezone.utc).strftime(
+        SERVICENOW_DATETIME_FORMAT
+    )
 
 
-def _format_time_query(operator: str, value: str) -> str:
+def _format_time_query(operator: str, value: str, timezone_value: Any = None) -> str:
+    if not timezone_value:
+        return f"^sys_updated_on{operator}{value}"
+
     query_date, query_time = value.split(" ")
     return (
         f"^sys_updated_on{operator}"
@@ -162,7 +190,7 @@ def migrate_legacy_ingest_state(asset: Asset) -> None:
     """Seed SDK ingest state from legacy flat connector state after upgrade."""
     state = asset.ingest_state
 
-    needs_last_time = "last_time" not in state
+    needs_last_time = "last_time" not in state and UTC_CHECKPOINT_FIELD not in state
     needs_first_run = "first_run" not in state
 
     if not needs_last_time and not needs_first_run:
@@ -206,6 +234,17 @@ def on_poll(
     # specifically for ingestion-related data like last_time
     state = asset.ingest_state
     last_time = state.get("last_time")
+    utc_checkpoint = state.get(UTC_CHECKPOINT_FIELD)
+    using_utc_checkpoint = utc_checkpoint is not None
+
+    if using_utc_checkpoint:
+        last_time = _format_epoch_checkpoint(utc_checkpoint)
+        if last_time is None:
+            logger.warning(
+                f"Invalid {UTC_CHECKPOINT_FIELD} value; falling back to legacy last_time"
+            )
+            using_utc_checkpoint = False
+            last_time = state.get("last_time")
 
     # Legacy state may have stored last_time as epoch seconds.
     if last_time and isinstance(last_time, float):
@@ -236,17 +275,13 @@ def on_poll(
 
         # If start_time provided (epoch milliseconds), use it for filtering
         if params.start_time:
-            start_time_str = _format_service_now_time(
-                params.start_time / 1000.0, timezone_value
-            )
+            start_time_str = _format_service_now_time(params.start_time / 1000.0)
             query += _format_time_query(">=", start_time_str)
             logger.info(f"Using provided start_time: {start_time_str}")
 
         # If end_time provided (epoch milliseconds), add upper bound filter
         if params.end_time:
-            end_time_str = _format_service_now_time(
-                params.end_time / 1000.0, timezone_value
-            )
+            end_time_str = _format_service_now_time(params.end_time / 1000.0)
             query += _format_time_query("<=", end_time_str)
             logger.info(f"Using provided end_time: {end_time_str}")
 
@@ -259,7 +294,8 @@ def on_poll(
         # Subsequent scheduled polls
         if last_time and len(last_time.split(" ")) == 2:
             # Add time-based filter from state
-            query += _format_time_query(">=", last_time)
+            query_timezone = None if using_utc_checkpoint else timezone_value
+            query += _format_time_query(">=", last_time, query_timezone)
             max_tickets = int(asset.max_container)
             logger.info(
                 f"Scheduled poll: fetching up to {max_tickets} tickets updated after {last_time}"
@@ -408,9 +444,16 @@ def on_poll(
         if "sys_updated_on" not in issues[-1]:
             raise Exception("No updated time in last ingested incident.")
 
-        updated_time = _sanitize_checkpoint_time(issues[-1]["sys_updated_on"])
-        if updated_time is None:
+        updated_time_utc = _sanitize_checkpoint_time(issues[-1]["sys_updated_on"])
+        if updated_time_utc is None:
             raise Exception("Invalid updated time in last ingested incident.")
+
+        utc_checkpoint = _parse_utc_checkpoint(updated_time_utc)
+        if utc_checkpoint is None:
+            raise Exception("Invalid updated time in last ingested incident.")
+        state[UTC_CHECKPOINT_FIELD] = utc_checkpoint
+
+        updated_time = updated_time_utc
 
         # Apply timezone conversion if configured
         if timezone_value:

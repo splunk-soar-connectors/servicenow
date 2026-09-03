@@ -22,6 +22,7 @@ from soar_sdk.logging import getLogger
 from .consts import AUTH_TYPE_VALUES, PASSWORD_GRANT_AUTH_TYPE
 
 logger = getLogger()
+logger.propagate = False
 
 
 class Asset(BaseAsset):
@@ -29,12 +30,16 @@ class Asset(BaseAsset):
 
     username: str = AssetField(
         required=False,
-        description="Username",
+        description="Username. Required for basic_auth and password_grant.",
         category=FieldCategory.CONNECTIVITY,
     )
     timezone: ZoneInfo = AssetField(
         required=False,
-        description="Timezone configured on ServiceNow",
+        description=(
+            "Timezone used by On Poll for date-range filtering and scheduled-poll "
+            "checkpoints. Set this to the timezone configured on the ServiceNow "
+            "instance; defaults to UTC when unset."
+        ),
         category=FieldCategory.INGEST,
     )
     url: str = AssetField(
@@ -49,30 +54,45 @@ class Asset(BaseAsset):
     )
     on_poll_filter: str = AssetField(
         required=False,
-        description="Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name)",
+        description=(
+            "Optional ServiceNow encoded query appended to On Poll. Separate "
+            "conditions with '^' and do not include a leading '^'. Applies to "
+            "manual and scheduled polling."
+        ),
         category=FieldCategory.INGEST,
     )
     client_id: str = AssetField(
         required=False,
-        description="Client ID. OAuth will be preferred if provided",
+        description=(
+            "OAuth client ID. Required together with client_secret for password_grant "
+            "or client_credentials; ignored when basic_auth is selected."
+        ),
         category=FieldCategory.CONNECTIVITY,
     )
     client_secret: str = AssetField(
         required=False,
-        description="Client Secret. Required with Client ID",
+        description=(
+            "OAuth client secret. Required together with client_id for password_grant "
+            "or client_credentials; ignored when basic_auth is selected."
+        ),
         sensitive=True,
         category=FieldCategory.CONNECTIVITY,
     )
     oauth_grant_type: str = AssetField(
         required=False,
-        description="Authentication type. Basic Auth uses username and password; password_grant and client_credentials use OAuth",
+        description=(
+            "Authentication mode: basic_auth uses username/password; password_grant "
+            "uses client_id/client_secret plus username/password; client_credentials "
+            "uses client_id/client_secret only. For client_credentials, configure an "
+            "OAuth Application User in ServiceNow."
+        ),
         default=PASSWORD_GRANT_AUTH_TYPE,
         value_list=AUTH_TYPE_VALUES,
         category=FieldCategory.CONNECTIVITY,
     )
     password: str = AssetField(
         required=False,
-        description="Password",
+        description="Password. Required for basic_auth and password_grant.",
         sensitive=True,
         category=FieldCategory.CONNECTIVITY,
     )

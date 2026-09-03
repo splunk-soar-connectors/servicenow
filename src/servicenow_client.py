@@ -28,6 +28,7 @@ from soar_sdk.logging import getLogger
 from .consts import (
     API_URI,
     BASIC_AUTH_TYPE,
+    CLIENT_CREDENTIALS_GRANT_TYPE,
     DEFAULT_LIMIT,
     DEFAULT_OFFSET,
     MAX_PAGES,
@@ -123,6 +124,15 @@ class ServiceNowClient:
                 "select an OAuth authentication type."
             )
 
+        if auth_type == CLIENT_CREDENTIALS_GRANT_TYPE:
+            if not client_id or not client_secret:
+                raise ActionFailure(
+                    "Client credentials authentication requires both client_id and "
+                    "client_secret."
+                )
+            logger.info("Using OAuth authentication")
+            return OAuthBearerAuth(self._get_oauth_client(), auto_refresh=True)
+
         if client_id or client_secret:
             if not client_id:
                 raise ActionFailure(
@@ -139,7 +149,9 @@ class ServiceNowClient:
             logger.info("Using OAuth authentication")
             return OAuthBearerAuth(self._get_oauth_client(), auto_refresh=True)
 
-        if username and password:
+        # Preserve legacy assets that default to password_grant but only have
+        # username/password configured for Basic Auth.
+        if auth_type == PASSWORD_GRANT_AUTH_TYPE and username and password:
             logger.info("Using Basic Auth authentication")
             return BasicAuth(username, password)
 

@@ -109,15 +109,15 @@ This table lists the configuration variables required to operate ServiceNow. The
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**username** | optional | string | Username |
-**timezone** | optional | timezone | Timezone configured on ServiceNow |
+**username** | optional | string | Username. Required for basic_auth and password_grant. |
+**timezone** | optional | timezone | Timezone used by On Poll for date-range filtering and scheduled-poll checkpoints. Set this to the timezone configured on the ServiceNow instance; defaults to UTC when unset. |
 **url** | required | string | Device URL including the port, e.g. https://myservicenow.enterprise.com:8080 |
 **on_poll_table** | optional | string | Table to ingest issues from |
-**on_poll_filter** | optional | string | Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name) |
-**client_id** | optional | string | Client ID. OAuth will be preferred if provided |
-**client_secret** | optional | password | Client Secret. Required with Client ID |
-**oauth_grant_type** | optional | string | Authentication type. Basic Auth uses username and password; password_grant and client_credentials use OAuth |
-**password** | optional | password | Password |
+**on_poll_filter** | optional | string | Optional ServiceNow encoded query appended to On Poll. Separate conditions with '^' and do not include a leading '^'. Applies to manual and scheduled polling. |
+**client_id** | optional | string | OAuth client ID. Required together with client_secret for password_grant or client_credentials; ignored when basic_auth is selected. |
+**client_secret** | optional | password | OAuth client secret. Required together with client_id for password_grant or client_credentials; ignored when basic_auth is selected. |
+**oauth_grant_type** | optional | string | Authentication mode: basic_auth uses username/password; password_grant uses client_id/client_secret plus username/password; client_credentials uses client_id/client_secret only. For client_credentials, configure an OAuth Application User in ServiceNow. |
+**password** | optional | password | Password. Required for basic_auth and password_grant. |
 **first_run_container** | optional | numeric | Max container (For first run of schedule polling) |
 **max_container** | optional | numeric | Max container (For other runs of schedule polling) |
 **severity** | optional | string | Severity to apply to Containers and Artifacts ingested via On Poll |
