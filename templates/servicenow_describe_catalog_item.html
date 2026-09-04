@@ -1,5 +1,4 @@
 {% extends 'widgets/widget_template.html' %}
-{% load custom_template %}
 {% block custom_title_prop %}
   {% if title_logo %}
     style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
@@ -10,7 +9,7 @@
 {% block custom_tools %}{% endblock %}
 {% block widget_content %}
   <!-- Main Start Block -->
-  <!-- File: servicenow_list_services.html
+  <!-- File: servicenow_describe_catalog_item.html
   Copyright (c) 2016-2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +91,8 @@ and limitations under the License.
     }
 
   </style>
-  <div class="servicenow"
+  <div id="servicenow-{{ this_widget_uuid }}"
+       class="servicenow"
        style="overflow: auto;
               width: 100%;
               height: 100%;
@@ -106,60 +106,34 @@ and limitations under the License.
       {% if not result.data %}
         <h4 class="wf-h4-style">No data found</h4>
       {% else %}
+        {% set input = result.data[0] %}
         <h4 class="wf-h3-style">Info</h4>
         <table class="wf-table-vertical">
-          {% if result.param.catalog_sys_id %}
-            <tr>
-              <td>Catalog SYS ID</td>
-              <td>
-                <a class="no-word-wrap"
-                   href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.catalog_sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                  {{ result.param.catalog_sys_id }}
-                  &nbsp;
-                  <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                </a>
-              </td>
-            </tr>
-          {% endif %}
-          {% if result.param.category_sys_id %}
-            <tr>
-              <td>Category SYS ID</td>
-              <td>
-                <a class="no-word-wrap"
-                   href="javascript:;"
-                   onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ result.param.category_sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                  {{ result.param.category_sys_id }}
-                  &nbsp;
-                  <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                </a>
-              </td>
-            </tr>
-          {% endif %}
-          {% if result.param.search_text %}
-            <tr>
-              <td>Search Text</td>
-              <td>{{ result.param.search_text }}</td>
-            </tr>
-          {% endif %}
-          {% if result.param.max_results %}
-            <tr>
-              <td>Max Results</td>
-              <td>{{ result.param.max_results }}</td>
-            </tr>
-          {% endif %}
+          <tr>
+            <td>SYS ID</td>
+            <td>
+              <a class="no-word-wrap"
+                 href="javascript:;"
+                 onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':{{ input.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                {{ input.sys_id }}
+                &nbsp;
+                <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+              </a>
+            </td>
+          </tr>
         </table>
         <div class="results">
-          <h4 class="wf-h4-style">Services</h4>
+          <h4 class="wf-h4-style">Item Details</h4>
           <!--Default View-->
           <table class="wf-table-horizontal datatable">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Short Description</th>
-                <th>Item SYS ID</th>
+                <th>Category Name</th>
                 <th>Category SYS ID</th>
-                <th>Catalog SYS ID</th>
+                <th>Catalog Name : Catalog SYS ID</th>
+                <th>Variable Details</th>
               </tr>
             </thead>
             <tbody>
@@ -167,21 +141,13 @@ and limitations under the License.
                 <tr>
                   <td>{{ data.name }}</td>
                   <td>{{ data.short_description }}</td>
-                  <td>
-                    <a class="no-word-wrap"
-                       href="javascript:;"
-                       onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ data.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                      {{ data.sys_id }}
-                      &nbsp;
-                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                    </a>
-                  </td>
-                  {% if data.category.value %}
+                  <td>{{ data.category.title }}</td>
+                  {% if data.category.sys_id %}
                     <td>
                       <a class="no-word-wrap"
                          href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ data.category.value|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                        {{ data.category.value }}
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ data.category.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                        {{ data.category.sys_id }}
                         &nbsp;
                         <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                       </a>
@@ -191,14 +157,40 @@ and limitations under the License.
                   {% endif %}
                   <td>
                     {% for catalog in data.catalogs %}
-                      <a class="no-word-wrap"
-                         href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ catalog|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                        {{ catalog }}
-                        &nbsp;
-                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                      {{ catalog.title }} : <a class="no-word-wrap"
+    href="javascript:;"
+    onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ catalog.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                      {{ catalog.sys_id }}
+                      &nbsp;
+                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
                       </a>
                     {% endfor %}
+                  </td>
+                  <td>
+                    <table class="wf-table-horizontal datatable">
+                      <thead>
+                        <tr>
+                          <th>Variable Name</th>
+                          <th>Variable ID</th>
+                          <th>Variable Value</th>
+                          <th>Mandatory</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for variable in data.variables %}
+                          <tr>
+                            <td>{{ variable.name }}</td>
+                            <td>{{ variable.id }}</td>
+                            {% if variable.value %}
+                              <td>{{ variable.value }}</td>
+                            {% else %}
+                              <td>None</td>
+                            {% endif %}
+                            <td>{{ variable.mandatory }}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
                   </td>
                 </tr>
               {% endfor %}
@@ -227,7 +219,7 @@ and limitations under the License.
         }
     });
     $.fn.DataTable.ext.pager.numbers_length = 5;
-    $('.datatable').DataTable();
+    $('#servicenow-{{ this_widget_uuid }}').find('.datatable').DataTable();
   </script>
 {% endblock %}
 <!-- Main Start Block -->
