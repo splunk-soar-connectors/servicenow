@@ -74,6 +74,8 @@ IPV6_REGEX += (
 SERVICENOW_DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 SERVICENOW_DEFAULT_TABLE = "incident"
 UTC_CHECKPOINT_FIELD = "last_time_epoch_ms"
+LAST_SYS_ID_FIELD = "last_sys_id"
+ON_POLL_ORDERING = ("ORDERBYsys_updated_on", "ORDERBYsys_id")
 
 
 def _format_utc_timestamp(timestamp: float) -> str:
@@ -129,6 +131,55 @@ def _format_time_query(operator: str, value: str, timezone_value: Any = None) ->
     return (
         f"^sys_updated_on{operator}"
         f"javascript:gs.dateGenerate('{query_date}','{query_time}')"
+    )
+
+
+def _join_query_parts(*parts: str | None) -> str:
+    """Join encoded-query parts while removing separator characters."""
+    return "^".join(str(part).strip("^") for part in parts if part)
+
+
+def _time_query_condition(operator: str, value: str, timezone_value: Any = None) -> str:
+    """Return a ServiceNow time condition without a leading separator."""
+    return _format_time_query(operator, value, timezone_value).lstrip("^")
+
+
+def _build_ordered_query(custom_filter: str | None, *conditions: str | None) -> str:
+    """Build a query with the stable On Poll ordering applied."""
+    return _join_query_parts(custom_filter, *conditions, *ON_POLL_ORDERING)
+
+
+def _build_scheduled_query(
+    custom_filter: str | None,
+    last_time: str | None,
+    last_sys_id: str | None,
+    timezone_value: Any = None,
+    using_utc_checkpoint: bool = False,
+) -> str:
+    """Build a legacy or composite scheduled-poll checkpoint query."""
+    query_timezone = None if using_utc_checkpoint else timezone_value
+
+    if not last_time:
+        return _build_ordered_query(custom_filter)
+
+    if last_sys_id:
+        records_after_time = _time_query_condition(">", last_time, query_timezone)
+        records_at_time_after_id = _join_query_parts(
+            _time_query_condition("=", last_time, query_timezone),
+            f"sys_id>{last_sys_id}",
+        )
+        composite_filter = "^NQ".join(
+            (
+                _join_query_parts(custom_filter, records_after_time),
+                _join_query_parts(custom_filter, records_at_time_after_id),
+            )
+        )
+        return _join_query_parts(composite_filter, *ON_POLL_ORDERING)
+
+    # Legacy assets have only a timestamp. Include the boundary timestamp once
+    # so records at that timestamp cannot be skipped during migration.
+    return _build_ordered_query(
+        custom_filter, _time_query_condition(">=", last_time, query_timezone)
     )
 
 
@@ -234,6 +285,15 @@ def on_poll(
     # specifically for ingestion-related data like last_time
     state = asset.ingest_state
     last_time = state.get("last_time")
+    last_sys_id = state.get(LAST_SYS_ID_FIELD)
+    if last_sys_id:
+        try:
+            last_sys_id = validate_path_segment(LAST_SYS_ID_FIELD, last_sys_id)
+        except ActionFailure:
+            logger.warning(
+                f"Invalid {LAST_SYS_ID_FIELD} value; falling back to legacy time checkpoint"
+            )
+            last_sys_id = None
     utc_checkpoint = state.get(UTC_CHECKPOINT_FIELD)
     using_utc_checkpoint = utc_checkpoint is not None
 
@@ -258,13 +318,10 @@ def on_poll(
             state["last_time"] = sanitized_last_time
         last_time = sanitized_last_time
 
-    query = "ORDERBYsys_updated_on"
     scheduled_first_run = False
 
-    # Add custom filter from asset config if present
     custom_filter = asset.on_poll_filter
-    if custom_filter:
-        query += f"^{custom_filter}"
+    query = _build_ordered_query(custom_filter)
 
     if is_manual_poll:
         # Manual polling (Poll Now) - use SDK's container_count parameter
@@ -276,13 +333,22 @@ def on_poll(
         # If start_time provided (epoch milliseconds), use it for filtering
         if params.start_time:
             start_time_str = _format_service_now_time(params.start_time / 1000.0)
-            query += _format_time_query(">=", start_time_str)
+            query = _build_ordered_query(
+                custom_filter,
+                _time_query_condition(">=", start_time_str),
+            )
             logger.info(f"Using provided start_time: {start_time_str}")
 
         # If end_time provided (epoch milliseconds), add upper bound filter
         if params.end_time:
             end_time_str = _format_service_now_time(params.end_time / 1000.0)
-            query += _format_time_query("<=", end_time_str)
+            query = _build_ordered_query(
+                custom_filter,
+                _time_query_condition(">=", start_time_str)
+                if params.start_time
+                else None,
+                _time_query_condition("<=", end_time_str),
+            )
             logger.info(f"Using provided end_time: {end_time_str}")
 
     elif state.get("first_run", True):
@@ -293,9 +359,13 @@ def on_poll(
     else:
         # Subsequent scheduled polls
         if last_time and len(last_time.split(" ")) == 2:
-            # Add time-based filter from state
-            query_timezone = None if using_utc_checkpoint else timezone_value
-            query += _format_time_query(">=", last_time, query_timezone)
+            query = _build_scheduled_query(
+                custom_filter,
+                last_time,
+                last_sys_id,
+                timezone_value,
+                using_utc_checkpoint,
+            )
             max_tickets = int(asset.max_container)
             logger.info(
                 f"Scheduled poll: fetching up to {max_tickets} tickets updated after {last_time}"
@@ -330,6 +400,17 @@ def on_poll(
 
     logger.info(f"Retrieved {len(issues)} issues from ServiceNow")
 
+    sanitized_issues = [_strip_format_controls(issue) for issue in issues]
+    if not is_manual_poll:
+        missing_sys_id = [
+            issue for issue in sanitized_issues if not issue.get("sys_id")
+        ]
+        if missing_sys_id:
+            raise ActionFailure(
+                "ServiceNow returned a scheduled-poll record without sys_id; "
+                "checkpoint was not advanced"
+            )
+
     # Get or validate severity
     severity = _get_severity(soar, asset)
 
@@ -337,8 +418,7 @@ def on_poll(
     containers_created = 0
     artifacts_created = 0
 
-    for issue in issues:
-        sanitized_issue = _strip_format_controls(issue)
+    for sanitized_issue in sanitized_issues:
         sdi = sanitized_issue.get("sys_id")
         if not sdi:
             logger.warning("Issue missing sys_id, skipping")
@@ -441,10 +521,11 @@ def on_poll(
     # Preserve legacy behavior: scheduled polls advance the checkpoint;
     # manual polls do not modify scheduled poll state.
     if not is_manual_poll and issues:
-        if "sys_updated_on" not in issues[-1]:
+        last_issue = sanitized_issues[-1]
+        if "sys_updated_on" not in last_issue:
             raise Exception("No updated time in last ingested incident.")
 
-        updated_time_utc = _sanitize_checkpoint_time(issues[-1]["sys_updated_on"])
+        updated_time_utc = _sanitize_checkpoint_time(last_issue["sys_updated_on"])
         if updated_time_utc is None:
             raise Exception("Invalid updated time in last ingested incident.")
 
@@ -452,6 +533,7 @@ def on_poll(
         if utc_checkpoint is None:
             raise Exception("Invalid updated time in last ingested incident.")
         state[UTC_CHECKPOINT_FIELD] = utc_checkpoint
+        state[LAST_SYS_ID_FIELD] = last_issue["sys_id"]
 
         updated_time = updated_time_utc
 
