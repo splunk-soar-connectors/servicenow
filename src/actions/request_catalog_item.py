@@ -32,6 +32,7 @@ from ..consts import (
     API_URI,
 )
 from ..helpers import validate_path_segment
+from ..models.servicenow import ServiceNowReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -64,7 +65,9 @@ class RequestCatalogItemOutput(PermissiveActionOutput):
     due_date: str | None = OutputField(
         column_name="DUE DATE", example_values=["2019-10-18 13:49:24"]
     )
-    assigned_to: str | None = OutputField(column_name="ASSIGNED TO")
+    assigned_to: ServiceNowReferenceOutput | None = OutputField(
+        column_name="ASSIGNED TO"
+    )
 
     # All other fields in alphabetical order
     active: str | None = OutputField(example_values=["true"])
@@ -73,18 +76,18 @@ class RequestCatalogItemOutput(PermissiveActionOutput):
     approval: str | None = OutputField(example_values=["approved"])
     approval_history: str | None = None
     approval_set: str | None = None
-    assignment_group: str | None = None
+    assignment_group: ServiceNowReferenceOutput | None = None
     business_duration: str | None = None
-    business_service: str | None = None
+    business_service: ServiceNowReferenceOutput | None = None
     calendar_duration: str | None = None
     calendar_stc: str | None = None
     close_notes: str | None = None
     closed_at: str | None = None
     closed_by: str | None = None
-    cmdb_ci: str | None = None
+    cmdb_ci: ServiceNowReferenceOutput | None = None
     comments: str | None = None
     comments_and_work_notes: str | None = None
-    company: str | None = None
+    company: ServiceNowReferenceOutput | None = None
     contact_type: str | None = None
     correlation_display: str | None = None
     correlation_id: str | None = None
@@ -98,16 +101,18 @@ class RequestCatalogItemOutput(PermissiveActionOutput):
     group_list: str | None = None
     impact: str | None = OutputField(example_values=["3"])
     knowledge: str | None = OutputField(example_values=["false"])
-    location: str | None = None
+    location: ServiceNowReferenceOutput | None = None
     made_sla: str | None = OutputField(example_values=["true"])
     opened_at: str | None = OutputField(example_values=["2019-10-18 13:49:24"])
+    opened_by: ServiceNowReferenceOutput | None = None
     order: str | None = None
     parent: str | None = None
     parent_interaction: str | None = None
     reassignment_count: str | None = OutputField(example_values=["0"])
     request_state: str | None = OutputField(example_values=["in_process"])
     requested_date: str | None = None
-    service_offering: str | None = None
+    requested_for: ServiceNowReferenceOutput | None = None
+    service_offering: ServiceNowReferenceOutput | None = None
     sla_due: str | None = None
     special_instructions: str | None = None
     stage: str | None = OutputField(example_values=["requested"])

@@ -22,6 +22,7 @@ from soar_sdk.exceptions import ActionFailure
 from ..app import app, Asset
 from ..consts import TICKET_ENDPOINT
 from ..helpers import validate_path_segment
+from ..models.servicenow import ServiceNowDisplayReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -66,7 +67,7 @@ class AddCommentOutput(PermissiveActionOutput):
     beneficiary: str | None = None
     bundle: str | None = OutputField(example_values=["false"])
     business_duration: str | None = OutputField(example_values=["0 Seconds"])
-    business_service: str | None = None
+    business_service: ServiceNowDisplayReferenceOutput | None = None
     business_stc: str | None = OutputField(example_values=["0"])
     calendar_duration: str | None = OutputField(example_values=["1 Minute"])
     calendar_stc: str | None = OutputField(example_values=["114"])
@@ -83,7 +84,7 @@ class AddCommentOutput(PermissiveActionOutput):
         ]
     )
     closed_at: str | None = OutputField(example_values=["2018-12-09 19:29:08"])
-    cmdb_ci: str | None = None
+    cmdb_ci: ServiceNowDisplayReferenceOutput | None = None
     cmdb_ci_class: str | None = None
     cmdb_model_category: str | None = OutputField(example_values=["Computer"])
     number: str | None = OutputField(
@@ -166,13 +167,13 @@ class AddCommentOutput(PermissiveActionOutput):
     owned_by: str | None = None
     owner: str | None = None
     parent: str | None = None
-    parent_incident: str | None = None
+    parent_incident: ServiceNowDisplayReferenceOutput | None = None
     picture: str | None = None
     po_number: str | None = OutputField(example_values=["PO100004"])
     power_consumption: str | None = None
     pre_allocated: str | None = OutputField(example_values=["false"])
     priority: str | None = OutputField(example_values=["3 - Moderate"])
-    problem_id: str | None = None
+    problem_id: ServiceNowDisplayReferenceOutput | None = None
     purchase_date: str | None = OutputField(example_values=["2018-01-05"])
     quantity: str | None = OutputField(example_values=["1"])
     rack_units: str | None = OutputField(example_values=["1"])
@@ -188,11 +189,11 @@ class AddCommentOutput(PermissiveActionOutput):
     resolved_at: str | None = OutputField(example_values=["2018-09-16 05:51:17"])
     retired: str | None = None
     retirement_date: str | None = None
-    rfc: str | None = None
+    rfc: ServiceNowDisplayReferenceOutput | None = None
     rights: str | None = OutputField(example_values=["600"])
     salvage_value: str | None = OutputField(example_values=["$0.00"])
     serial_number: str | None = OutputField(example_values=["BQP-854-D33246-GH"])
-    service_offering: str | None = None
+    service_offering: ServiceNowDisplayReferenceOutput | None = None
     severity: str | None = OutputField(example_values=["3 - Low"])
     skip_sync: str | None = OutputField(example_values=["false"])
     sla: str | None = None
@@ -232,6 +233,14 @@ class AddCommentOutput(PermissiveActionOutput):
     )
     work_notes_list: str | None = None
     work_start: str | None = None
+    assigned_to: ServiceNowDisplayReferenceOutput | None = None
+    assignment_group: ServiceNowDisplayReferenceOutput | None = None
+    caller_id: ServiceNowDisplayReferenceOutput | None = None
+    ci: ServiceNowDisplayReferenceOutput | None = None
+    company: ServiceNowDisplayReferenceOutput | None = None
+    location: ServiceNowDisplayReferenceOutput | None = None
+    opened_by: ServiceNowDisplayReferenceOutput | None = None
+    resolved_by: ServiceNowDisplayReferenceOutput | None = None
 
 
 @app.action(

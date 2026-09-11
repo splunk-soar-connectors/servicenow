@@ -31,6 +31,7 @@ from .consts import (
     CLIENT_CREDENTIALS_GRANT_TYPE,
     DEFAULT_LIMIT,
     DEFAULT_OFFSET,
+    DEFAULT_REQUEST_TIMEOUT,
     MAX_PAGES,
     PASSWORD_GRANT_AUTH_TYPE,
     SC_CAT_ITEMS_ENDPOINT,
@@ -62,7 +63,11 @@ class ServiceNowClient:
     """Client for ServiceNow API operations."""
 
     def __init__(
-        self, asset: "Asset", *, verify_ssl: bool = True, timeout: float = 30.0
+        self,
+        asset: "Asset",
+        *,
+        verify_ssl: bool = True,
+        timeout: float = DEFAULT_REQUEST_TIMEOUT,
     ):
         """
         Initialize ServiceNow client.
@@ -161,7 +166,35 @@ class ServiceNowClient:
             "(2) username and password for Basic Auth"
         )
 
-    def _process_response(self, response: httpx.Response) -> dict:
+    def _process_empty_response(
+        self, response: httpx.Response, table_location_prefix: str
+    ) -> dict:
+        """Convert a successful empty table response into the legacy result shape."""
+        location = response.headers.get("Location")
+        if not location:
+            return {}
+
+        expected_location = urlparse(table_location_prefix)
+        actual_location = urlparse(location)
+        expected_path = expected_location.path.rstrip("/")
+        actual_path = actual_location.path.rstrip("/")
+
+        if (
+            actual_location.scheme != expected_location.scheme
+            or actual_location.netloc != expected_location.netloc
+            or not actual_path.startswith(f"{expected_path}/")
+        ):
+            return {}
+
+        sys_id = actual_path.rsplit("/", 1)[-1]
+        if not sys_id:
+            return {}
+
+        return {"result": {"sys_id": sys_id}}
+
+    def _process_response(
+        self, response: httpx.Response, *, table_location_prefix: str
+    ) -> dict:
         """
         Process HTTP response from ServiceNow API
         """
@@ -177,7 +210,13 @@ class ServiceNowClient:
                     response.status_code,
                     f"ServiceNow API request failed (HTTP {response.status_code}): {error_message}",
                 ) from e
-            # Non-error non-JSON response (e.g., 204 No Content)
+            # Preserve legacy handling for successful empty table responses. The
+            # Table API may suppress the response body while returning the new
+            # record URL in the Location header.
+            if 200 <= response.status_code < 205:
+                return self._process_empty_response(response, table_location_prefix)
+
+            # Non-error non-JSON response
             return {}
 
         # Handle error status codes with JSON responses
@@ -268,7 +307,10 @@ class ServiceNowClient:
         except OAuthClientError as e:
             raise ActionFailure(f"ServiceNow authentication failed: {e}") from e
 
-        return self._process_response(response)
+        return self._process_response(
+            response,
+            table_location_prefix=f"{base_url}{api_uri}/table",
+        )
 
     def get_sys_id_from_ticket_number(
         self,
@@ -279,6 +321,7 @@ class ServiceNowClient:
         Convert ticket number to sys_id by querying ServiceNow
         """
         table_name = validate_path_segment("table", table_name)
+        ticket_number = validate_path_segment("ticket_number", ticket_number)
         params = {"sysparm_query": f"number={ticket_number}"}
         endpoint = TABLE_ENDPOINT.format(table_name)
 
@@ -445,9 +488,7 @@ class ServiceNowClient:
             base_url = self._normalize_base_url()
             url = f"{base_url}{API_URI}{endpoint}"
 
-            # Match legacy attachment behavior: ServiceNow may take longer than
-            # the default API timeout for large files.
-            with httpx.Client(auth=self.get_auth(), timeout=None) as client:  # noqa: S113
+            with httpx.Client(auth=self.get_auth(), timeout=self.timeout) as client:
                 response = client.post(
                     url,
                     headers={"Content-Type": content_type},

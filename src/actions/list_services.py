@@ -22,6 +22,7 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT
 from ..helpers import validate_positive_integer
+from ..models.servicenow import ServiceNowReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -35,7 +36,7 @@ class ListServicesParams(Params):
         cef_types=["servicenow catalog sys id", "md5"],
     )
     category_sys_id: str = Param(
-        description="SYS ID of a catergory",
+        description="SYS ID of a category",
         required=False,
         primary=True,
         cef_types=["servicenow category sys id", "md5"],
@@ -52,6 +53,7 @@ class ListServicesParams(Params):
 class ServiceItemOutput(PermissiveActionOutput):
     """ServiceNow catalog item details"""
 
+    category: ServiceNowReferenceOutput | None = None
     name: str | None = OutputField(
         column_name="Name", example_values=["Retire a Standard Change Template"]
     )

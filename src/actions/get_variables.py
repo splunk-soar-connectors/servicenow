@@ -33,6 +33,7 @@ logger = getLogger()
 ITEM_OPT_MTOM_TABLE = "sc_item_option_mtom"
 ITEM_OPT_TABLE = "sc_item_option"
 ITEM_OPT_NEW_TABLE = "item_option_new"
+RESERVED_VARIABLE_NAMES = frozenset({"sys_id"})
 
 
 class GetVariablesParams(Params):
@@ -71,6 +72,19 @@ def get_variables_view(outputs: list[GetVariablesOutput]) -> dict:
     return {"results": [{"data": [output.model_dump()]} for output in outputs]}
 
 
+def _normalize_variable_name(question_text: str) -> str:
+    """Avoid collisions between dynamic variable names and fixed output fields."""
+    if question_text in RESERVED_VARIABLE_NAMES:
+        normalized_name = f"variable_{question_text}"
+        logger.warning(
+            "Renaming catalog variable %r to %r to avoid an output-field collision",
+            question_text,
+            normalized_name,
+        )
+        return normalized_name
+    return question_text
+
+
 @app.action(
     description="Get variables for a ticket/record",
     action_type="investigate",
@@ -85,14 +99,15 @@ def get_variables(
     """
     Get variables for a ticket/record
     """
-    logger.info(f"Getting variables for request item sys_id: {params.sys_id}")
+    sys_id = validate_path_segment("sys_id", params.sys_id)
+    logger.info(f"Getting variables for request item sys_id: {sys_id}")
 
     client = ServiceNowClient(asset)
 
     # Step 1: Query sc_item_option_mtom table
     endpoint = TABLE_ENDPOINT.format(ITEM_OPT_MTOM_TABLE)
     request_params = {
-        "sysparm_query": f"request_item={params.sys_id}",
+        "sysparm_query": f"request_item={sys_id}",
     }
 
     logger.debug(f"Querying {endpoint} with params: {request_params}")
@@ -104,9 +119,7 @@ def get_variables(
 
     # Check if results were returned
     if not response.get("result"):
-        error_msg = (
-            f"No data found for the requested item having System ID: {params.sys_id}"
-        )
+        error_msg = f"No data found for the requested item having System ID: {sys_id}"
         raise ActionFailure(error_msg)
 
     # Step 2: Process each item to build variables dictionary
@@ -126,7 +139,7 @@ def get_variables(
         variable_value, question_id = _fetch_variable_details(
             client=client,
             item_option_value=item_option_value,
-            sys_id=params.sys_id,
+            sys_id=sys_id,
         )
 
         # Fetch question text from item_option_new table (if question_id is not empty)
@@ -135,19 +148,19 @@ def get_variables(
                 client=client,
                 question_id=question_id,
                 item_option_value=item_option_value,
-                sys_id=params.sys_id,
+                sys_id=sys_id,
             )
         else:
             # No question available for this variable - use empty string as key
             question_text = ""
 
         # Add to variables dictionary
-        variables[question_text] = variable_value
+        variables[_normalize_variable_name(question_text)] = variable_value
 
     soar.set_summary(GetVariablesSummary(num_variables=len(variables)))
     soar.set_message(f"Num variables: {len(variables)}")
 
-    return GetVariablesOutput(sys_id=params.sys_id, **variables)
+    return GetVariablesOutput(sys_id=sys_id, **variables)
 
 
 def _extract_reference_value(reference: Any) -> str:

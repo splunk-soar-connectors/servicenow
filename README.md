@@ -110,6 +110,7 @@ This table lists the configuration variables required to operate ServiceNow. The
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **username** | optional | string | Username. Required for basic_auth and password_grant. |
+**password** | optional | password | Password. Required for basic_auth and password_grant. |
 **timezone** | optional | timezone | Timezone used by On Poll for date-range filtering and scheduled-poll checkpoints. Set this to the timezone configured on the ServiceNow instance; defaults to UTC when unset. |
 **url** | required | string | Device URL including the port, e.g. https://myservicenow.enterprise.com:8080 |
 **on_poll_table** | optional | string | Table to ingest issues from |
@@ -117,7 +118,6 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **client_id** | optional | string | OAuth client ID. Required together with client_secret for password_grant or client_credentials; ignored when basic_auth is selected. |
 **client_secret** | optional | password | OAuth client secret. Required together with client_id for password_grant or client_credentials; ignored when basic_auth is selected. |
 **oauth_grant_type** | optional | string | Authentication mode: basic_auth uses username/password; password_grant uses client_id/client_secret plus username/password; client_credentials uses client_id/client_secret only. For client_credentials, configure an OAuth Application User in ServiceNow. |
-**password** | optional | password | Password. Required for basic_auth and password_grant. |
 **first_run_container** | optional | numeric | Max container (For first run of schedule polling) |
 **max_container** | optional | numeric | Max container (For other runs of schedule polling) |
 **severity** | optional | string | Severity to apply to Containers and Artifacts ingested via On Poll |
@@ -190,7 +190,8 @@ action_result.data.\*.barcode | string | | G73SW-XN2 |
 action_result.data.\*.beneficiary | string | | |
 action_result.data.\*.bundle | string | | false |
 action_result.data.\*.business_duration | string | | 0 Seconds |
-action_result.data.\*.business_service | string | | |
+action_result.data.\*.business_service.display_value | string | | |
+action_result.data.\*.business_service.link | string | `url` | |
 action_result.data.\*.business_stc | string | | 0 |
 action_result.data.\*.calendar_duration | string | | 1 Minute |
 action_result.data.\*.calendar_stc | string | | 114 |
@@ -203,7 +204,8 @@ action_result.data.\*.child_incidents | string | | 1 |
 action_result.data.\*.close_code | string | | Solved (Permanently) |
 action_result.data.\*.close_notes | string | | This is not an issue with the USB port. Replaced the headset to resolve the issue. |
 action_result.data.\*.closed_at | string | | 2018-12-09 19:29:08 |
-action_result.data.\*.cmdb_ci | string | | |
+action_result.data.\*.cmdb_ci.display_value | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
 action_result.data.\*.cmdb_ci_class | string | | |
 action_result.data.\*.cmdb_model_category | string | | Computer |
 action_result.data.\*.number | string | `servicenow ticket number` | INC0000001 |
@@ -261,13 +263,15 @@ action_result.data.\*.order_date | string | | 2017-12-22 23:00:00 |
 action_result.data.\*.owned_by | string | | |
 action_result.data.\*.owner | string | | |
 action_result.data.\*.parent | string | | |
-action_result.data.\*.parent_incident | string | | |
+action_result.data.\*.parent_incident.display_value | string | | |
+action_result.data.\*.parent_incident.link | string | `url` | |
 action_result.data.\*.picture | string | | |
 action_result.data.\*.po_number | string | | PO100004 |
 action_result.data.\*.power_consumption | string | | |
 action_result.data.\*.pre_allocated | string | | false |
 action_result.data.\*.priority | string | | 3 - Moderate |
-action_result.data.\*.problem_id | string | | |
+action_result.data.\*.problem_id.display_value | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
 action_result.data.\*.purchase_date | string | | 2018-01-05 |
 action_result.data.\*.quantity | string | | 1 |
 action_result.data.\*.rack_units | string | | 1 |
@@ -283,11 +287,13 @@ action_result.data.\*.residual_date | string | | 2020-11-08 |
 action_result.data.\*.resolved_at | string | | 2018-09-16 05:51:17 |
 action_result.data.\*.retired | string | | |
 action_result.data.\*.retirement_date | string | | |
-action_result.data.\*.rfc | string | | |
+action_result.data.\*.rfc.display_value | string | | |
+action_result.data.\*.rfc.link | string | `url` | |
 action_result.data.\*.rights | string | | 600 |
 action_result.data.\*.salvage_value | string | | $0.00 |
 action_result.data.\*.serial_number | string | | BQP-854-D33246-GH |
-action_result.data.\*.service_offering | string | | |
+action_result.data.\*.service_offering.display_value | string | | |
+action_result.data.\*.service_offering.link | string | `url` | |
 action_result.data.\*.severity | string | | 3 - Low |
 action_result.data.\*.skip_sync | string | | false |
 action_result.data.\*.sla | string | | |
@@ -321,6 +327,22 @@ action_result.data.\*.work_end | string | | |
 action_result.data.\*.work_notes | string | | 2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br> |
 action_result.data.\*.work_notes_list | string | | |
 action_result.data.\*.work_start | string | | |
+action_result.data.\*.assigned_to.display_value | string | | |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assignment_group.display_value | string | | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.caller_id.display_value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.ci.display_value | string | | |
+action_result.data.\*.ci.link | string | `url` | |
+action_result.data.\*.company.display_value | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.location.display_value | string | | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.opened_by.display_value | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.resolved_by.display_value | string | | |
+action_result.data.\*.resolved_by.link | string | `url` | |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 
@@ -356,6 +378,20 @@ action_result.data.\*.number | string | `servicenow ticket number` | INC0000001 
 action_result.data.\*.short_description | string | | My computer is not detecting the headphone device |
 action_result.data.\*.sys_id | string | `servicenow ticket sysid` `md5` | |
 action_result.data.\*.work_notes | string | | 2019-10-15 03:56:58 - System Administrator (Work notes)<br>check work note<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br> |
+action_result.data.\*.assigned_to.display_value | string | | |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assignment_group.display_value | string | | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.caller_id.display_value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.ci.display_value | string | | |
+action_result.data.\*.ci.link | string | `url` | |
+action_result.data.\*.company.display_value | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.opened_by.display_value | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.resolved_by.display_value | string | | |
+action_result.data.\*.resolved_by.link | string | `url` | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | false |
 action_result.data.\*.activity_due | string | | UNKNOWN |
@@ -368,7 +404,8 @@ action_result.data.\*.assigned | string | | 2020-02-02 23:00:00 |
 action_result.data.\*.assigned_condition | string | | |
 action_result.data.\*.beneficiary | string | | |
 action_result.data.\*.business_duration | string | | 0 Seconds |
-action_result.data.\*.business_service | string | | |
+action_result.data.\*.business_service.display_value | string | | |
+action_result.data.\*.business_service.link | string | `url` | |
 action_result.data.\*.business_stc | string | | 0 |
 action_result.data.\*.calendar_duration | string | | 1 Minute |
 action_result.data.\*.calendar_stc | string | | 114 |
@@ -380,7 +417,8 @@ action_result.data.\*.child_incidents | string | | |
 action_result.data.\*.close_code | string | | Solved (Permanently) |
 action_result.data.\*.close_notes | string | | This is not an issue with the USB port. Replaced the headset to resolve the issue. |
 action_result.data.\*.closed_at | string | | 2018-12-09 19:29:08 |
-action_result.data.\*.cmdb_ci | string | | |
+action_result.data.\*.cmdb_ci.display_value | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
 action_result.data.\*.comments | string | | 2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br> |
 action_result.data.\*.comments_and_work_notes | string | | 2019-10-15 03:56:58 - System Administrator (Work notes)<br>check work note<br><br>2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:27:07 - System Administrator (Work notes)<br>This is a test123 work note<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:54:52 - System Administrator (Work notes)<br>This is a test work note<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br> |
 action_result.data.\*.contact_type | string | | |
@@ -420,7 +458,8 @@ action_result.data.\*.justification | string | | |
 action_result.data.\*.knowledge | string | | false |
 action_result.data.\*.lease_id | string | | |
 action_result.data.\*.license_key | string | | |
-action_result.data.\*.location | string | | |
+action_result.data.\*.location.display_value | string | | |
+action_result.data.\*.location.link | string | `url` | |
 action_result.data.\*.made_sla | string | | true |
 action_result.data.\*.managed_by | string | | |
 action_result.data.\*.merged_into | string | | |
@@ -432,11 +471,13 @@ action_result.data.\*.order | string | | |
 action_result.data.\*.order_date | string | | |
 action_result.data.\*.owned_by | string | | |
 action_result.data.\*.parent | string | | |
-action_result.data.\*.parent_incident | string | | |
+action_result.data.\*.parent_incident.display_value | string | | |
+action_result.data.\*.parent_incident.link | string | `url` | |
 action_result.data.\*.po_number | string | | |
 action_result.data.\*.pre_allocated | string | | false |
 action_result.data.\*.priority | string | | 3 - Moderate |
-action_result.data.\*.problem_id | string | | |
+action_result.data.\*.problem_id.display_value | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
 action_result.data.\*.purchase_date | string | | |
 action_result.data.\*.quantity | string | | 1 |
 action_result.data.\*.reassignment_count | string | | 0 |
@@ -451,12 +492,14 @@ action_result.data.\*.residual_date | string | | |
 action_result.data.\*.resolved_at | string | | 2018-09-16 05:51:17 |
 action_result.data.\*.retired | string | | |
 action_result.data.\*.retirement_date | string | | |
-action_result.data.\*.rfc | string | | |
+action_result.data.\*.rfc.display_value | string | | |
+action_result.data.\*.rfc.link | string | `url` | |
 action_result.data.\*.rights | string | | 10 |
 action_result.data.\*.route_reason | string | | |
 action_result.data.\*.salvage_value | string | | $0.00 |
 action_result.data.\*.serial_number | string | | |
-action_result.data.\*.service_offering | string | | |
+action_result.data.\*.service_offering.display_value | string | | |
+action_result.data.\*.service_offering.link | string | `url` | |
 action_result.data.\*.severity | string | | 3 - Low |
 action_result.data.\*.skip_sync | string | | false |
 action_result.data.\*.sla_due | string | | UNKNOWN |
@@ -530,6 +573,28 @@ action_result.data.\*.opened_at | string | | 2018-11-22 09:57:05 |
 action_result.data.\*.closed_at | string | | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | true |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | | |
+action_result.data.\*.business_service.link | string | `url` | |
+action_result.data.\*.business_service.value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | | |
+action_result.data.\*.ci.link | string | `url` | |
+action_result.data.\*.ci.value | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | | |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | | |
+action_result.data.\*.service_offering.link | string | `url` | |
+action_result.data.\*.service_offering.value | string | | |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
 action_result.data.\*.approval | string | | not requested |
@@ -611,12 +676,15 @@ action_result.data.\*.old_status | string | | |
 action_result.data.\*.old_substatus | string | | |
 action_result.data.\*.order | string | | |
 action_result.data.\*.order_date | string | | |
-action_result.data.\*.owned_by | string | | |
+action_result.data.\*.owned_by.link | string | `url` | |
+action_result.data.\*.owned_by.value | string | | |
 action_result.data.\*.parent | string | | |
-action_result.data.\*.parent_incident | string | | |
+action_result.data.\*.parent_incident.link | string | `url` | |
+action_result.data.\*.parent_incident.value | string | | |
 action_result.data.\*.po_number | string | | |
 action_result.data.\*.pre_allocated | string | | false |
-action_result.data.\*.problem_id | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | | |
 action_result.data.\*.purchase_date | string | | |
 action_result.data.\*.quantity | string | | 1 |
 action_result.data.\*.reassignment_count | string | | 0 |
@@ -939,6 +1007,26 @@ action_result.data.\*.severity | string | | 1 |
 action_result.data.\*.priority | string | | 1 |
 action_result.data.\*.opened_at | string | | 2018-02-07 23:09:51 |
 action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | | |
+action_result.data.\*.business_service.link | string | `url` | |
+action_result.data.\*.business_service.value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | | |
+action_result.data.\*.ci.link | string | `url` | |
+action_result.data.\*.ci.value | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | | |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | | |
+action_result.data.\*.request_item.link | string | `url` | |
+action_result.data.\*.request_item.value | string | | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | false |
 action_result.data.\*.activity_due | string | | |
@@ -1038,7 +1126,10 @@ action_result.data.\*.order_date | string | | |
 action_result.data.\*.owned_by | string | | |
 action_result.data.\*.owner | string | | |
 action_result.data.\*.parent | string | | |
-action_result.data.\*.parent_incident | string | | |
+action_result.data.\*.parent_incident.link | string | `url` | |
+action_result.data.\*.parent_incident.value | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | | |
 action_result.data.\*.picture | string | | |
 action_result.data.\*.po_number | string | | |
 action_result.data.\*.power_consumption | string | | |
@@ -1058,11 +1149,13 @@ action_result.data.\*.residual_date | string | | |
 action_result.data.\*.resolved_at | string | | 2018-05-10 19:56:12 |
 action_result.data.\*.retired | string | | |
 action_result.data.\*.retirement_date | string | | |
-action_result.data.\*.rfc | string | | |
+action_result.data.\*.rfc.link | string | `url` | |
+action_result.data.\*.rfc.value | string | | |
 action_result.data.\*.rights | string | | 600 |
 action_result.data.\*.salvage_value | string | | 0 |
 action_result.data.\*.serial_number | string | | |
-action_result.data.\*.service_offering | string | | |
+action_result.data.\*.service_offering.link | string | `url` | |
+action_result.data.\*.service_offering.value | string | | |
 action_result.data.\*.skip_sync | string | | false |
 action_result.data.\*.sla | string | | |
 action_result.data.\*.sla_due | string | | |
@@ -1241,7 +1334,7 @@ The 'search text' parameter will search the text in the 'Name', 'Display Name', 
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
 **catalog_sys_id** | optional | SYS ID of a catalog | string | `servicenow catalog sys id` `md5` |
-**category_sys_id** | optional | SYS ID of a catergory | string | `servicenow category sys id` `md5` |
+**category_sys_id** | optional | SYS ID of a category | string | `servicenow category sys id` `md5` |
 **search_text** | optional | Text pattern to search over | string | |
 **max_results** | optional | Max number of items to return | numeric | |
 
@@ -1255,6 +1348,8 @@ action_result.parameter.catalog_sys_id | string | `servicenow catalog sys id` `m
 action_result.parameter.category_sys_id | string | `servicenow category sys id` `md5` | |
 action_result.parameter.search_text | string | | |
 action_result.parameter.max_results | numeric | | |
+action_result.data.\*.category.link | string | `url` | |
+action_result.data.\*.category.value | string | | |
 action_result.data.\*.name | string | | Retire a Standard Change Template |
 action_result.data.\*.short_description | string | | |
 action_result.data.\*.sys_id | string | `md5` | |
@@ -1361,6 +1456,20 @@ action_result.data.\*.priority | string | | 1 |
 action_result.data.\*.opened_at | string | | 2018-02-07 23:09:51 |
 action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
 action_result.data.\*.active | string | | false |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | | |
+action_result.data.\*.business_service.link | string | `url` | |
+action_result.data.\*.business_service.value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | | |
+action_result.data.\*.ci.link | string | `url` | |
+action_result.data.\*.ci.value | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | | |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
 action_result.data.\*.approval | string | | |
@@ -1391,17 +1500,32 @@ action_result.data.\*.hold_reason | string | | |
 action_result.data.\*.impact | string | | 1 |
 action_result.data.\*.incident_state | string | | 7 |
 action_result.data.\*.knowledge | string | | false |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | | |
 action_result.data.\*.made_sla | string | | false |
 action_result.data.\*.notify | string | | 1 |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | | |
 action_result.data.\*.order | string | | |
 action_result.data.\*.parent | string | | |
+action_result.data.\*.parent_incident.link | string | `url` | |
+action_result.data.\*.parent_incident.value | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | | |
 action_result.data.\*.reassignment_count | string | | 1 |
 action_result.data.\*.reopen_count | string | | |
 action_result.data.\*.reopened_by | string | | |
 action_result.data.\*.reopened_time | string | | |
+action_result.data.\*.request_item.link | string | `url` | |
+action_result.data.\*.request_item.value | string | | |
 action_result.data.\*.resolved_at | string | | 2018-05-10 19:56:12 |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | | |
+action_result.data.\*.rfc.link | string | `url` | |
+action_result.data.\*.rfc.value | string | | |
 action_result.data.\*.sc_item_option | string | | |
-action_result.data.\*.service_offering | string | | |
+action_result.data.\*.service_offering.link | string | `url` | |
+action_result.data.\*.service_offering.value | string | | |
 action_result.data.\*.sla_due | string | | |
 action_result.data.\*.state | string | | 7 |
 action_result.data.\*.subcategory | string | | |
@@ -1531,6 +1655,8 @@ action_result.data.\*.calendar_integration | string | | 1 |
 action_result.data.\*.city | string | | |
 action_result.data.\*.company | string | | |
 action_result.data.\*.cost_center | string | | |
+action_result.data.\*.department.link | string | `url` | |
+action_result.data.\*.department.value | string | | |
 action_result.data.\*.country | string | | |
 action_result.data.\*.date_format | string | | |
 action_result.data.\*.default_perspective | string | | |
@@ -1606,25 +1732,30 @@ action_result.data.\*.short_description | string | | |
 action_result.data.\*.priority | string | | 4 |
 action_result.data.\*.price | string | | 0 |
 action_result.data.\*.due_date | string | | 2019-10-18 13:49:24 |
-action_result.data.\*.assigned_to | string | | |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | | |
 action_result.data.\*.active | string | | true |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
 action_result.data.\*.approval | string | | approved |
 action_result.data.\*.approval_history | string | | |
 action_result.data.\*.approval_set | string | | |
-action_result.data.\*.assignment_group | string | | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | | |
 action_result.data.\*.business_duration | string | | |
-action_result.data.\*.business_service | string | | |
+action_result.data.\*.business_service.link | string | `url` | |
+action_result.data.\*.business_service.value | string | | |
 action_result.data.\*.calendar_duration | string | | |
 action_result.data.\*.calendar_stc | string | | |
 action_result.data.\*.close_notes | string | | |
 action_result.data.\*.closed_at | string | | |
 action_result.data.\*.closed_by | string | | |
-action_result.data.\*.cmdb_ci | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | | |
 action_result.data.\*.comments | string | | |
 action_result.data.\*.comments_and_work_notes | string | | |
-action_result.data.\*.company | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | | |
 action_result.data.\*.contact_type | string | | |
 action_result.data.\*.correlation_display | string | | |
 action_result.data.\*.correlation_id | string | | |
@@ -1638,16 +1769,22 @@ action_result.data.\*.follow_up | string | | |
 action_result.data.\*.group_list | string | | |
 action_result.data.\*.impact | string | | 3 |
 action_result.data.\*.knowledge | string | | false |
-action_result.data.\*.location | string | | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | | |
 action_result.data.\*.made_sla | string | | true |
 action_result.data.\*.opened_at | string | | 2019-10-18 13:49:24 |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | | |
 action_result.data.\*.order | string | | |
 action_result.data.\*.parent | string | | |
 action_result.data.\*.parent_interaction | string | | |
 action_result.data.\*.reassignment_count | string | | 0 |
 action_result.data.\*.request_state | string | | in_process |
 action_result.data.\*.requested_date | string | | |
-action_result.data.\*.service_offering | string | | |
+action_result.data.\*.requested_for.link | string | `url` | |
+action_result.data.\*.requested_for.value | string | | |
+action_result.data.\*.service_offering.link | string | `url` | |
+action_result.data.\*.service_offering.value | string | | |
 action_result.data.\*.sla_due | string | | |
 action_result.data.\*.special_instructions | string | | |
 action_result.data.\*.stage | string | | requested |
@@ -1928,6 +2065,30 @@ action_result.data.\*.category | string | | network |
 action_result.data.\*.sys_id | string | `servicenow ticket sysid` `md5` | |
 action_result.data.\*.opened_at | string | | 2018-02-07 23:09:51 |
 action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | | |
+action_result.data.\*.business_service.link | string | `url` | |
+action_result.data.\*.business_service.value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | | |
+action_result.data.\*.ci.link | string | `url` | |
+action_result.data.\*.ci.value | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | | |
+action_result.data.\*.owned_by.link | string | `url` | |
+action_result.data.\*.owned_by.value | string | | |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | | |
+action_result.data.\*.request_item.link | string | `url` | |
+action_result.data.\*.request_item.value | string | | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | false |
 action_result.data.\*.activity_due | string | | |
@@ -2008,7 +2169,8 @@ action_result.data.\*.old_substatus | string | | |
 action_result.data.\*.order | string | | |
 action_result.data.\*.order_date | string | | |
 action_result.data.\*.parent | string | | |
-action_result.data.\*.parent_incident | string | | |
+action_result.data.\*.parent_incident.link | string | `url` | |
+action_result.data.\*.parent_incident.value | string | | |
 action_result.data.\*.po_number | string | | |
 action_result.data.\*.pre_allocated | string | | false |
 action_result.data.\*.purchase_date | string | | |
@@ -2025,10 +2187,14 @@ action_result.data.\*.residual_date | string | | |
 action_result.data.\*.resolved_at | string | | 2018-05-10 19:56:12 |
 action_result.data.\*.retired | string | | |
 action_result.data.\*.retirement_date | string | | |
-action_result.data.\*.rfc | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | | |
+action_result.data.\*.rfc.link | string | `url` | |
+action_result.data.\*.rfc.value | string | | |
 action_result.data.\*.salvage_value | string | | 0 |
 action_result.data.\*.serial_number | string | | |
-action_result.data.\*.service_offering | string | | |
+action_result.data.\*.service_offering.link | string | `url` | |
+action_result.data.\*.service_offering.value | string | | |
 action_result.data.\*.skip_sync | string | | false |
 action_result.data.\*.sla_due | string | | |
 action_result.data.\*.stockroom | string | | |

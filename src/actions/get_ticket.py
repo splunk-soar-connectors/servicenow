@@ -28,6 +28,7 @@ from ..consts import (
     SERVICENOW_INVALID_PARAMETER_MESSAGE,
     TicketNotFoundException,
 )
+from ..models.servicenow import ServiceNowReferenceOutput
 from ..servicenow_client import ServiceNowAPIError, ServiceNowClient
 
 logger = getLogger()
@@ -111,6 +112,17 @@ class GetTicketOutput(PermissiveActionOutput):
     )
 
     # All other fields in alphabetical order
+    assigned_to: ServiceNowReferenceOutput | None = None
+    assignment_group: ServiceNowReferenceOutput | None = None
+    business_service: ServiceNowReferenceOutput | None = None
+    caller_id: ServiceNowReferenceOutput | None = None
+    ci: ServiceNowReferenceOutput | None = None
+    company: ServiceNowReferenceOutput | None = None
+    location: ServiceNowReferenceOutput | None = None
+    opened_by: ServiceNowReferenceOutput | None = None
+    resolved_by: ServiceNowReferenceOutput | None = None
+    request_item: ServiceNowReferenceOutput | None = None
+
     acquisition_method: str | None = None
     active: str | None = OutputField(example_values=["false"])
     activity_due: str | None = None
@@ -194,7 +206,8 @@ class GetTicketOutput(PermissiveActionOutput):
     owned_by: str | None = None
     owner: str | None = None
     parent: str | None = None
-    parent_incident: str | None = None
+    parent_incident: ServiceNowReferenceOutput | None = None
+    problem_id: ServiceNowReferenceOutput | None = None
     picture: str | None = None
     po_number: str | None = None
     power_consumption: str | None = None
@@ -214,11 +227,11 @@ class GetTicketOutput(PermissiveActionOutput):
     resolved_at: str | None = OutputField(example_values=["2018-05-10 19:56:12"])
     retired: str | None = None
     retirement_date: str | None = None
-    rfc: str | None = None
+    rfc: ServiceNowReferenceOutput | None = None
     rights: str | None = OutputField(example_values=["600"])
     salvage_value: str | None = OutputField(example_values=["0"])
     serial_number: str | None = None
-    service_offering: str | None = None
+    service_offering: ServiceNowReferenceOutput | None = None
     skip_sync: str | None = OutputField(example_values=["false"])
     sla: str | None = None
     sla_due: str | None = None

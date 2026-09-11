@@ -31,6 +31,7 @@ from soar_sdk.shims.phantom.encryption_helper import encryption_helper
 
 from .consts import (
     CLIENT_CREDENTIALS_GRANT_TYPE,
+    DEFAULT_REQUEST_TIMEOUT,
     OAUTH_GRANT_TYPE_STATE_KEY,
     PASSWORD_GRANT_AUTH_TYPE,
     PASSWORD_GRANT_TYPE,
@@ -329,7 +330,7 @@ def create_servicenow_oauth_client(
     password: str | None = None,
     grant_type: str = PASSWORD_GRANT_AUTH_TYPE,
     verify_ssl: bool = True,
-    timeout: float = 30.0,
+    timeout: float = DEFAULT_REQUEST_TIMEOUT,
 ) -> ServiceNowOAuthClient:
     """
     Factory function to create a ServiceNow OAuth client.

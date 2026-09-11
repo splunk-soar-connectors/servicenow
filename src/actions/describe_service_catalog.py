@@ -23,7 +23,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import SC_CATALOG_ENDPOINT, SC_CATEGORY_ENDPOINT, DEFAULT_MAX_LIMIT
-from ..helpers import validate_positive_integer
+from ..helpers import validate_path_segment, validate_positive_integer
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -231,13 +231,14 @@ def describe_service_catalog(
     params: DescribeServiceCatalogParams, soar: SOARClient, asset: Asset
 ) -> DescribeServiceCatalogOutput:
     """Describe a service catalog with its categories and items"""
-    logger.info(f"Fetching catalog details for sys_id: {params.sys_id}")
+    sys_id = validate_path_segment("sys_id", params.sys_id)
+    logger.info(f"Fetching catalog details for sys_id: {sys_id}")
 
     client = ServiceNowClient(asset)
 
     # 1. Fetch catalog details
-    logger.debug(f"Querying catalog endpoint with sys_id: {params.sys_id}")
-    request_params = {"sysparm_query": f"sys_id={params.sys_id}"}
+    logger.debug(f"Querying catalog endpoint with sys_id: {sys_id}")
+    request_params = {"sysparm_query": f"sys_id={sys_id}"}
 
     catalog_response = client.make_rest_call(
         SC_CATALOG_ENDPOINT,
@@ -252,8 +253,8 @@ def describe_service_catalog(
     logger.debug(f"Found catalog: {catalog_data.get('title', 'Unknown')}")
 
     # 2. Fetch categories for this catalog
-    logger.debug(f"Fetching categories for catalog: {params.sys_id}")
-    categories_params = {"sysparm_query": f"sc_catalog={params.sys_id}"}
+    logger.debug(f"Fetching categories for catalog: {sys_id}")
+    categories_params = {"sysparm_query": f"sc_catalog={sys_id}"}
 
     categories_response = client.make_rest_call(
         SC_CATEGORY_ENDPOINT,
@@ -270,7 +271,7 @@ def describe_service_catalog(
     logger.debug(f"Fetching up to {limit} catalog items")
 
     items = client.fetch_catalog_items(
-        catalog_sys_id=params.sys_id,
+        catalog_sys_id=sys_id,
         limit=limit,
         split_catalogs=False,
     )

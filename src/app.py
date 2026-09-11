@@ -15,6 +15,7 @@
 """ServiceNow SOAR SDK App - Main Application Module"""
 
 from zoneinfo import ZoneInfo
+
 from soar_sdk.app import App
 from soar_sdk.asset import BaseAsset, AssetField, FieldCategory
 from soar_sdk.logging import getLogger
@@ -31,6 +32,12 @@ class Asset(BaseAsset):
     username: str = AssetField(
         required=False,
         description="Username. Required for basic_auth and password_grant.",
+        category=FieldCategory.CONNECTIVITY,
+    )
+    password: str = AssetField(
+        required=False,
+        description="Password. Required for basic_auth and password_grant.",
+        sensitive=True,
         category=FieldCategory.CONNECTIVITY,
     )
     timezone: ZoneInfo = AssetField(
@@ -90,13 +97,6 @@ class Asset(BaseAsset):
         value_list=AUTH_TYPE_VALUES,
         category=FieldCategory.CONNECTIVITY,
     )
-    password: str = AssetField(
-        required=False,
-        description="Password. Required for basic_auth and password_grant.",
-        sensitive=True,
-        category=FieldCategory.CONNECTIVITY,
-    )
-
     first_run_container: int = AssetField(
         required=False,
         description="Max container (For first run of schedule polling)",
