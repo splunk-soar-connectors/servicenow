@@ -19,7 +19,7 @@ import re
 import unicodedata
 from datetime import datetime, timezone
 from typing import Optional, Any, Union
-from collections.abc import Iterator
+from collections.abc import Iterator, MutableMapping
 from zoneinfo import ZoneInfo
 
 from soar_sdk.abstract import SOARClient
@@ -104,6 +104,28 @@ def _parse_utc_checkpoint(timestamp: str) -> int | None:
     except (TypeError, ValueError):
         return None
     return int(parsed.timestamp() * 1000)
+
+
+def _save_utc_checkpoint(
+    state: MutableMapping[str, Any],
+    checkpoint_epoch_ms: int,
+    timezone_value: Any = None,
+) -> None:
+    """Persist the UTC checkpoint and derive the legacy compatibility value."""
+    checkpoint_utc = _format_epoch_checkpoint(checkpoint_epoch_ms)
+    if checkpoint_utc is None:
+        raise ActionFailure("Cannot save an invalid ServiceNow UTC checkpoint")
+
+    state[UTC_CHECKPOINT_FIELD] = checkpoint_epoch_ms
+
+    legacy_checkpoint = checkpoint_utc
+    if timezone_obj := _timezone_value(timezone_value):
+        legacy_checkpoint = (
+            datetime.fromtimestamp(checkpoint_epoch_ms / 1000.0, tz=timezone.utc)
+            .astimezone(timezone_obj)
+            .strftime(SERVICENOW_DATETIME_FORMAT)
+        )
+    state["last_time"] = legacy_checkpoint
 
 
 def _timezone_value(timezone_value: Any) -> ZoneInfo | None:
@@ -261,14 +283,22 @@ def on_poll(
         last_time = _format_utc_timestamp(last_time)
 
     if last_time:
-        sanitized_last_time = _sanitize_checkpoint_time(last_time, timezone_value)
+        # UTC epoch checkpoints are already timezone-neutral. The asset timezone is
+        # only needed to interpret a legacy local-wall-clock checkpoint during the
+        # first poll after upgrading from the legacy connector.
+        checkpoint_timezone = None if using_utc_checkpoint else timezone_value
+        sanitized_last_time = _sanitize_checkpoint_time(last_time, checkpoint_timezone)
         if sanitized_last_time is None:
             state.pop("last_time", None)
         elif sanitized_last_time != last_time:
-            state["last_time"] = sanitized_last_time
+            if using_utc_checkpoint:
+                sanitized_checkpoint = _parse_utc_checkpoint(sanitized_last_time)
+                if sanitized_checkpoint is None:
+                    raise ActionFailure("Invalid sanitized ServiceNow UTC checkpoint")
+                _save_utc_checkpoint(state, sanitized_checkpoint, timezone_value)
+            else:
+                state["last_time"] = sanitized_last_time
         last_time = sanitized_last_time
-
-    scheduled_first_run = False
 
     custom_filter = asset.on_poll_filter
     query = "ORDERBYsys_updated_on"
@@ -296,7 +326,6 @@ def on_poll(
 
     elif state.get("first_run", True):
         # First scheduled poll
-        scheduled_first_run = True
         max_tickets = first_run_limit
         logger.info(f"First run (scheduled): fetching up to {max_tickets} tickets")
     else:
@@ -325,6 +354,9 @@ def on_poll(
     params_dict = {"sysparm_query": query, "sysparm_exclude_reference_link": "true"}
 
     logger.info(f"Fetching issues from table: {table_name}")
+    poll_started_epoch_ms = int(
+        datetime.now(timezone.utc).replace(microsecond=0).timestamp() * 1000
+    )
     try:
         issues = client.paginator(endpoint, payload=params_dict, limit=max_tickets)
     except Exception as e:
@@ -332,7 +364,8 @@ def on_poll(
 
     if not issues:
         logger.info("No issues found. Nothing to ingest.")
-        if scheduled_first_run:
+        if not is_manual_poll:
+            _save_utc_checkpoint(state, poll_started_epoch_ms, timezone_value)
             state["first_run"] = False
         return
 
@@ -468,27 +501,9 @@ def on_poll(
         utc_checkpoint = _parse_utc_checkpoint(updated_time_utc)
         if utc_checkpoint is None:
             raise Exception("Invalid updated time in last ingested incident.")
-        state[UTC_CHECKPOINT_FIELD] = utc_checkpoint
-
-        updated_time = updated_time_utc
-
-        # Apply timezone conversion if configured
-        if timezone_value:
-            try:
-                dt = datetime.strptime(
-                    updated_time, SERVICENOW_DATETIME_FORMAT
-                ).replace(tzinfo=timezone.utc)
-                timezone_obj = _timezone_value(timezone_value)
-                if timezone_obj:
-                    updated_time = dt.astimezone(timezone_obj).strftime(
-                        SERVICENOW_DATETIME_FORMAT
-                    )
-            except Exception as e:
-                logger.warning(f"Failed to convert timezone: {e}")
-
-        state["last_time"] = updated_time
+        _save_utc_checkpoint(state, utc_checkpoint, timezone_value)
         # State is automatically saved when using asset.ingest_state (it's an AssetState object)
-        logger.info(f"Updated last_time to {updated_time}")
+        logger.info(f"Updated UTC checkpoint to {updated_time_utc}")
 
         # Ensure first_run is set to False
         if state.get("first_run", True):

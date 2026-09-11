@@ -43,9 +43,9 @@ class Asset(BaseAsset):
     timezone: ZoneInfo = AssetField(
         required=False,
         description=(
-            "Timezone used by On Poll for date-range filtering and scheduled-poll "
-            "checkpoints. Set this to the timezone configured on the ServiceNow "
-            "instance; defaults to UTC when unset."
+            "Timezone used only to interpret and preserve legacy On Poll checkpoint "
+            "state during an app upgrade. New checkpoints and SOAR-provided date "
+            "ranges use UTC."
         ),
         category=FieldCategory.INGEST,
     )
