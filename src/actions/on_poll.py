@@ -354,9 +354,6 @@ def on_poll(
     params_dict = {"sysparm_query": query, "sysparm_exclude_reference_link": "true"}
 
     logger.info(f"Fetching issues from table: {table_name}")
-    poll_started_epoch_ms = int(
-        datetime.now(timezone.utc).replace(microsecond=0).timestamp() * 1000
-    )
     try:
         issues = client.paginator(endpoint, payload=params_dict, limit=max_tickets)
     except Exception as e:
@@ -364,8 +361,7 @@ def on_poll(
 
     if not issues:
         logger.info("No issues found. Nothing to ingest.")
-        if not is_manual_poll:
-            _save_utc_checkpoint(state, poll_started_epoch_ms, timezone_value)
+        if not is_manual_poll and state.get("first_run", True):
             state["first_run"] = False
         return
 
