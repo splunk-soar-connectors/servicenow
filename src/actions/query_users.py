@@ -22,7 +22,6 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT, TABLE_ENDPOINT
 from ..helpers import validate_path_segment, validate_positive_integer
-from ..models.servicenow import ServiceNowReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 
@@ -68,7 +67,7 @@ class QueryUserOutput(PermissiveActionOutput):
     city: str | None = None
     company: str | None = None
     cost_center: str | None = None
-    department: ServiceNowReferenceOutput | None = None
+    department: str | None = None
     country: str | None = None
     date_format: str | None = None
     default_perspective: str | None = None

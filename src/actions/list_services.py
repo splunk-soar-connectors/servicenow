@@ -21,8 +21,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT
-from ..helpers import validate_positive_integer
-from ..models.servicenow import ServiceNowReferenceOutput
+from ..helpers import validate_path_segment, validate_positive_integer
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -53,7 +52,7 @@ class ListServicesParams(Params):
 class ServiceItemOutput(PermissiveActionOutput):
     """ServiceNow catalog item details"""
 
-    category: ServiceNowReferenceOutput | None = None
+    category: str | None = None
     name: str | None = OutputField(
         column_name="Name", example_values=["Retire a Standard Change Template"]
     )
@@ -159,10 +158,21 @@ def list_services(
     params: ListServicesParams, soar: SOARClient[ListServicesSummary], asset: Asset
 ) -> list[ServiceItemOutput]:
     """List catalog items/services from ServiceNow"""
+    catalog_sys_id = (
+        validate_path_segment("catalog_sys_id", params.catalog_sys_id)
+        if params.catalog_sys_id
+        else None
+    )
+    category_sys_id = (
+        validate_path_segment("category_sys_id", params.category_sys_id)
+        if params.category_sys_id
+        else None
+    )
+
     logger.info(
         f"Listing services with max_results: {params.max_results}, "
-        f"catalog_sys_id: {params.catalog_sys_id}, "
-        f"category_sys_id: {params.category_sys_id}, "
+        f"catalog_sys_id: {catalog_sys_id}, "
+        f"category_sys_id: {category_sys_id}, "
         f"search_text: {params.search_text}"
     )
 
@@ -174,8 +184,8 @@ def list_services(
     )
 
     services = client.fetch_catalog_items(
-        catalog_sys_id=params.catalog_sys_id,
-        category_sys_id=params.category_sys_id,
+        catalog_sys_id=catalog_sys_id,
+        category_sys_id=category_sys_id,
         search_text=params.search_text,
         limit=limit,
     )

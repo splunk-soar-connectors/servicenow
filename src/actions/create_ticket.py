@@ -35,7 +35,6 @@ from ..helpers import (
     parse_fields_json,
     validate_path_segment,
 )
-from ..models.servicenow import ServiceNowReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -131,17 +130,17 @@ class CreateTicketOutput(PermissiveActionOutput):
     closed_at: str | None = OutputField(column_name="CLOSED ON")
     acquisition_method: str | None = None
     active: str | None = OutputField(example_values=["true"])
-    assigned_to: ServiceNowReferenceOutput | None = None
-    assignment_group: ServiceNowReferenceOutput | None = None
-    business_service: ServiceNowReferenceOutput | None = None
-    caller_id: ServiceNowReferenceOutput | None = None
-    ci: ServiceNowReferenceOutput | None = None
-    cmdb_ci: ServiceNowReferenceOutput | None = None
-    company: ServiceNowReferenceOutput | None = None
-    location: ServiceNowReferenceOutput | None = None
-    opened_by: ServiceNowReferenceOutput | None = None
-    resolved_by: ServiceNowReferenceOutput | None = None
-    service_offering: ServiceNowReferenceOutput | None = None
+    assigned_to: str | None = None
+    assignment_group: str | None = None
+    business_service: str | None = None
+    caller_id: str | None = None
+    ci: str | None = None
+    cmdb_ci: str | None = None
+    company: str | None = None
+    location: str | None = None
+    opened_by: str | None = None
+    resolved_by: str | None = None
+    service_offering: str | None = None
     activity_due: str | None = None
     additional_assignee_list: str | None = None
     approval: str | None = OutputField(example_values=["not requested"])
@@ -203,12 +202,12 @@ class CreateTicketOutput(PermissiveActionOutput):
     old_substatus: str | None = None
     order: str | None = None
     order_date: str | None = None
-    owned_by: ServiceNowReferenceOutput | None = None
+    owned_by: str | None = None
     parent: str | None = None
-    parent_incident: ServiceNowReferenceOutput | None = None
+    parent_incident: str | None = None
     po_number: str | None = None
     pre_allocated: str | None = OutputField(example_values=["false"])
-    problem_id: ServiceNowReferenceOutput | None = None
+    problem_id: str | None = None
     purchase_date: str | None = None
     quantity: str | None = OutputField(example_values=["1"])
     reassignment_count: str | None = OutputField(example_values=["0"])

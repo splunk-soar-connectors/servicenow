@@ -78,25 +78,12 @@ def make_request(
     """
     logger.info(f"make_request: {params.http_method} {params.endpoint}")
 
-    endpoint = params.endpoint
-    if endpoint.startswith("http://") or endpoint.startswith("https://"):
-        raise ActionFailure(
-            f"Invalid endpoint: {endpoint}. "
-            "Do not include the full URL, only the path after the base URL is needed "
-            f"(e.g. '/api/now/table/incident'). The base URL ({asset.url}) is already configured in the asset."
-        )
-
-    # Ensure leading slash
-    if not endpoint.startswith("/"):
-        endpoint = f"/{endpoint}"
-
     # resolve authentication
     verify = params.verify_ssl if params.verify_ssl is not None else True
     client = ServiceNowClient(asset, verify_ssl=verify)
 
     # build the full URL
-    base_url = client._normalize_base_url()
-    url = f"{base_url}{endpoint}"
+    url = client.build_url(params.endpoint)
 
     try:
         auth = client.get_auth()

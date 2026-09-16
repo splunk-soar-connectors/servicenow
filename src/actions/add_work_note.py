@@ -23,7 +23,6 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import TICKET_ENDPOINT
 from ..helpers import validate_path_segment
-from ..models.servicenow import ServiceNowDisplayReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -73,13 +72,13 @@ class AddWorkNoteOutput(PermissiveActionOutput):
     )
 
     # All other fields in alphabetical order
-    assigned_to: ServiceNowDisplayReferenceOutput | None = None
-    assignment_group: ServiceNowDisplayReferenceOutput | None = None
-    caller_id: ServiceNowDisplayReferenceOutput | None = None
-    ci: ServiceNowDisplayReferenceOutput | None = None
-    company: ServiceNowDisplayReferenceOutput | None = None
-    opened_by: ServiceNowDisplayReferenceOutput | None = None
-    resolved_by: ServiceNowDisplayReferenceOutput | None = None
+    assigned_to: str | None = None
+    assignment_group: str | None = None
+    caller_id: str | None = None
+    ci: str | None = None
+    company: str | None = None
+    opened_by: str | None = None
+    resolved_by: str | None = None
 
     acquisition_method: str | None = None
     active: str | None = OutputField(example_values=["false"])
@@ -93,7 +92,7 @@ class AddWorkNoteOutput(PermissiveActionOutput):
     assigned_condition: str | None = None
     beneficiary: str | None = None
     business_duration: str | None = OutputField(example_values=["0 Seconds"])
-    business_service: ServiceNowDisplayReferenceOutput | None = None
+    business_service: str | None = None
     business_stc: str | None = OutputField(example_values=["0"])
     calendar_duration: str | None = OutputField(example_values=["1 Minute"])
     calendar_stc: str | None = OutputField(example_values=["114"])
@@ -109,7 +108,7 @@ class AddWorkNoteOutput(PermissiveActionOutput):
         ]
     )
     closed_at: str | None = OutputField(example_values=["2018-12-09 19:29:08"])
-    cmdb_ci: ServiceNowDisplayReferenceOutput | None = None
+    cmdb_ci: str | None = None
     comments: str | None = OutputField(
         example_values=[
             "2019-10-15 03:31:23 - System Administrator (Additional comments)<br>test12345 comment<br><br>2019-10-15 02:25:50 - System Administrator (Additional comments)<br>This is a test123 comment<br><br>2019-10-10 06:00:48 - System Administrator (Additional comments)<br>This is a test comment<br><br>2019-10-10 05:45:58 - System Administrator (Additional comments)<br>This is a test comment<br><br>"
@@ -161,7 +160,7 @@ class AddWorkNoteOutput(PermissiveActionOutput):
     knowledge: str | None = OutputField(example_values=["false"])
     lease_id: str | None = None
     license_key: str | None = None
-    location: ServiceNowDisplayReferenceOutput | None = None
+    location: str | None = None
     made_sla: str | None = OutputField(example_values=["true"])
     managed_by: str | None = None
     merged_into: str | None = None
@@ -173,11 +172,11 @@ class AddWorkNoteOutput(PermissiveActionOutput):
     order_date: str | None = None
     owned_by: str | None = None
     parent: str | None = None
-    parent_incident: ServiceNowDisplayReferenceOutput | None = None
+    parent_incident: str | None = None
     po_number: str | None = None
     pre_allocated: str | None = OutputField(example_values=["false"])
     priority: str | None = OutputField(example_values=["3 - Moderate"])
-    problem_id: ServiceNowDisplayReferenceOutput | None = None
+    problem_id: str | None = None
     purchase_date: str | None = None
     quantity: str | None = OutputField(example_values=["1"])
     reassignment_count: str | None = OutputField(example_values=["0"])
@@ -192,12 +191,12 @@ class AddWorkNoteOutput(PermissiveActionOutput):
     resolved_at: str | None = OutputField(example_values=["2018-09-16 05:51:17"])
     retired: str | None = None
     retirement_date: str | None = None
-    rfc: ServiceNowDisplayReferenceOutput | None = None
+    rfc: str | None = None
     rights: str | None = OutputField(example_values=["10"])
     route_reason: str | None = None
     salvage_value: str | None = OutputField(example_values=["$0.00"])
     serial_number: str | None = None
-    service_offering: ServiceNowDisplayReferenceOutput | None = None
+    service_offering: str | None = None
     severity: str | None = OutputField(example_values=["3 - Low"])
     skip_sync: str | None = OutputField(example_values=["false"])
     sla_due: str | None = OutputField(example_values=["UNKNOWN"])

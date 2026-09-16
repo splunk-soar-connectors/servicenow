@@ -22,7 +22,6 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT, TABLE_ENDPOINT
 from ..helpers import validate_path_segment, validate_positive_integer
-from ..models.servicenow import ServiceNowReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -73,13 +72,13 @@ class ListTicketOutput(PermissiveActionOutput):
         column_name="CLOSED ON", example_values=["2018-02-08 23:10:06"]
     )
     active: str | None = OutputField(example_values=["false"])
-    assigned_to: ServiceNowReferenceOutput | None = None
-    assignment_group: ServiceNowReferenceOutput | None = None
-    business_service: ServiceNowReferenceOutput | None = None
-    caller_id: ServiceNowReferenceOutput | None = None
-    ci: ServiceNowReferenceOutput | None = None
-    cmdb_ci: ServiceNowReferenceOutput | None = None
-    company: ServiceNowReferenceOutput | None = None
+    assigned_to: str | None = None
+    assignment_group: str | None = None
+    business_service: str | None = None
+    caller_id: str | None = None
+    ci: str | None = None
+    cmdb_ci: str | None = None
+    company: str | None = None
     activity_due: str | None = ""
     additional_assignee_list: str | None = ""
     approval: str | None = ""
@@ -112,24 +111,24 @@ class ListTicketOutput(PermissiveActionOutput):
     impact: str | None = OutputField(example_values=["1"])
     incident_state: str | None = OutputField(example_values=["7"])
     knowledge: str | None = OutputField(example_values=["false"])
-    location: ServiceNowReferenceOutput | None = None
+    location: str | None = None
     made_sla: str | None = OutputField(example_values=["false"])
     notify: str | None = OutputField(example_values=["1"])
-    opened_by: ServiceNowReferenceOutput | None = None
+    opened_by: str | None = None
     order: str | None = ""
     parent: str | None = ""
-    parent_incident: ServiceNowReferenceOutput | None = None
-    problem_id: ServiceNowReferenceOutput | None = None
+    parent_incident: str | None = None
+    problem_id: str | None = None
     reassignment_count: str | None = OutputField(example_values=["1"])
     reopen_count: str | None = ""
     reopened_by: str | None = ""
     reopened_time: str | None = ""
-    request_item: ServiceNowReferenceOutput | None = None
+    request_item: str | None = None
     resolved_at: str | None = OutputField(example_values=["2018-05-10 19:56:12"])
-    resolved_by: ServiceNowReferenceOutput | None = None
-    rfc: ServiceNowReferenceOutput | None = None
+    resolved_by: str | None = None
+    rfc: str | None = None
     sc_item_option: str | None = ""
-    service_offering: ServiceNowReferenceOutput | None = None
+    service_offering: str | None = None
     sla_due: str | None = ""
     state: str | None = OutputField(example_values=["7"])
     subcategory: str | None = ""

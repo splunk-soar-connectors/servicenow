@@ -73,21 +73,59 @@ class ServiceNowClient:
         Initialize ServiceNow client.
         """
         self.asset = asset
+        self._base_url = self._normalize_base_url(asset.url)
         self.verify_ssl = verify_ssl
         self.timeout = timeout
         self._response_headers: dict[str, str] = {}
         self._oauth_client: Optional[ServiceNowOAuthClient] = None
 
-    def _normalize_base_url(self) -> str:
-        """Normalize base URL by removing trailing slash"""
-        base_url = (self.asset.url or "").rstrip("/")
-        parsed_url = urlparse(base_url)
-        if parsed_url.scheme not in {"http", "https"} or not parsed_url.netloc:
+    @staticmethod
+    def _normalize_base_url(configured_url: str) -> str:
+        """Validate and normalize the configured ServiceNow instance URL."""
+        base_url = configured_url or ""
+        if any(character.isspace() or ord(character) < 32 for character in base_url):
             raise ActionFailure(
-                "Invalid ServiceNow URL configured. Include the protocol, for example "
-                "https://myservicenow.enterprise.com"
+                "Invalid ServiceNow URL configured. Include only the instance origin, "
+                "for example https://myservicenow.enterprise.com"
             )
-        return base_url
+
+        try:
+            parsed_url = urlparse(base_url)
+            hostname = parsed_url.hostname
+            _port = parsed_url.port
+        except ValueError as e:
+            raise ActionFailure(
+                "Invalid ServiceNow URL configured. Include only the instance origin, "
+                "for example https://myservicenow.enterprise.com"
+            ) from e
+
+        if (
+            parsed_url.scheme not in {"http", "https"}
+            or not hostname
+            or parsed_url.username is not None
+            or parsed_url.password is not None
+            or parsed_url.path.rstrip("/")
+            or parsed_url.params
+            or parsed_url.query
+            or parsed_url.fragment
+        ):
+            raise ActionFailure(
+                "Invalid ServiceNow URL configured. Include only the instance origin, "
+                "for example https://myservicenow.enterprise.com"
+            )
+        return base_url.rstrip("/")
+
+    def build_url(self, endpoint: str) -> str:
+        """Build an absolute ServiceNow URL from an endpoint path."""
+        parsed_endpoint = urlparse(endpoint)
+        if parsed_endpoint.scheme or parsed_endpoint.netloc:
+            raise ActionFailure(
+                "Invalid endpoint. Provide only the path after the configured "
+                "ServiceNow URL, for example '/api/now/table/incident'."
+            )
+        if not endpoint.startswith("/"):
+            endpoint = f"/{endpoint}"
+        return f"{self._base_url}{endpoint}"
 
     def _get_oauth_client(self) -> ServiceNowOAuthClient:
         if self._oauth_client is None:
@@ -96,7 +134,7 @@ class ServiceNowClient:
             )
             migrate_legacy_oauth_state(self.asset, oauth_grant_type)
             self._oauth_client = create_servicenow_oauth_client(
-                base_url=self._normalize_base_url(),
+                base_url=self._base_url,
                 client_id=self.asset.client_id,
                 client_secret=self.asset.client_secret,
                 auth_state=self.asset.auth_state,
@@ -287,8 +325,7 @@ class ServiceNowClient:
         if api_uri is None:
             api_uri = API_URI
 
-        base_url = self._normalize_base_url()
-        url = f"{base_url}{api_uri}{endpoint}"
+        url = self.build_url(f"{api_uri}{endpoint}")
 
         try:
             with httpx.Client(auth=self.get_auth(), timeout=self.timeout) as client:
@@ -309,7 +346,7 @@ class ServiceNowClient:
 
         return self._process_response(
             response,
-            table_location_prefix=f"{base_url}{api_uri}/table",
+            table_location_prefix=self.build_url(f"{api_uri}/table"),
         )
 
     def get_sys_id_from_ticket_number(
@@ -485,8 +522,7 @@ class ServiceNowClient:
         params = {"table_name": table, "table_sys_id": ticket_id, "file_name": filename}
 
         try:
-            base_url = self._normalize_base_url()
-            url = f"{base_url}{API_URI}{endpoint}"
+            url = self.build_url(f"{API_URI}{endpoint}")
 
             with httpx.Client(auth=self.get_auth(), timeout=self.timeout) as client:
                 response = client.post(
