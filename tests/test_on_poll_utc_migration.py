@@ -240,9 +240,7 @@ def test_utc_checkpoint_query_is_independent_of_asset_timezone(monkeypatch):
             )
         )
 
-    assert queries == [
-        "ORDERBYsys_updated_on^sys_updated_on>=2025-09-03 09:00:00"
-    ] * 3
+    assert queries == ["ORDERBYsys_updated_on^sys_updated_on>=2025-09-03 09:00:00"] * 3
 
 
 def test_invalid_utc_checkpoint_falls_back_to_legacy_checkpoint(monkeypatch):
@@ -389,9 +387,7 @@ class FilteringPaginator:
         )
         checkpoint = match.group(1) if match else "0000-00-00 00:00:00"
         matching = [
-            record
-            for record in self.records
-            if record["sys_updated_on"] >= checkpoint
+            record for record in self.records if record["sys_updated_on"] >= checkpoint
         ]
         matching.sort(key=lambda record: record["sys_updated_on"])
         return matching[:limit]
@@ -495,9 +491,7 @@ def test_all_same_timestamp_records_are_eventually_ingested(monkeypatch):
 
     for _ in range(3):
         emitted = list(
-            module.on_poll.__wrapped__(
-                ScheduledPollParams(), SimpleNamespace(), asset
-            )
+            module.on_poll.__wrapped__(ScheduledPollParams(), SimpleNamespace(), asset)
         )
         observed.update(_source_ids(emitted))
 
