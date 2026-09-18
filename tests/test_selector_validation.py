@@ -38,27 +38,38 @@ def test_ticket_number_rejects_encoded_query_operators(ticket_number):
         client.get_sys_id_from_ticket_number("incident", ticket_number)
 
 
-@pytest.mark.parametrize("field", ["user_id", "username"])
-def test_query_users_rejects_encoded_query_operators(monkeypatch, field):
+@pytest.mark.parametrize(
+    ("field", "expected_query"),
+    [
+        ("user_id", "sys_id=admin^ORuser_name=guest"),
+        ("username", "user_name=admin^ORuser_name=guest"),
+    ],
+)
+def test_query_users_forwards_legacy_selector_values(
+    monkeypatch, field, expected_query
+):
     module = importlib.import_module("src.actions.query_users")
+    captured = {}
 
     class FakeClient:
         def __init__(self, asset):
             pass
 
-        def paginator(self, *args, **kwargs):
-            raise AssertionError(
-                "ServiceNow should not be called for an invalid selector"
-            )
+        def paginator(self, endpoint, payload, limit):
+            captured.update(endpoint=endpoint, payload=payload, limit=limit)
+            return []
 
     monkeypatch.setattr(module, "ServiceNowClient", FakeClient)
 
     values = {"max_results": 10}
     values[field] = "admin^ORuser_name=guest"
     params = module.QueryUsersParams(**values)
+    soar = SimpleNamespace(
+        set_summary=lambda summary: None, set_message=lambda message: None
+    )
 
-    with pytest.raises(ActionFailure, match=field):
-        module.query_users.__wrapped__(params, SimpleNamespace(), SimpleNamespace())
+    assert module.query_users.__wrapped__(params, soar, SimpleNamespace()) == []
+    assert captured["payload"]["sysparm_query"] == expected_query
 
 
 @pytest.mark.parametrize("field", ["catalog_sys_id", "category_sys_id"])

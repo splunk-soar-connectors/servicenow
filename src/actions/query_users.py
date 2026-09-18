@@ -21,7 +21,7 @@ from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT, TABLE_ENDPOINT
-from ..helpers import validate_path_segment, validate_positive_integer
+from ..helpers import validate_positive_integer
 from ..servicenow_client import ServiceNowClient
 
 
@@ -141,12 +141,10 @@ def query_users(
     if not query_param:
         # If no query provided, check for user_id or username
         if params.user_id:
-            user_id = validate_path_segment("user_id", params.user_id)
-            query_param = f"sysparm_query=sys_id={user_id}"
+            query_param = f"sysparm_query=sys_id={params.user_id}"
             logger.debug(f"Building query from user_id: {query_param}")
         elif params.username:
-            username = validate_path_segment("username", params.username)
-            query_param = f"sysparm_query=user_name={username}"
+            query_param = f"sysparm_query=user_name={params.username}"
             logger.debug(f"Building query from username: {query_param}")
 
     endpoint = TABLE_ENDPOINT.format("sys_user")
