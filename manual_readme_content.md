@@ -14,32 +14,10 @@
   - severity: Custom severity of the ingested artifact.
 
     - **Using Custom Severities on Ingested Data**
-      - If you decide to use custom severities to apply to Containers and Artifacts ingested
-        via On Poll, then you must make sure that the automation user you use has the
-        correct permissions.
-
-      - By default, the automation user is selected to run the ServiceNow ingestion action.
-        (See **Asset Configuration** > **Asset Settings** > **Advanced** ) The automation
-        user does **NOT** have access to view or edit **System Settings** , which includes
-        the permission to view the custom severities on your instance. This will cause your
-        On Poll action to fail since your user cannot pull the custom severities on your
-        instance.
-
-      - In order to solve this problem, you must create a user of type **Automation** and
-        assign this user a Role that has permissions to view or edit **System Settings** (
-        **Administration** > **User Management** > **Users** **> + User** button on the
-        top right corner). Then, choose this user in your ServiceNow **Asset Settings**
-        under **Advanced** and you will be able to successfully apply custom severities to
-        your ingested data.
-
-        **Administration** > **User Management** > **Users** **> + User**
-        [![](img/servicenow_create_user.png)](img/servicenow_create_user.png)
-
-        **Administration** > **User Management** > **Roles & Permissions** **> + Role**
-        [![](img/servicenow_create_role.png)](img/servicenow_create_role.png)
-
-        **Asset Settings** > **Advanced**
-        [![](img/servicenow_asset_settings.png)](img/servicenow_asset_settings.png)
+      - Custom severities can be applied to Containers and Artifacts ingested via On Poll.
+        The app reads severity options from the SOAR `/rest/container_options` endpoint,
+        which only requires container view permissions available to the automation role by
+        default.
 
       - In order to use the custom severity it is necessary to create a severity over (
         **Administration** > **Event Settings** > **Severity** ). If custom severity has
@@ -80,26 +58,23 @@
 
 - **The functioning of Test Connectivity**
 
-  - **Case 1: If Client ID & Client Secret are provided:**
+  - Test Connectivity uses the authentication mode selected in the `oauth_grant_type`
+    configuration parameter.
 
-    - Step1: While running the test connectivity, the system will check if the refresh token
-      is present or not in the state file.
-    - Step2(a): If a refresh token is present then the system will make the API call to fetch
-      a new token. Using new token the test connectivity will get passed.
-    - Step2(b): If the refresh token is not present then the system will check for the
-      Username and Password. Using Username & Password system will make an API call to fetch a
-      new token and test connectivity will get passed.
-    - Step3: If the refresh token is not present and Username and Password are not provided
-      then the system will return an error and the action will fail.
+  - **Case 1: basic_auth**
 
-  - **Case 2: If Client ID & Client Secret are not provided:**
+    - The app authenticates using the configured Username and Password. Saved OAuth
+      credentials are ignored.
 
-    - Step1: While running the test connectivity, System will check if the Username and
-      Password are provided or not.
-    - Step2: If Username & Password are provided then the system will get authenticated and
-      test connectivity will get passed.
-    - Step3: If the Username & Password are not provided then the system will return an error
-      and the action will fail.
+  - **Case 2: password_grant**
+
+    - The app uses the configured Client ID, Client Secret, Username, and Password. An
+      existing refresh token is reused when available.
+
+  - **Case 3: client_credentials**
+
+    - The app uses the configured Client ID and Client Secret. Username and Password are not
+      required. Configure an OAuth Application User in ServiceNow for this mode.
 
 - In order to use the app actions, a user must have these roles itil, sn_request_write, and
   catalog. In some actions, the user can also provide the table name as input in that case the
