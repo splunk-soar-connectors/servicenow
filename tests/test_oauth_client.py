@@ -58,7 +58,7 @@ class FakeAuthState:
 def make_config():
     return OAuthConfig(
         client_id="client-id",
-        client_secret="client-secret",
+        client_secret="client-secret",  # pragma: allowlist secret
         token_endpoint="https://example.service-now.com/oauth_token.do",
         authorization_endpoint=None,
     )
@@ -142,7 +142,7 @@ def test_password_grant_auth_type_fetches_oauth_password_grant():
         config=make_config(),
         auth_state=auth_state,
         username="service-user",
-        password="service-password",
+        password="service-password",  # pragma: allowlist secret
         http_client=make_http_client(
             requests, "password-token", refresh_token="password-refresh-token"
         ),
@@ -171,7 +171,7 @@ def test_password_grant_requires_refresh_token():
         config=make_config(),
         auth_state=auth_state,
         username="service-user",
-        password="service-password",
+        password="service-password",  # pragma: allowlist secret
         http_client=make_http_client(requests, "password-token"),
     )
 
@@ -198,7 +198,7 @@ def test_legacy_password_auth_type_is_treated_as_password_grant():
         config=make_config(),
         auth_state=auth_state,
         username="service-user",
-        password="service-password",
+        password="service-password",  # pragma: allowlist secret
         grant_type=PASSWORD_GRANT_AUTH_TYPE,
         http_client=make_http_client(
             requests, "password-token", refresh_token="password-refresh-token"

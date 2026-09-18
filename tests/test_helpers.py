@@ -28,9 +28,9 @@ from src.servicenow_client import ServiceNowClient
 class FakeAsset:
     url = "https://example.service-now.com"
     username = "user"
-    password = "pass"
+    password = "pass"  # pragma: allowlist secret
     client_id = ""
-    client_secret = "leftover-secret"
+    client_secret = "leftover-secret"  # pragma: allowlist secret
     oauth_grant_type = PASSWORD_GRANT_AUTH_TYPE
 
 

@@ -25,7 +25,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.servicenow_client import ServiceNowClient
 
 
-@pytest.mark.parametrize("ticket_number", ["INC001^ORnumber=INC002", "INC001^ORactive=true"])
+@pytest.mark.parametrize(
+    "ticket_number", ["INC001^ORnumber=INC002", "INC001^ORactive=true"]
+)
 def test_ticket_number_rejects_encoded_query_operators(ticket_number):
     client = object.__new__(ServiceNowClient)
     client.make_rest_call = lambda *args, **kwargs: pytest.fail(
@@ -45,7 +47,9 @@ def test_query_users_rejects_encoded_query_operators(monkeypatch, field):
             pass
 
         def paginator(self, *args, **kwargs):
-            raise AssertionError("ServiceNow should not be called for an invalid selector")
+            raise AssertionError(
+                "ServiceNow should not be called for an invalid selector"
+            )
 
     monkeypatch.setattr(module, "ServiceNowClient", FakeClient)
 
@@ -63,7 +67,9 @@ def test_list_services_rejects_encoded_query_operators(monkeypatch, field):
 
     class FakeClient:
         def __init__(self, asset):
-            raise AssertionError("ServiceNow should not be called for an invalid selector")
+            raise AssertionError(
+                "ServiceNow should not be called for an invalid selector"
+            )
 
     monkeypatch.setattr(module, "ServiceNowClient", FakeClient)
 
