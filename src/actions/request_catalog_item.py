@@ -32,6 +32,7 @@ from ..consts import (
     API_URI,
 )
 from ..helpers import validate_path_segment
+from ..models.reference import UrlMd5ReferenceOutput, UrlReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -43,9 +44,7 @@ class RequestCatalogItemParams(Params):
         primary=True,
         cef_types=["servicenow item sys id", "md5"],
     )
-    variables: str = Param(
-        description="JSON containing variables values", required=False
-    )
+    variables: str | None = Param(description="JSON containing variables values")
     quantity: int = Param(description="Number of items to request", default=1)
 
 
@@ -101,14 +100,14 @@ class RequestCatalogItemOutput(PermissiveActionOutput):
     location: str | None = None
     made_sla: str | None = OutputField(example_values=["true"])
     opened_at: str | None = OutputField(example_values=["2019-10-18 13:49:24"])
-    opened_by: str | None = None
+    opened_by: UrlMd5ReferenceOutput | None = None
     order: str | None = None
     parent: str | None = None
     parent_interaction: str | None = None
     reassignment_count: str | None = OutputField(example_values=["0"])
     request_state: str | None = OutputField(example_values=["in_process"])
     requested_date: str | None = None
-    requested_for: str | None = None
+    requested_for: UrlMd5ReferenceOutput | None = None
     service_offering: str | None = None
     sla_due: str | None = None
     special_instructions: str | None = None
@@ -135,6 +134,7 @@ class RequestCatalogItemOutput(PermissiveActionOutput):
     work_notes: str | None = None
     work_notes_list: str | None = None
     work_start: str | None = None
+    sys_domain: UrlReferenceOutput | None = None
 
 
 @app.action(

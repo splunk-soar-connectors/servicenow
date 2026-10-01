@@ -23,6 +23,11 @@ from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
 from ..helpers import validate_path_segment
+from ..models.reference import (
+    ReferenceOutput,
+    UrlMd5ReferenceOutput,
+    UrlReferenceOutput,
+)
 from ..consts import (
     SERVICENOW_TICKET_ID_MESSAGE,
     SERVICENOW_INVALID_PARAMETER_MESSAGE,
@@ -50,9 +55,8 @@ class GetTicketParams(Params):
         primary=True,
         cef_types=["servicenow ticket sysid", "servicenow ticket number"],
     )
-    is_sys_id: bool = Param(
+    is_sys_id: bool | None = Param(
         description="Whether the value provided in the ID parameter is SYS ID or ticket number",
-        required=False,
     )
 
 
@@ -111,15 +115,15 @@ class GetTicketOutput(PermissiveActionOutput):
     )
 
     # All other fields in alphabetical order
-    assigned_to: str | None = None
-    assignment_group: str | None = None
-    business_service: str | None = None
-    caller_id: str | None = None
+    assigned_to: UrlMd5ReferenceOutput | None = None
+    assignment_group: UrlMd5ReferenceOutput | None = None
+    business_service: ReferenceOutput | None = None
+    caller_id: UrlMd5ReferenceOutput | None = None
     ci: str | None = None
-    company: str | None = None
-    location: str | None = None
-    opened_by: str | None = None
-    resolved_by: str | None = None
+    company: UrlMd5ReferenceOutput | None = None
+    location: UrlMd5ReferenceOutput | None = None
+    opened_by: UrlMd5ReferenceOutput | None = None
+    resolved_by: UrlMd5ReferenceOutput | None = None
     request_item: str | None = None
 
     acquisition_method: str | None = None
@@ -149,10 +153,12 @@ class GetTicketOutput(PermissiveActionOutput):
     checked_in: str | None = None
     checked_out: str | None = None
     child_incidents: str | None = None
+    closed_by: UrlMd5ReferenceOutput | None = None
     close_code: str | None = OutputField(example_values=["Closed/Resolved by Caller"])
     close_notes: str | None = OutputField(
         example_values=["Closed before close notes were made mandatory<br>\t\t"]
     )
+    cmdb_ci: UrlMd5ReferenceOutput | None = None
     cmdb_ci_class: str | None = None
     cmdb_model_category: str | None = None
     comments: str | None = None
@@ -161,11 +167,14 @@ class GetTicketOutput(PermissiveActionOutput):
     correlation_display: str | None = None
     correlation_id: str | None = None
     cost: str | None = OutputField(example_values=["0"])
+    cost_center: str | None = None
     delivery_date: str | None = None
     delivery_plan: str | None = None
     delivery_task: str | None = None
+    department: str | None = None
     depreciated_amount: str | None = OutputField(example_values=["0"])
     depreciation_date: str | None = None
+    depreciation: str | None = None
     display_name: str | None = None
     disposal_reason: str | None = None
     due: str | None = None
@@ -194,7 +203,10 @@ class GetTicketOutput(PermissiveActionOutput):
     made_sla: str | None = OutputField(example_values=["false"])
     main_component: str | None = None
     managed_by: str | None = None
+    manufacturer: ReferenceOutput | None = None
     merged_into: str | None = None
+    model: ReferenceOutput | None = None
+    model_category: ReferenceOutput | None = None
     model_number: str | None = OutputField(example_values=["G73SW-XN2"])
     name: str | None = OutputField(example_values=["G Series"])
     notify: str | None = OutputField(example_values=["1"])
@@ -206,11 +218,12 @@ class GetTicketOutput(PermissiveActionOutput):
     owner: str | None = None
     parent: str | None = None
     parent_incident: str | None = None
-    problem_id: str | None = None
+    problem_id: UrlMd5ReferenceOutput | None = None
     picture: str | None = None
     po_number: str | None = None
     power_consumption: str | None = None
     pre_allocated: str | None = OutputField(example_values=["false"])
+    product_catalog_item: ReferenceOutput | None = None
     purchase_date: str | None = None
     quantity: str | None = OutputField(example_values=["1"])
     rack_units: str | None = OutputField(example_values=["1"])
@@ -237,6 +250,7 @@ class GetTicketOutput(PermissiveActionOutput):
     sound_power: str | None = None
     state: str | None = OutputField(example_values=["7"])
     status: str | None = OutputField(example_values=["In Production"])
+    stockroom: ReferenceOutput | None = None
     subcategory: str | None = None
     substatus: str | None = None
     support_group: str | None = None
@@ -244,6 +258,7 @@ class GetTicketOutput(PermissiveActionOutput):
     sys_class_name: str | None = OutputField(example_values=["incident"])
     sys_created_by: str | None = OutputField(example_values=["pat"])
     sys_created_on: str | None = OutputField(example_values=["2016-09-08 18:24:13"])
+    sys_domain: UrlReferenceOutput | None = None
     sys_domain_path: str | None = OutputField(
         cef_types=["domain"], example_values=["/"]
     )
@@ -258,6 +273,7 @@ class GetTicketOutput(PermissiveActionOutput):
     upon_reject: str | None = None
     urgency: str | None = OutputField(example_values=["1"])
     user_input: str | None = None
+    vendor: ReferenceOutput | None = None
     warranty_expiration: str | None = None
     watch_list: str | None = None
     weight: str | None = None

@@ -22,16 +22,16 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT, TABLE_ENDPOINT
 from ..helpers import validate_positive_integer
+from ..models.reference import UrlMd5ReferenceOutput, UrlReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 
 class QueryUsersParams(Params):
-    query: str = Param(
+    query: str | None = Param(
         description="The query to run. e.g. sysparm_query=user_name=admin",
-        required=False,
     )
-    user_id: str = Param(description="Query by user system ID", required=False)
-    username: str = Param(description="Query by username", required=False)
+    user_id: str | None = Param(description="Query by user system ID")
+    username: str | None = Param(description="Query by username")
     max_results: int = Param(
         description="Max number of records to return", required=False, default=100
     )
@@ -67,7 +67,7 @@ class QueryUserOutput(PermissiveActionOutput):
     city: str | None = None
     company: str | None = None
     cost_center: str | None = None
-    department: str | None = None
+    department: UrlMd5ReferenceOutput | None = None
     country: str | None = None
     date_format: str | None = None
     default_perspective: str | None = None
@@ -108,6 +108,7 @@ class QueryUserOutput(PermissiveActionOutput):
     vip: str | None = OutputField(example_values=["false"])
     web_service_access_only: str | None = OutputField(example_values=["false"])
     zip: str | None = None
+    sys_domain: UrlReferenceOutput | None = None
 
 
 class QueryUsersSummary(ActionOutput):

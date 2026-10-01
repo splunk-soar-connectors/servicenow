@@ -24,6 +24,11 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import SC_CATALOG_ENDPOINT, SC_CATEGORY_ENDPOINT, DEFAULT_MAX_LIMIT
 from ..helpers import validate_path_segment, validate_positive_integer
+from ..models.reference import (
+    ReferenceOutput,
+    UrlMd5ReferenceOutput,
+    UrlReferenceOutput,
+)
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -52,14 +57,18 @@ class CategoriesOutput(PermissiveActionOutput):
     entitlement_script: str | None = None
     header_icon: str | None = None
     homepage_image: str | None = None
+    homepage_renderer: UrlMd5ReferenceOutput | None = None
     icon: str | None = None
     image: str | None = None
     location: str | None = None
+    module: str | None = None
     mobile_hide_description: str | None = OutputField(example_values=["false"])
     mobile_picture: str | None = None
     mobile_subcategory_render_type: str | None = OutputField(example_values=["list"])
     order: str | None = OutputField(example_values=["0"])
+    parent: UrlMd5ReferenceOutput | None = None
     roles: str | None = None
+    sc_catalog: UrlMd5ReferenceOutput | None = None
     show_in_cms: str | None = OutputField(example_values=["false"])
     sys_class_name: str | None = OutputField(example_values=["sc_category"])
     sys_created_by: str | None = OutputField(example_values=["admin"])
@@ -69,7 +78,9 @@ class CategoriesOutput(PermissiveActionOutput):
     )
     sys_mod_count: str | None = OutputField(example_values=["1"])
     sys_name: str | None = OutputField(example_values=["Template Management"])
+    sys_package: UrlMd5ReferenceOutput | None = None
     sys_policy: str | None = None
+    sys_scope: UrlMd5ReferenceOutput | None = None
     sys_tags: str | None = None
     sys_update_name: str | None = OutputField(
         example_values=["sc_category_00728916937002002dcef157b67ffb6d"]
@@ -79,14 +90,22 @@ class CategoriesOutput(PermissiveActionOutput):
     title: str | None = OutputField(example_values=["Template Management"])
 
 
+class CatalogItemCategoryOutput(ReferenceOutput):
+    sys_id: str | None = OutputField(cef_types=["servicenow category sys id", "md5"])
+    title: str | None = None
+
+
 class ItemsOutput(PermissiveActionOutput):
     active: str | None = OutputField(example_values=["true"])
     availability: str | None = OutputField(example_values=["on_desktop"])
     billable: str | None = OutputField(example_values=["false"])
+    # The API may return catalog IDs as strings; preserve that list shape.
     catalogs: list[str] = Field(default_factory=list)
+    category: CatalogItemCategoryOutput | None = None
     content_type: str | None = None
     cost: str | None = OutputField(example_values=["0"])
     custom_cart: str | None = None
+    delivery_plan: ReferenceOutput | None = None
     delivery_plan_script: str | None = None
     delivery_time: str | None = OutputField(example_values=["1970-01-03 00:00:00"])
     description: str | None = OutputField(
@@ -115,6 +134,7 @@ class ItemsOutput(PermissiveActionOutput):
         example_values=["use_desktop_picture"]
     )
     name: str | None = OutputField(example_values=["Retire a Standard Change Template"])
+    model: ReferenceOutput | None = None
     no_attachment_v2: str | None = OutputField(example_values=["false"])
     no_cart: str | None = OutputField(example_values=["false"])
     no_cart_v2: str | None = OutputField(example_values=["false"])
@@ -146,7 +166,11 @@ class ItemsOutput(PermissiveActionOutput):
     sc_ic_item_staging: str | None = None
     sc_ic_version: str | None = None
     short_description: str | None = None
+    show_delivery_time: bool | None = None
+    show_price: bool | None = None
+    show_quantity: bool | None = None
     show_variable_help_on_load: str | None = OutputField(example_values=["false"])
+    show_wishlist: bool | None = None
     start_closed: str | None = OutputField(example_values=["false"])
     sys_class_name: str | None = OutputField(example_values=["sc_cat_item_producer"])
     sys_created_by: str | None = OutputField(example_values=["admin"])
@@ -158,7 +182,9 @@ class ItemsOutput(PermissiveActionOutput):
     sys_name: str | None = OutputField(
         example_values=["Retire a Standard Change Template"]
     )
+    sys_package: ReferenceOutput | None = None
     sys_policy: str | None = None
+    sys_scope: ReferenceOutput | None = None
     sys_tags: str | None = None
     sys_update_name: str | None = OutputField(
         example_values=["sc_cat_item_producer_011f117a9f3002002920bde8132e7020"]
@@ -168,9 +194,12 @@ class ItemsOutput(PermissiveActionOutput):
     type: str | None = OutputField(example_values=["item"])
     url: str | None = None
     use_sc_layout: str | None = OutputField(example_values=["true"])
+    template: ReferenceOutput | None = None
+    vendor: ReferenceOutput | None = None
     visible_bundle: str | None = OutputField(example_values=["true"])
     visible_guide: str | None = OutputField(example_values=["true"])
     visible_standalone: str | None = OutputField(example_values=["true"])
+    workflow: ReferenceOutput | None = None
 
 
 class DescribeServiceCatalogOutput(PermissiveActionOutput):
@@ -193,7 +222,9 @@ class DescribeServiceCatalogOutput(PermissiveActionOutput):
     )
     sys_mod_count: str | None = OutputField(example_values=["48"])
     sys_name: str | None = OutputField(example_values=["Service Catalog"])
+    sys_package: UrlMd5ReferenceOutput | None = None
     sys_policy: str | None = None
+    sys_scope: UrlReferenceOutput | None = None
     sys_tags: str | None = None
     sys_update_name: str | None = OutputField(
         example_values=["sc_catalog_e0d08b13c3330100c8b837659bba8fb4"]

@@ -49,12 +49,11 @@ class ServiceNowMakeRequestParams(MakeRequestParams):
         required=False,
         default=True,
     )
-    body: str = Param(
+    body: str | None = Param(
         description=(
             "The request body to send. When Content-Type contains 'json', this must "
             "be a JSON object. For other content types, the body is sent as raw text."
         ),
-        required=False,
     )
 
 

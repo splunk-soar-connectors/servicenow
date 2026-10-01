@@ -35,6 +35,11 @@ from ..helpers import (
     parse_fields_json,
     validate_path_segment,
 )
+from ..models.reference import (
+    ReferenceOutput,
+    UrlMd5ReferenceOutput,
+    UrlReferenceOutput,
+)
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -48,9 +53,8 @@ class UpdateTicketParams(Params):
         default="incident",
         cef_types=["servicenow table"],
     )
-    vault_id: str = Param(
+    vault_id: str | None = Param(
         description="To attach a file to a ticket, the file must first be in the vault. When the vault ID of a file is provided, it is uploaded and attached to the ticket (Comma-delimited)",
-        required=False,
         primary=True,
         cef_types=["vault id"],
     )
@@ -59,10 +63,9 @@ class UpdateTicketParams(Params):
         primary=True,
         cef_types=["servicenow ticket sysid", "servicenow ticket number"],
     )
-    fields: str = Param(description="JSON containing field values", required=False)
-    is_sys_id: bool = Param(
+    fields: str | None = Param(description="JSON containing field values")
+    is_sys_id: bool | None = Param(
         description="Whether the value provided in the ID parameter is SYS ID or ticket number",
-        required=False,
     )
 
 
@@ -125,17 +128,17 @@ class UpdateTicketOutput(PermissiveActionOutput):
     )
 
     # All other fields in alphabetical order
-    assigned_to: str | None = None
-    assignment_group: str | None = None
-    business_service: str | None = None
-    caller_id: str | None = None
-    ci: str | None = None
-    cmdb_ci: str | None = None
-    company: str | None = None
-    location: str | None = None
-    opened_by: str | None = None
-    owned_by: str | None = None
-    resolved_by: str | None = None
+    assigned_to: UrlMd5ReferenceOutput | None = None
+    assignment_group: UrlMd5ReferenceOutput | None = None
+    business_service: ReferenceOutput | None = None
+    caller_id: UrlMd5ReferenceOutput | None = None
+    ci: ReferenceOutput | None = None
+    cmdb_ci: UrlMd5ReferenceOutput | None = None
+    company: UrlMd5ReferenceOutput | None = None
+    location: UrlMd5ReferenceOutput | None = None
+    opened_by: UrlMd5ReferenceOutput | None = None
+    owned_by: ReferenceOutput | None = None
+    resolved_by: UrlMd5ReferenceOutput | None = None
     request_item: str | None = None
 
     acquisition_method: str | None = None
@@ -217,7 +220,7 @@ class UpdateTicketOutput(PermissiveActionOutput):
     resolved_at: str | None = OutputField(example_values=["2018-05-10 19:56:12"])
     retired: str | None = None
     retirement_date: str | None = None
-    problem_id: str | None = None
+    problem_id: UrlMd5ReferenceOutput | None = None
     rfc: str | None = None
     salvage_value: str | None = OutputField(example_values=["0"])
     serial_number: str | None = None
@@ -251,6 +254,14 @@ class UpdateTicketOutput(PermissiveActionOutput):
     work_notes: str | None = None
     work_notes_list: str | None = None
     work_start: str | None = None
+    closed_by: UrlMd5ReferenceOutput | None = None
+    cost_center: ReferenceOutput | None = None
+    department: ReferenceOutput | None = None
+    depreciation: ReferenceOutput | None = None
+    model: ReferenceOutput | None = None
+    model_category: ReferenceOutput | None = None
+    sys_domain: UrlReferenceOutput | None = None
+    vendor: ReferenceOutput | None = None
 
 
 class UpdateTicketSummary(ActionOutput):

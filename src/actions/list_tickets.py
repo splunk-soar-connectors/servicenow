@@ -22,6 +22,11 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT, TABLE_ENDPOINT
 from ..helpers import validate_path_segment, validate_positive_integer
+from ..models.reference import (
+    ReferenceOutput,
+    UrlMd5ReferenceOutput,
+    UrlReferenceOutput,
+)
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -72,13 +77,13 @@ class ListTicketOutput(PermissiveActionOutput):
         column_name="CLOSED ON", example_values=["2018-02-08 23:10:06"]
     )
     active: str | None = OutputField(example_values=["false"])
-    assigned_to: str | None = None
-    assignment_group: str | None = None
-    business_service: str | None = None
-    caller_id: str | None = None
+    assigned_to: UrlMd5ReferenceOutput | None = None
+    assignment_group: UrlMd5ReferenceOutput | None = None
+    business_service: UrlMd5ReferenceOutput | None = None
+    caller_id: UrlMd5ReferenceOutput | None = None
     ci: str | None = None
-    cmdb_ci: str | None = None
-    company: str | None = None
+    cmdb_ci: UrlMd5ReferenceOutput | None = None
+    company: UrlMd5ReferenceOutput | None = None
     activity_due: str | None = ""
     additional_assignee_list: str | None = ""
     approval: str | None = ""
@@ -91,6 +96,7 @@ class ListTicketOutput(PermissiveActionOutput):
     category: str | None = OutputField(example_values=["network"])
     caused_by: str | None = ""
     child_incidents: str | None = ""
+    closed_by: UrlMd5ReferenceOutput | None = None
     close_code: str | None = OutputField(example_values=["Closed/Resolved by Caller"])
     close_notes: str | None = OutputField(
         example_values=["Closed before close notes were made mandatory<br>\t\t"]
@@ -111,22 +117,22 @@ class ListTicketOutput(PermissiveActionOutput):
     impact: str | None = OutputField(example_values=["1"])
     incident_state: str | None = OutputField(example_values=["7"])
     knowledge: str | None = OutputField(example_values=["false"])
-    location: str | None = None
+    location: UrlMd5ReferenceOutput | None = None
     made_sla: str | None = OutputField(example_values=["false"])
     notify: str | None = OutputField(example_values=["1"])
-    opened_by: str | None = None
+    opened_by: UrlMd5ReferenceOutput | None = None
     order: str | None = ""
     parent: str | None = ""
-    parent_incident: str | None = None
-    problem_id: str | None = None
+    parent_incident: ReferenceOutput | None = None
+    problem_id: UrlMd5ReferenceOutput | None = None
     reassignment_count: str | None = OutputField(example_values=["1"])
     reopen_count: str | None = ""
     reopened_by: str | None = ""
     reopened_time: str | None = ""
-    request_item: str | None = None
+    request_item: ReferenceOutput | None = None
     resolved_at: str | None = OutputField(example_values=["2018-05-10 19:56:12"])
-    resolved_by: str | None = None
-    rfc: str | None = None
+    resolved_by: UrlMd5ReferenceOutput | None = None
+    rfc: UrlMd5ReferenceOutput | None = None
     sc_item_option: str | None = ""
     service_offering: str | None = None
     sla_due: str | None = ""
@@ -135,6 +141,7 @@ class ListTicketOutput(PermissiveActionOutput):
     sys_class_name: str | None = OutputField(example_values=["incident"])
     sys_created_by: str | None = OutputField(example_values=["pat"])
     sys_created_on: str | None = OutputField(example_values=["2016-09-08 18:24:13"])
+    sys_domain: UrlReferenceOutput | None = None
     sys_domain_path: str | None = OutputField(
         cef_types=["domain"], example_values=["/"]
     )

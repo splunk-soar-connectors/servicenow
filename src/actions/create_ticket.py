@@ -35,15 +35,18 @@ from ..helpers import (
     parse_fields_json,
     validate_path_segment,
 )
+from ..models.reference import (
+    ReferenceOutput,
+    UrlMd5ReferenceOutput,
+    UrlReferenceOutput,
+)
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 
 
 class CreateTicketParams(Params):
-    short_description: str = Param(
-        description="Ticket short description", required=False
-    )
+    short_description: str | None = Param(description="Ticket short description")
     table: str = Param(
         description="Table to add to",
         required=False,
@@ -51,14 +54,13 @@ class CreateTicketParams(Params):
         default="incident",
         cef_types=["servicenow table"],
     )
-    vault_id: str = Param(
+    vault_id: str | None = Param(
         description="To attach a file to a ticket, the file must first be in the vault. When the Vault ID of a file is provided, it is uploaded and attached to the ticket (Comma-delimited)",
-        required=False,
         primary=True,
         cef_types=["vault id"],
     )
-    description: str = Param(description="Ticket description", required=False)
-    fields: str = Param(description="JSON containing field values", required=False)
+    description: str | None = Param(description="Ticket description")
+    fields: str | None = Param(description="JSON containing field values")
 
 
 class AttachmentDetailsOutput(PermissiveActionOutput):
@@ -130,15 +132,15 @@ class CreateTicketOutput(PermissiveActionOutput):
     closed_at: str | None = OutputField(column_name="CLOSED ON")
     acquisition_method: str | None = None
     active: str | None = OutputField(example_values=["true"])
-    assigned_to: str | None = None
+    assigned_to: ReferenceOutput | None = None
     assignment_group: str | None = None
     business_service: str | None = None
     caller_id: str | None = None
     ci: str | None = None
     cmdb_ci: str | None = None
     company: str | None = None
-    location: str | None = None
-    opened_by: str | None = None
+    location: ReferenceOutput | None = None
+    opened_by: UrlMd5ReferenceOutput | None = None
     resolved_by: str | None = None
     service_offering: str | None = None
     activity_due: str | None = None
@@ -252,6 +254,19 @@ class CreateTicketOutput(PermissiveActionOutput):
     work_notes: str | None = None
     work_notes_list: str | None = None
     work_start: str | None = None
+    closed_by: str | None = None
+    cost_center: str | None = None
+    department: str | None = None
+    depreciation: str | None = None
+    managed_by: str | None = None
+    model: ReferenceOutput | None = None
+    model_category: ReferenceOutput | None = None
+    rfc: str | None = None
+    stockroom: str | None = None
+    support_group: str | None = None
+    supported_by: str | None = None
+    sys_domain: UrlReferenceOutput | None = None
+    vendor: str | None = None
 
 
 def _build_failed_attachment_result(

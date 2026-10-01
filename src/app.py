@@ -29,19 +29,16 @@ logger.propagate = False
 class Asset(BaseAsset):
     """ServiceNow Asset Configuration"""
 
-    username: str = AssetField(
-        required=False,
+    username: str | None = AssetField(
         description="Username. Required for basic_auth and password_grant.",
         category=FieldCategory.CONNECTIVITY,
     )
-    password: str = AssetField(
-        required=False,
+    password: str | None = AssetField(
         description="Password. Required for basic_auth and password_grant.",
         sensitive=True,
         category=FieldCategory.CONNECTIVITY,
     )
-    timezone: ZoneInfo = AssetField(
-        required=False,
+    timezone: ZoneInfo | None = AssetField(
         description=(
             "Timezone used only to interpret and preserve legacy On Poll checkpoint "
             "state during an app upgrade. New checkpoints use UTC."
@@ -53,13 +50,11 @@ class Asset(BaseAsset):
         description="Device URL including the port, e.g. https://myservicenow.enterprise.com:8080",
         category=FieldCategory.CONNECTIVITY,
     )
-    on_poll_table: str = AssetField(
-        required=False,
+    on_poll_table: str | None = AssetField(
         description="Table to ingest issues from",
         category=FieldCategory.INGEST,
     )
-    on_poll_filter: str = AssetField(
-        required=False,
+    on_poll_filter: str | None = AssetField(
         description=(
             "Optional ServiceNow encoded query appended to On Poll. Separate "
             "conditions with '^' and do not include a leading '^'. Applies to "
@@ -67,16 +62,14 @@ class Asset(BaseAsset):
         ),
         category=FieldCategory.INGEST,
     )
-    client_id: str = AssetField(
-        required=False,
+    client_id: str | None = AssetField(
         description=(
             "OAuth client ID. Required together with client_secret for password_grant "
             "or client_credentials; ignored when basic_auth is selected."
         ),
         category=FieldCategory.CONNECTIVITY,
     )
-    client_secret: str = AssetField(
-        required=False,
+    client_secret: str | None = AssetField(
         description=(
             "OAuth client secret. Required together with client_id for password_grant "
             "or client_credentials; ignored when basic_auth is selected."
@@ -108,8 +101,7 @@ class Asset(BaseAsset):
         default=100,
         category=FieldCategory.INGEST,
     )
-    severity: str = AssetField(
-        required=False,
+    severity: str | None = AssetField(
         description="Severity to apply to Containers and Artifacts ingested via On Poll",
         category=FieldCategory.INGEST,
     )

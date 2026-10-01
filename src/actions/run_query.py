@@ -23,6 +23,11 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import SERVICENOW_SENSITIVE_PROPS
 from ..helpers import validate_path_segment
+from ..models.reference import (
+    ReferenceOutput,
+    UrlMd5ReferenceOutput,
+    UrlReferenceOutput,
+)
 from ..servicenow_client import ServiceNowClient
 
 
@@ -76,6 +81,20 @@ class RunQueryOutput(PermissiveActionOutput):
     closed_at: str | None = OutputField(
         column_name="CLOSED ON", example_values=["2018-02-08 23:10:06"]
     )
+    assigned_to: UrlMd5ReferenceOutput | None = None
+    assignment_group: UrlMd5ReferenceOutput | None = None
+    business_service: UrlMd5ReferenceOutput | None = None
+    caller_id: UrlMd5ReferenceOutput | None = None
+    closed_by: UrlMd5ReferenceOutput | None = None
+    cmdb_ci: UrlMd5ReferenceOutput | None = None
+    company: UrlMd5ReferenceOutput | None = None
+    location: UrlMd5ReferenceOutput | None = None
+    opened_by: UrlMd5ReferenceOutput | None = None
+    parent_incident: ReferenceOutput | None = None
+    problem_id: UrlMd5ReferenceOutput | None = None
+    resolved_by: UrlMd5ReferenceOutput | None = None
+    rfc: UrlMd5ReferenceOutput | None = None
+    sys_domain: UrlReferenceOutput | None = None
     active: str | None = OutputField(example_values=["true"])
     activity_due: str | None = None
     additional_assignee_list: str | None = None

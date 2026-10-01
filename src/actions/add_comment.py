@@ -40,12 +40,13 @@ class AddCommentParams(Params):
         cef_types=["servicenow ticket sysid", "servicenow ticket number"],
     )
     comment: str = Param(description="Comment to add")
-    is_sys_id: bool = Param(
+    is_sys_id: bool | None = Param(
         description="Whether the value provided in the ID parameter is SYS ID or ticket number",
-        required=False,
     )
 
 
+# These actions request display values, so ServiceNow reference fields may be
+# strings or objects. PermissiveActionOutput preserves undeclared fields.
 class AddCommentOutput(PermissiveActionOutput):
     """Output structure for add_comment action"""
 

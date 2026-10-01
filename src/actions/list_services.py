@@ -22,27 +22,29 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import DEFAULT_MAX_LIMIT
 from ..helpers import validate_path_segment, validate_positive_integer
+from ..models.reference import (
+    ReferenceOutput,
+    UrlMd5ReferenceOutput,
+    UrlReferenceOutput,
+)
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
 
 
 class ListServicesParams(Params):
-    catalog_sys_id: str = Param(
+    catalog_sys_id: str | None = Param(
         description="SYS ID of a catalog",
-        required=False,
         primary=True,
         cef_types=["servicenow catalog sys id", "md5"],
     )
-    category_sys_id: str = Param(
+    category_sys_id: str | None = Param(
         description="SYS ID of a category",
-        required=False,
         primary=True,
         cef_types=["servicenow category sys id", "md5"],
     )
-    search_text: str = Param(
+    search_text: str | None = Param(
         description="Text pattern to search over",
-        required=False,
     )
     max_results: int = Param(
         description="Max number of items to return", required=False, default=100
@@ -52,12 +54,13 @@ class ListServicesParams(Params):
 class ServiceItemOutput(PermissiveActionOutput):
     """ServiceNow catalog item details"""
 
-    category: str | None = None
+    category: UrlMd5ReferenceOutput | None = None
     name: str | None = OutputField(
         column_name="Name", example_values=["Retire a Standard Change Template"]
     )
     short_description: str | None = OutputField(column_name="Short Description")
     sys_id: str | None = OutputField(column_name="Item SYS ID", cef_types=["md5"])
+    # fetch_catalog_items returns a list, while the legacy manifest declares a string.
     catalogs: list[str] | None = OutputField(
         column_name="Catalog SYS ID", cef_types=["md5"]
     )
@@ -138,6 +141,13 @@ class ServiceItemOutput(PermissiveActionOutput):
     visible_bundle: str | None = OutputField(example_values=["true"])
     visible_guide: str | None = OutputField(example_values=["true"])
     visible_standalone: str | None = OutputField(example_values=["true"])
+    delivery_plan: UrlMd5ReferenceOutput | None = None
+    model: ReferenceOutput | None = None
+    sys_package: UrlMd5ReferenceOutput | None = None
+    sys_scope: UrlReferenceOutput | None = None
+    template: ReferenceOutput | None = None
+    vendor: ReferenceOutput | None = None
+    workflow: ReferenceOutput | None = None
 
 
 class ListServicesSummary(ActionOutput):

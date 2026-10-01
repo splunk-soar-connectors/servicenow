@@ -52,9 +52,7 @@ class CategoryOutput(PermissiveActionOutput):
 
 class CategoryWithActiveOutput(PermissiveActionOutput):
     active: bool | None = None
-    sys_id: str | None = OutputField(
-        cef_types=["servicenow category sys id", "md5"],
-    )
+    sys_id: str | None = None
     title: str | None = OutputField(example_values=["Can We Help You?"])
 
 
@@ -84,7 +82,7 @@ class ChildrenOutput(PermissiveActionOutput):
     read_only: bool | None = None
     render_label: bool | None = None
     type: int | None = OutputField(example_values=[7])
-    value: str | None = None
+    value: bool | None = None
 
 
 class VariablesOutput(PermissiveActionOutput):
@@ -112,10 +110,26 @@ class VariablesOutput(PermissiveActionOutput):
     value: str | None = None
 
 
+class OnLoadScriptOutput(PermissiveActionOutput):
+    appliesTo: str | None = None
+    condition: str | None = None
+    fieldName: str | None = None
+    script: str | None = None
+    sys_id: str | None = None
+    type: str | None = None
+    ui_type: str | None = None
+    variable_set: str | None = None
+
+
+class ClientScriptOutput(PermissiveActionOutput):
+    onLoad: list[OnLoadScriptOutput] | None = None
+
+
 class DescribeCatalogItemOutput(PermissiveActionOutput):
     catalogs: list[CatalogsOutput] | None = None
     categories: list[CategoriesOutput] | None = None
     category: CategoryOutput | None = None
+    client_script: ClientScriptOutput | None = None
     content_type: str | None = None
     description: str | None = OutputField(
         example_values=[

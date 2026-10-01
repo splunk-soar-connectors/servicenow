@@ -542,15 +542,18 @@ action_result.data.\*.opened_at | string | | 2018-11-22 09:57:05 |
 action_result.data.\*.closed_at | string | | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | true |
-action_result.data.\*.assigned_to | string | | |
+action_result.data.\*.assigned_to.link | string | | |
+action_result.data.\*.assigned_to.value | string | | |
 action_result.data.\*.assignment_group | string | | |
 action_result.data.\*.business_service | string | | |
 action_result.data.\*.caller_id | string | | |
 action_result.data.\*.ci | string | | |
 action_result.data.\*.cmdb_ci | string | | |
 action_result.data.\*.company | string | | |
-action_result.data.\*.location | string | | |
-action_result.data.\*.opened_by | string | | |
+action_result.data.\*.location.link | string | | |
+action_result.data.\*.location.value | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | `md5` | |
 action_result.data.\*.resolved_by | string | | |
 action_result.data.\*.service_offering | string | | |
 action_result.data.\*.activity_due | string | | |
@@ -682,6 +685,22 @@ action_result.data.\*.work_end | string | | |
 action_result.data.\*.work_notes | string | | |
 action_result.data.\*.work_notes_list | string | | |
 action_result.data.\*.work_start | string | | |
+action_result.data.\*.closed_by | string | | |
+action_result.data.\*.cost_center | string | | |
+action_result.data.\*.department | string | | |
+action_result.data.\*.depreciation | string | | |
+action_result.data.\*.managed_by | string | | |
+action_result.data.\*.model.link | string | | |
+action_result.data.\*.model.value | string | | |
+action_result.data.\*.model_category.link | string | | |
+action_result.data.\*.model_category.value | string | | |
+action_result.data.\*.rfc | string | | |
+action_result.data.\*.stockroom | string | | |
+action_result.data.\*.support_group | string | | |
+action_result.data.\*.supported_by | string | | |
+action_result.data.\*.sys_domain.link | string | `url` | |
+action_result.data.\*.sys_domain.value | string | | |
+action_result.data.\*.vendor | string | | |
 action_result.summary.created_ticket_id | string | `servicenow ticket sysid` `md5` | |
 action_result.summary.successfully_added_attachments_count | numeric | | 1 2 3 |
 action_result.summary.vault_failure_details | string | | Invalid Vault ID: vault_id_1, vault_id_2 |
@@ -713,12 +732,20 @@ action_result.data.\*.catalogs.\*.sys_id | string | `servicenow catalog sys id` 
 action_result.data.\*.catalogs.\*.title | string | | Service Catalog |
 action_result.data.\*.categories.\*.active | boolean | | True False |
 action_result.data.\*.categories.\*.category.active | boolean | | True False |
-action_result.data.\*.categories.\*.category.sys_id | string | `servicenow category sys id` `md5` | |
+action_result.data.\*.categories.\*.category.sys_id | string | | |
 action_result.data.\*.categories.\*.category.title | string | | Can We Help You? |
 action_result.data.\*.categories.\*.sys_id | string | `servicenow category sys id` `md5` | |
 action_result.data.\*.categories.\*.title | string | | Can We Help You? |
 action_result.data.\*.category.sys_id | string | `servicenow category sys id` `md5` | |
 action_result.data.\*.category.title | string | | Can We Help You? |
+action_result.data.\*.client_script.onLoad.\*.appliesTo | string | | |
+action_result.data.\*.client_script.onLoad.\*.condition | string | | |
+action_result.data.\*.client_script.onLoad.\*.fieldName | string | | |
+action_result.data.\*.client_script.onLoad.\*.script | string | | |
+action_result.data.\*.client_script.onLoad.\*.sys_id | string | | |
+action_result.data.\*.client_script.onLoad.\*.type | string | | |
+action_result.data.\*.client_script.onLoad.\*.ui_type | string | | |
+action_result.data.\*.client_script.onLoad.\*.variable_set | string | | |
 action_result.data.\*.content_type | string | | |
 action_result.data.\*.description | string | | <p>Here you can request a new Knowledge Base to be used. A Knowledge Base can be used to store Knowledge in an organization and anyone can request for a new one to be created.</p> |
 action_result.data.\*.icon | string | | images/icons/catalog_item.gifx |
@@ -760,7 +787,7 @@ action_result.data.\*.variables.\*.children.\*.pricing_implications | boolean | 
 action_result.data.\*.variables.\*.children.\*.read_only | boolean | | True False |
 action_result.data.\*.variables.\*.children.\*.render_label | boolean | | True False |
 action_result.data.\*.variables.\*.children.\*.type | numeric | | 7 |
-action_result.data.\*.variables.\*.children.\*.value | string | | |
+action_result.data.\*.variables.\*.children.\*.value | boolean | | True False |
 action_result.data.\*.variables.\*.display_type | string | | Multi Line Text |
 action_result.data.\*.variables.\*.displayvalue | string | | |
 action_result.data.\*.variables.\*.friendly_type | string | | multi_line_text |
@@ -810,14 +837,21 @@ action_result.data.\*.categories.\*.description | string | | Propose a new Stand
 action_result.data.\*.categories.\*.entitlement_script | string | | |
 action_result.data.\*.categories.\*.header_icon | string | | |
 action_result.data.\*.categories.\*.homepage_image | string | | |
+action_result.data.\*.categories.\*.homepage_renderer.link | string | `url` | |
+action_result.data.\*.categories.\*.homepage_renderer.value | string | `md5` | |
 action_result.data.\*.categories.\*.icon | string | | |
 action_result.data.\*.categories.\*.image | string | | |
 action_result.data.\*.categories.\*.location | string | | |
+action_result.data.\*.categories.\*.module | string | | |
 action_result.data.\*.categories.\*.mobile_hide_description | string | | false |
 action_result.data.\*.categories.\*.mobile_picture | string | | |
 action_result.data.\*.categories.\*.mobile_subcategory_render_type | string | | list |
 action_result.data.\*.categories.\*.order | string | | 0 |
+action_result.data.\*.categories.\*.parent.link | string | `url` | |
+action_result.data.\*.categories.\*.parent.value | string | `md5` | |
 action_result.data.\*.categories.\*.roles | string | | |
+action_result.data.\*.categories.\*.sc_catalog.link | string | `url` | |
+action_result.data.\*.categories.\*.sc_catalog.value | string | `md5` | |
 action_result.data.\*.categories.\*.show_in_cms | string | | false |
 action_result.data.\*.categories.\*.sys_class_name | string | | sc_category |
 action_result.data.\*.categories.\*.sys_created_by | string | | admin |
@@ -825,7 +859,11 @@ action_result.data.\*.categories.\*.sys_created_on | string | | 2015-06-24 04:53
 action_result.data.\*.categories.\*.sys_id | string | `servicenow category sys id` `md5` | |
 action_result.data.\*.categories.\*.sys_mod_count | string | | 1 |
 action_result.data.\*.categories.\*.sys_name | string | | Template Management |
+action_result.data.\*.categories.\*.sys_package.link | string | `url` | |
+action_result.data.\*.categories.\*.sys_package.value | string | `md5` | |
 action_result.data.\*.categories.\*.sys_policy | string | | |
+action_result.data.\*.categories.\*.sys_scope.link | string | `url` | |
+action_result.data.\*.categories.\*.sys_scope.value | string | `md5` | |
 action_result.data.\*.categories.\*.sys_tags | string | | |
 action_result.data.\*.categories.\*.sys_update_name | string | | sc_category_00728916937002002dcef157b67ffb6d |
 action_result.data.\*.categories.\*.sys_updated_by | string | | admin |
@@ -841,9 +879,15 @@ action_result.data.\*.items.\*.active | string | | true |
 action_result.data.\*.items.\*.availability | string | | on_desktop |
 action_result.data.\*.items.\*.billable | string | | false |
 action_result.data.\*.items.\*.catalogs.\* | string | | |
+action_result.data.\*.items.\*.category.link | string | | |
+action_result.data.\*.items.\*.category.value | string | | |
+action_result.data.\*.items.\*.category.sys_id | string | `servicenow category sys id` `md5` | |
+action_result.data.\*.items.\*.category.title | string | | |
 action_result.data.\*.items.\*.content_type | string | | |
 action_result.data.\*.items.\*.cost | string | | 0 |
 action_result.data.\*.items.\*.custom_cart | string | | |
+action_result.data.\*.items.\*.delivery_plan.link | string | | |
+action_result.data.\*.items.\*.delivery_plan.value | string | | |
 action_result.data.\*.items.\*.delivery_plan_script | string | | |
 action_result.data.\*.items.\*.delivery_time | string | | 1970-01-03 00:00:00 |
 action_result.data.\*.items.\*.description | string | | <p class="p1"><font size="2"><span class="s1">Request an existing Standard Change Template is made unavailable when it is no longer required or no longer acceptable as a Standard Change. This will be confirmed by your Change Management team.</span></font></p> |
@@ -866,6 +910,8 @@ action_result.data.\*.items.\*.mobile_hide_price | string | | false |
 action_result.data.\*.items.\*.mobile_picture | string | | |
 action_result.data.\*.items.\*.mobile_picture_type | string | | use_desktop_picture |
 action_result.data.\*.items.\*.name | string | | Retire a Standard Change Template |
+action_result.data.\*.items.\*.model.link | string | | |
+action_result.data.\*.items.\*.model.value | string | | |
 action_result.data.\*.items.\*.no_attachment_v2 | string | | false |
 action_result.data.\*.items.\*.no_cart | string | | false |
 action_result.data.\*.items.\*.no_cart_v2 | string | | false |
@@ -893,7 +939,11 @@ action_result.data.\*.items.\*.sc_catalogs | string | | |
 action_result.data.\*.items.\*.sc_ic_item_staging | string | | |
 action_result.data.\*.items.\*.sc_ic_version | string | | |
 action_result.data.\*.items.\*.short_description | string | | |
+action_result.data.\*.items.\*.show_delivery_time | boolean | | True False |
+action_result.data.\*.items.\*.show_price | boolean | | True False |
+action_result.data.\*.items.\*.show_quantity | boolean | | True False |
 action_result.data.\*.items.\*.show_variable_help_on_load | string | | false |
+action_result.data.\*.items.\*.show_wishlist | boolean | | True False |
 action_result.data.\*.items.\*.start_closed | string | | false |
 action_result.data.\*.items.\*.sys_class_name | string | | sc_cat_item_producer |
 action_result.data.\*.items.\*.sys_created_by | string | | admin |
@@ -901,7 +951,11 @@ action_result.data.\*.items.\*.sys_created_on | string | | 2015-06-25 20:19:46 |
 action_result.data.\*.items.\*.sys_id | string | `servicenow item sys id` `md5` | |
 action_result.data.\*.items.\*.sys_mod_count | string | | 21 |
 action_result.data.\*.items.\*.sys_name | string | | Retire a Standard Change Template |
+action_result.data.\*.items.\*.sys_package.link | string | | |
+action_result.data.\*.items.\*.sys_package.value | string | | |
 action_result.data.\*.items.\*.sys_policy | string | | |
+action_result.data.\*.items.\*.sys_scope.link | string | | |
+action_result.data.\*.items.\*.sys_scope.value | string | | |
 action_result.data.\*.items.\*.sys_tags | string | | |
 action_result.data.\*.items.\*.sys_update_name | string | | sc_cat_item_producer_011f117a9f3002002920bde8132e7020 |
 action_result.data.\*.items.\*.sys_updated_by | string | | admin |
@@ -909,9 +963,15 @@ action_result.data.\*.items.\*.sys_updated_on | string | | 2017-11-02 22:38:21 |
 action_result.data.\*.items.\*.type | string | | item |
 action_result.data.\*.items.\*.url | string | | |
 action_result.data.\*.items.\*.use_sc_layout | string | | true |
+action_result.data.\*.items.\*.template.link | string | | |
+action_result.data.\*.items.\*.template.value | string | | |
+action_result.data.\*.items.\*.vendor.link | string | | |
+action_result.data.\*.items.\*.vendor.value | string | | |
 action_result.data.\*.items.\*.visible_bundle | string | | true |
 action_result.data.\*.items.\*.visible_guide | string | | true |
 action_result.data.\*.items.\*.visible_standalone | string | | true |
+action_result.data.\*.items.\*.workflow.link | string | | |
+action_result.data.\*.items.\*.workflow.value | string | | |
 action_result.data.\*.manager | string | | |
 action_result.data.\*.sys_class_name | string | | sc_catalog |
 action_result.data.\*.sys_created_by | string | | admin |
@@ -919,7 +979,11 @@ action_result.data.\*.sys_created_on | string | | 2013-09-19 11:03:11 |
 action_result.data.\*.sys_id | string | `servicenow catalog sys id` `md5` | |
 action_result.data.\*.sys_mod_count | string | | 48 |
 action_result.data.\*.sys_name | string | | Service Catalog |
+action_result.data.\*.sys_package.link | string | `url` | |
+action_result.data.\*.sys_package.value | string | `md5` | |
 action_result.data.\*.sys_policy | string | | |
+action_result.data.\*.sys_scope.link | string | `url` | |
+action_result.data.\*.sys_scope.value | string | | |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_update_name | string | | sc_catalog_e0d08b13c3330100c8b837659bba8fb4 |
 action_result.data.\*.sys_updated_by | string | | admin |
@@ -962,15 +1026,23 @@ action_result.data.\*.severity | string | | 1 |
 action_result.data.\*.priority | string | | 1 |
 action_result.data.\*.opened_at | string | | 2018-02-07 23:09:51 |
 action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
-action_result.data.\*.assigned_to | string | | |
-action_result.data.\*.assignment_group | string | | |
-action_result.data.\*.business_service | string | | |
-action_result.data.\*.caller_id | string | | |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | `md5` | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | `md5` | |
+action_result.data.\*.business_service.link | string | | |
+action_result.data.\*.business_service.value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | `md5` | |
 action_result.data.\*.ci | string | | |
-action_result.data.\*.company | string | | |
-action_result.data.\*.location | string | | |
-action_result.data.\*.opened_by | string | | |
-action_result.data.\*.resolved_by | string | | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | `md5` | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | `md5` | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | `md5` | |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | `md5` | |
 action_result.data.\*.request_item | string | | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | false |
@@ -1017,8 +1089,12 @@ action_result.data.\*.certified | string | | false |
 action_result.data.\*.checked_in | string | | |
 action_result.data.\*.checked_out | string | | |
 action_result.data.\*.child_incidents | string | | |
+action_result.data.\*.closed_by.link | string | `url` | |
+action_result.data.\*.closed_by.value | string | `md5` | |
 action_result.data.\*.close_code | string | | Closed/Resolved by Caller |
 action_result.data.\*.close_notes | string | | Closed before close notes were made mandatory<br> |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | `md5` | |
 action_result.data.\*.cmdb_ci_class | string | | |
 action_result.data.\*.cmdb_model_category | string | | |
 action_result.data.\*.comments | string | | |
@@ -1027,11 +1103,14 @@ action_result.data.\*.contact_type | string | | |
 action_result.data.\*.correlation_display | string | | |
 action_result.data.\*.correlation_id | string | | |
 action_result.data.\*.cost | string | | 0 |
+action_result.data.\*.cost_center | string | | |
 action_result.data.\*.delivery_date | string | | |
 action_result.data.\*.delivery_plan | string | | |
 action_result.data.\*.delivery_task | string | | |
+action_result.data.\*.department | string | | |
 action_result.data.\*.depreciated_amount | string | | 0 |
 action_result.data.\*.depreciation_date | string | | |
+action_result.data.\*.depreciation | string | | |
 action_result.data.\*.display_name | string | | |
 action_result.data.\*.disposal_reason | string | | |
 action_result.data.\*.due | string | | |
@@ -1060,7 +1139,13 @@ action_result.data.\*.license_key | string | | |
 action_result.data.\*.made_sla | string | | false |
 action_result.data.\*.main_component | string | | |
 action_result.data.\*.managed_by | string | | |
+action_result.data.\*.manufacturer.link | string | | |
+action_result.data.\*.manufacturer.value | string | | |
 action_result.data.\*.merged_into | string | | |
+action_result.data.\*.model.link | string | | |
+action_result.data.\*.model.value | string | | |
+action_result.data.\*.model_category.link | string | | |
+action_result.data.\*.model_category.value | string | | |
 action_result.data.\*.model_number | string | | G73SW-XN2 |
 action_result.data.\*.name | string | | G Series |
 action_result.data.\*.notify | string | | 1 |
@@ -1072,11 +1157,14 @@ action_result.data.\*.owned_by | string | | |
 action_result.data.\*.owner | string | | |
 action_result.data.\*.parent | string | | |
 action_result.data.\*.parent_incident | string | | |
-action_result.data.\*.problem_id | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | `md5` | |
 action_result.data.\*.picture | string | | |
 action_result.data.\*.po_number | string | | |
 action_result.data.\*.power_consumption | string | | |
 action_result.data.\*.pre_allocated | string | | false |
+action_result.data.\*.product_catalog_item.link | string | | |
+action_result.data.\*.product_catalog_item.value | string | | |
 action_result.data.\*.purchase_date | string | | |
 action_result.data.\*.quantity | string | | 1 |
 action_result.data.\*.rack_units | string | | 1 |
@@ -1103,6 +1191,8 @@ action_result.data.\*.sla_due | string | | |
 action_result.data.\*.sound_power | string | | |
 action_result.data.\*.state | string | | 7 |
 action_result.data.\*.status | string | | In Production |
+action_result.data.\*.stockroom.link | string | | |
+action_result.data.\*.stockroom.value | string | | |
 action_result.data.\*.subcategory | string | | |
 action_result.data.\*.substatus | string | | |
 action_result.data.\*.support_group | string | | |
@@ -1110,6 +1200,8 @@ action_result.data.\*.supported_by | string | | |
 action_result.data.\*.sys_class_name | string | | incident |
 action_result.data.\*.sys_created_by | string | | pat |
 action_result.data.\*.sys_created_on | string | | 2016-09-08 18:24:13 |
+action_result.data.\*.sys_domain.link | string | `url` | |
+action_result.data.\*.sys_domain.value | string | | |
 action_result.data.\*.sys_domain_path | string | `domain` | / |
 action_result.data.\*.sys_mod_count | string | | 22 |
 action_result.data.\*.sys_tags | string | | |
@@ -1122,6 +1214,8 @@ action_result.data.\*.upon_approval | string | | |
 action_result.data.\*.upon_reject | string | | |
 action_result.data.\*.urgency | string | | 1 |
 action_result.data.\*.user_input | string | | |
+action_result.data.\*.vendor.link | string | | |
+action_result.data.\*.vendor.value | string | | |
 action_result.data.\*.warranty_expiration | string | | |
 action_result.data.\*.watch_list | string | | |
 action_result.data.\*.weight | string | | |
@@ -1187,28 +1281,40 @@ action_result.status | string | | success failure |
 action_result.message | string | | |
 action_result.parameter.max_results | numeric | | |
 action_result.data.\*.title | string | | Template Management Hardware Software |
+action_result.data.\*.sys_id | string | `servicenow category sys id` `md5` | |
+action_result.data.\*.sc_catalog.link | string | `url` | |
+action_result.data.\*.sc_catalog.value | string | `servicenow catalog sys id` `md5` | |
 action_result.data.\*.description | string | | Propose a new Standard Change Template. Modify or Retire an existing Standard Change Template. |
 action_result.data.\*.active | string | | true false |
-action_result.data.\*.sys_id | string | `servicenow category sys id` `md5` | |
 action_result.data.\*.order | string | | 0 1 2 |
 action_result.data.\*.sys_created_on | string | | 2015-06-24 04:53:17 |
 action_result.data.\*.sys_updated_on | string | | 2015-06-24 04:54:20 |
 action_result.data.\*.entitlement_script | string | | |
 action_result.data.\*.header_icon | string | | |
 action_result.data.\*.homepage_image | string | | |
+action_result.data.\*.homepage_renderer.link | string | `url` | |
+action_result.data.\*.homepage_renderer.value | string | `md5` | |
 action_result.data.\*.icon | string | | |
 action_result.data.\*.image | string | | |
 action_result.data.\*.location | string | | |
 action_result.data.\*.mobile_hide_description | string | | false true |
 action_result.data.\*.mobile_picture | string | | |
 action_result.data.\*.mobile_subcategory_render_type | string | | list |
+action_result.data.\*.module.link | string | | |
+action_result.data.\*.module.value | string | | |
+action_result.data.\*.parent.link | string | `url` | |
+action_result.data.\*.parent.value | string | `md5` | |
 action_result.data.\*.roles | string | | |
 action_result.data.\*.show_in_cms | string | | false true |
 action_result.data.\*.sys_class_name | string | | sc_category |
 action_result.data.\*.sys_created_by | string | | admin system |
 action_result.data.\*.sys_mod_count | string | | 0 1 2 |
 action_result.data.\*.sys_name | string | | Template Management Hardware Software |
+action_result.data.\*.sys_package.link | string | `url` | |
+action_result.data.\*.sys_package.value | string | `md5` | |
 action_result.data.\*.sys_policy | string | | |
+action_result.data.\*.sys_scope.link | string | `url` | |
+action_result.data.\*.sys_scope.value | string | | |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_update_name | string | | sc_category_00728916937002002dcef157b67ffb6d |
 action_result.data.\*.sys_updated_by | string | | admin system |
@@ -1257,6 +1363,10 @@ action_result.data.\*.sys_policy | string | | |
 action_result.data.\*.sys_tags | string | | |
 action_result.data.\*.sys_update_name | string | | |
 action_result.data.\*.sys_updated_by | string | | admin |
+action_result.data.\*.sys_package.link | string | `url` | |
+action_result.data.\*.sys_package.value | string | `md5` | |
+action_result.data.\*.sys_scope.link | string | `url` | |
+action_result.data.\*.sys_scope.value | string | | |
 action_result.summary.service_catalogs_returned | numeric | | 2 |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
@@ -1289,7 +1399,8 @@ action_result.parameter.catalog_sys_id | string | `servicenow catalog sys id` `m
 action_result.parameter.category_sys_id | string | `servicenow category sys id` `md5` | |
 action_result.parameter.search_text | string | | |
 action_result.parameter.max_results | numeric | | |
-action_result.data.\*.category | string | | |
+action_result.data.\*.category.link | string | `url` | |
+action_result.data.\*.category.value | string | `md5` | |
 action_result.data.\*.name | string | | Retire a Standard Change Template |
 action_result.data.\*.short_description | string | | |
 action_result.data.\*.sys_id | string | `md5` | |
@@ -1357,6 +1468,20 @@ action_result.data.\*.use_sc_layout | string | | true |
 action_result.data.\*.visible_bundle | string | | true |
 action_result.data.\*.visible_guide | string | | true |
 action_result.data.\*.visible_standalone | string | | true |
+action_result.data.\*.delivery_plan.link | string | `url` | |
+action_result.data.\*.delivery_plan.value | string | `md5` | |
+action_result.data.\*.model.link | string | | |
+action_result.data.\*.model.value | string | | |
+action_result.data.\*.sys_package.link | string | `url` | |
+action_result.data.\*.sys_package.value | string | `md5` | |
+action_result.data.\*.sys_scope.link | string | `url` | |
+action_result.data.\*.sys_scope.value | string | | |
+action_result.data.\*.template.link | string | | |
+action_result.data.\*.template.value | string | | |
+action_result.data.\*.vendor.link | string | | |
+action_result.data.\*.vendor.value | string | | |
+action_result.data.\*.workflow.link | string | | |
+action_result.data.\*.workflow.value | string | | |
 action_result.summary.services_returned | numeric | | 3 |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
@@ -1396,13 +1521,19 @@ action_result.data.\*.priority | string | | 1 |
 action_result.data.\*.opened_at | string | | 2018-02-07 23:09:51 |
 action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
 action_result.data.\*.active | string | | false |
-action_result.data.\*.assigned_to | string | | |
-action_result.data.\*.assignment_group | string | | |
-action_result.data.\*.business_service | string | | |
-action_result.data.\*.caller_id | string | | |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | `md5` | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | `md5` | |
+action_result.data.\*.business_service.link | string | `url` | |
+action_result.data.\*.business_service.value | string | `md5` | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | `md5` | |
 action_result.data.\*.ci | string | | |
-action_result.data.\*.cmdb_ci | string | | |
-action_result.data.\*.company | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | `md5` | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | `md5` | |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
 action_result.data.\*.approval | string | | |
@@ -1415,6 +1546,8 @@ action_result.data.\*.calendar_stc | string | | 7937181 |
 action_result.data.\*.category | string | | network |
 action_result.data.\*.caused_by | string | | |
 action_result.data.\*.child_incidents | string | | |
+action_result.data.\*.closed_by.link | string | `url` | |
+action_result.data.\*.closed_by.value | string | `md5` | |
 action_result.data.\*.close_code | string | | Closed/Resolved by Caller |
 action_result.data.\*.close_notes | string | | Closed before close notes were made mandatory<br> |
 action_result.data.\*.comments | string | | |
@@ -1433,22 +1566,29 @@ action_result.data.\*.hold_reason | string | | |
 action_result.data.\*.impact | string | | 1 |
 action_result.data.\*.incident_state | string | | 7 |
 action_result.data.\*.knowledge | string | | false |
-action_result.data.\*.location | string | | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | `md5` | |
 action_result.data.\*.made_sla | string | | false |
 action_result.data.\*.notify | string | | 1 |
-action_result.data.\*.opened_by | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | `md5` | |
 action_result.data.\*.order | string | | |
 action_result.data.\*.parent | string | | |
-action_result.data.\*.parent_incident | string | | |
-action_result.data.\*.problem_id | string | | |
+action_result.data.\*.parent_incident.link | string | | |
+action_result.data.\*.parent_incident.value | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | `md5` | |
 action_result.data.\*.reassignment_count | string | | 1 |
 action_result.data.\*.reopen_count | string | | |
 action_result.data.\*.reopened_by | string | | |
 action_result.data.\*.reopened_time | string | | |
-action_result.data.\*.request_item | string | | |
+action_result.data.\*.request_item.link | string | | |
+action_result.data.\*.request_item.value | string | | |
 action_result.data.\*.resolved_at | string | | 2018-05-10 19:56:12 |
-action_result.data.\*.resolved_by | string | | |
-action_result.data.\*.rfc | string | | |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | `md5` | |
+action_result.data.\*.rfc.link | string | `url` | |
+action_result.data.\*.rfc.value | string | `md5` | |
 action_result.data.\*.sc_item_option | string | | |
 action_result.data.\*.service_offering | string | | |
 action_result.data.\*.sla_due | string | | |
@@ -1457,6 +1597,8 @@ action_result.data.\*.subcategory | string | | |
 action_result.data.\*.sys_class_name | string | | incident |
 action_result.data.\*.sys_created_by | string | | pat |
 action_result.data.\*.sys_created_on | string | | 2016-09-08 18:24:13 |
+action_result.data.\*.sys_domain.link | string | `url` | |
+action_result.data.\*.sys_domain.value | string | | |
 action_result.data.\*.sys_domain_path | string | `domain` | / |
 action_result.data.\*.sys_mod_count | string | | 22 |
 action_result.data.\*.sys_tags | string | | |
@@ -1580,7 +1722,8 @@ action_result.data.\*.calendar_integration | string | | 1 |
 action_result.data.\*.city | string | | |
 action_result.data.\*.company | string | | |
 action_result.data.\*.cost_center | string | | |
-action_result.data.\*.department | string | | |
+action_result.data.\*.department.link | string | `url` | |
+action_result.data.\*.department.value | string | `md5` | |
 action_result.data.\*.country | string | | |
 action_result.data.\*.date_format | string | | |
 action_result.data.\*.default_perspective | string | | |
@@ -1621,6 +1764,8 @@ action_result.data.\*.time_zone | string | | |
 action_result.data.\*.vip | string | | false |
 action_result.data.\*.web_service_access_only | string | | false |
 action_result.data.\*.zip | string | | |
+action_result.data.\*.sys_domain.link | string | `url` | |
+action_result.data.\*.sys_domain.value | string | | |
 action_result.summary.total_users | numeric | | 1 |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
@@ -1691,14 +1836,16 @@ action_result.data.\*.knowledge | string | | false |
 action_result.data.\*.location | string | | |
 action_result.data.\*.made_sla | string | | true |
 action_result.data.\*.opened_at | string | | 2019-10-18 13:49:24 |
-action_result.data.\*.opened_by | string | | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | `md5` | |
 action_result.data.\*.order | string | | |
 action_result.data.\*.parent | string | | |
 action_result.data.\*.parent_interaction | string | | |
 action_result.data.\*.reassignment_count | string | | 0 |
 action_result.data.\*.request_state | string | | in_process |
 action_result.data.\*.requested_date | string | | |
-action_result.data.\*.requested_for | string | | |
+action_result.data.\*.requested_for.link | string | `url` | |
+action_result.data.\*.requested_for.value | string | `md5` | |
 action_result.data.\*.service_offering | string | | |
 action_result.data.\*.sla_due | string | | |
 action_result.data.\*.special_instructions | string | | |
@@ -1723,6 +1870,8 @@ action_result.data.\*.work_end | string | | |
 action_result.data.\*.work_notes | string | | |
 action_result.data.\*.work_notes_list | string | | |
 action_result.data.\*.work_start | string | | |
+action_result.data.\*.sys_domain.link | string | `url` | |
+action_result.data.\*.sys_domain.value | string | | |
 summary.total_objects | numeric | | 1 |
 summary.total_objects_successful | numeric | | 1 |
 
@@ -1758,6 +1907,34 @@ action_result.data.\*.severity | string | | 3 |
 action_result.data.\*.priority | string | | 3 |
 action_result.data.\*.opened_at | string | | 2016-08-10 16:14:29 |
 action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | `md5` | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | `md5` | |
+action_result.data.\*.business_service.link | string | `url` | |
+action_result.data.\*.business_service.value | string | `md5` | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | `md5` | |
+action_result.data.\*.closed_by.link | string | `url` | |
+action_result.data.\*.closed_by.value | string | `md5` | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | `md5` | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | `md5` | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | `md5` | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | `md5` | |
+action_result.data.\*.parent_incident.link | string | | |
+action_result.data.\*.parent_incident.value | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | `md5` | |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | `md5` | |
+action_result.data.\*.rfc.link | string | `url` | |
+action_result.data.\*.rfc.value | string | `md5` | |
+action_result.data.\*.sys_domain.link | string | `url` | |
+action_result.data.\*.sys_domain.value | string | | |
 action_result.data.\*.active | string | | true |
 action_result.data.\*.activity_due | string | | |
 action_result.data.\*.additional_assignee_list | string | | |
@@ -1980,17 +2157,28 @@ action_result.data.\*.category | string | | network |
 action_result.data.\*.sys_id | string | `servicenow ticket sysid` `md5` | |
 action_result.data.\*.opened_at | string | | 2018-02-07 23:09:51 |
 action_result.data.\*.closed_at | string | | 2018-02-08 23:10:06 |
-action_result.data.\*.assigned_to | string | | |
-action_result.data.\*.assignment_group | string | | |
-action_result.data.\*.business_service | string | | |
-action_result.data.\*.caller_id | string | | |
-action_result.data.\*.ci | string | | |
-action_result.data.\*.cmdb_ci | string | | |
-action_result.data.\*.company | string | | |
-action_result.data.\*.location | string | | |
-action_result.data.\*.opened_by | string | | |
-action_result.data.\*.owned_by | string | | |
-action_result.data.\*.resolved_by | string | | |
+action_result.data.\*.assigned_to.link | string | `url` | |
+action_result.data.\*.assigned_to.value | string | `md5` | |
+action_result.data.\*.assignment_group.link | string | `url` | |
+action_result.data.\*.assignment_group.value | string | `md5` | |
+action_result.data.\*.business_service.link | string | | |
+action_result.data.\*.business_service.value | string | | |
+action_result.data.\*.caller_id.link | string | `url` | |
+action_result.data.\*.caller_id.value | string | `md5` | |
+action_result.data.\*.ci.link | string | | |
+action_result.data.\*.ci.value | string | | |
+action_result.data.\*.cmdb_ci.link | string | `url` | |
+action_result.data.\*.cmdb_ci.value | string | `md5` | |
+action_result.data.\*.company.link | string | `url` | |
+action_result.data.\*.company.value | string | `md5` | |
+action_result.data.\*.location.link | string | `url` | |
+action_result.data.\*.location.value | string | `md5` | |
+action_result.data.\*.opened_by.link | string | `url` | |
+action_result.data.\*.opened_by.value | string | `md5` | |
+action_result.data.\*.owned_by.link | string | | |
+action_result.data.\*.owned_by.value | string | | |
+action_result.data.\*.resolved_by.link | string | `url` | |
+action_result.data.\*.resolved_by.value | string | `md5` | |
 action_result.data.\*.request_item | string | | |
 action_result.data.\*.acquisition_method | string | | |
 action_result.data.\*.active | string | | false |
@@ -2089,7 +2277,8 @@ action_result.data.\*.residual_date | string | | |
 action_result.data.\*.resolved_at | string | | 2018-05-10 19:56:12 |
 action_result.data.\*.retired | string | | |
 action_result.data.\*.retirement_date | string | | |
-action_result.data.\*.problem_id | string | | |
+action_result.data.\*.problem_id.link | string | `url` | |
+action_result.data.\*.problem_id.value | string | `md5` | |
 action_result.data.\*.rfc | string | | |
 action_result.data.\*.salvage_value | string | | 0 |
 action_result.data.\*.serial_number | string | | |
@@ -2121,6 +2310,22 @@ action_result.data.\*.work_end | string | | |
 action_result.data.\*.work_notes | string | | |
 action_result.data.\*.work_notes_list | string | | |
 action_result.data.\*.work_start | string | | |
+action_result.data.\*.closed_by.link | string | `url` | |
+action_result.data.\*.closed_by.value | string | `md5` | |
+action_result.data.\*.cost_center.link | string | | |
+action_result.data.\*.cost_center.value | string | | |
+action_result.data.\*.department.link | string | | |
+action_result.data.\*.department.value | string | | |
+action_result.data.\*.depreciation.link | string | | |
+action_result.data.\*.depreciation.value | string | | |
+action_result.data.\*.model.link | string | | |
+action_result.data.\*.model.value | string | | |
+action_result.data.\*.model_category.link | string | | |
+action_result.data.\*.model_category.value | string | | |
+action_result.data.\*.sys_domain.link | string | `url` | |
+action_result.data.\*.sys_domain.value | string | | |
+action_result.data.\*.vendor.link | string | | |
+action_result.data.\*.vendor.value | string | | |
 action_result.summary.fields_updated | boolean | | True False |
 action_result.summary.successfully_added_attachments_count | numeric | | 1 2 3 |
 action_result.summary.vault_failure_details | string | | Invalid Vault ID: vault_id_1, vault_id_2 |

@@ -22,6 +22,7 @@ from soar_sdk.logging import getLogger
 from ..app import app, Asset
 from ..consts import SC_CATALOG_ENDPOINT, DEFAULT_MAX_LIMIT
 from ..helpers import validate_positive_integer
+from ..models.reference import UrlMd5ReferenceOutput, UrlReferenceOutput
 from ..servicenow_client import ServiceNowClient
 
 logger = getLogger()
@@ -70,6 +71,8 @@ class ServiceCatalogOutput(PermissiveActionOutput):
     sys_tags: str | None = None
     sys_update_name: str | None = None
     sys_updated_by: str | None = OutputField(example_values=["admin"])
+    sys_package: UrlMd5ReferenceOutput | None = None
+    sys_scope: UrlReferenceOutput | None = None
 
 
 class ListServiceCatalogsSummary(ActionOutput):
