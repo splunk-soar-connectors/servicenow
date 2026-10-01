@@ -171,6 +171,7 @@ def _strip_sensitive_props(record: dict) -> dict:
 @app.action(
     description="Gets object data according to the specified query",
     action_type="investigate",
+    read_only=True,
     summary_type=RunQuerySummary,
     render_as="table",
 )

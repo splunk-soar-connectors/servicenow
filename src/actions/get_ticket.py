@@ -281,6 +281,7 @@ class GetTicketSummary(ActionOutput):
 @app.action(
     description="Get ticket/record information",
     action_type="investigate",
+    read_only=True,
     render_as="table",
     verbose="If the <b>table</b> value is not specified, the action defaults to the <b>incident</b>. Users can provide a valid ticket number in the 'id' parameter or check the 'is_sys_id' parameter and provide a valid <b>SYS ID</b> in the 'id' parameter. Users can get the <b>SYS ID</b> value for any ticket from the results of the <b>List Tickets</b> action run.",
     summary_type=GetTicketSummary,

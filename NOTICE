@@ -413,7 +413,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 @@@@============================================================================
 
-Library: bleach - 6.3.0
+Library: bleach - 6.4.0
 Homepage: https://github.com/mozilla/bleach
 License: Apache Software License
 License Text:
@@ -3371,7 +3371,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 @@@@============================================================================
 
-Library: splunk-soar-sdk - 3.25.1
+Library: splunk-soar-sdk - 6.1.2
 Homepage: https://github.com/phantomcyber/splunk-soar-sdk
 License: Apache-2.0
 License Text:
@@ -3884,9 +3884,9 @@ License Text:
 
 @@@@============================================================================
 
-Library: typer - 0.21.1
+Library: typer - 0.17.5
 Homepage: https://github.com/fastapi/typer
-License: MIT
+License: MIT License
 License Text:
 
 The MIT License (MIT)

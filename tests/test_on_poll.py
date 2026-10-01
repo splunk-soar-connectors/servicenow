@@ -106,7 +106,7 @@ def test_strip_format_controls_recursively():
     }
 
 
-def test_manual_poll_uses_sdk_epoch_timestamps_as_utc(monkeypatch):
+def test_manual_poll_ignores_sdk_epoch_timestamps(monkeypatch):
     module = importlib.import_module("src.actions.on_poll")
     captured = {}
 
@@ -136,11 +136,7 @@ def test_manual_poll_uses_sdk_epoch_timestamps_as_utc(monkeypatch):
 
     list(module.on_poll.__wrapped__(params, SimpleNamespace(), asset))
 
-    assert captured["sysparm_query"] == (
-        "ORDERBYsys_updated_on"
-        "^sys_updated_on>=2025-09-03 09:00:00"
-        "^sys_updated_on<=2025-09-03 10:00:00"
-    )
+    assert captured["sysparm_query"] == "ORDERBYsys_updated_on"
 
 
 def test_scheduled_poll_prefers_utc_checkpoint_over_legacy_timezone(monkeypatch):

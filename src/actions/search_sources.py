@@ -134,6 +134,7 @@ class SearchSourcesOutput(PermissiveActionOutput):
 @app.action(
     description="Search for records across multiple tables",
     action_type="investigate",
+    read_only=True,
     summary_type=SearchSourcesSummary,
     verbose="To find the list of search source IDs for the <b>sysparm_search_sources</b> parameter, follow this path in servicenow UI: All > Workspace Experience > Administration > Search Sources. Once there, click with two fingers/right click on the source name and copy the sys_id.",
 )
