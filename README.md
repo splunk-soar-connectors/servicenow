@@ -1,7 +1,7 @@
 # ServiceNow
 
 Publisher: Splunk <br>
-Connector Version: 2.8.2 <br>
+Connector Version: 2.8.5 <br>
 Product Vendor: ServiceNow <br>
 Product Name: ServiceNow <br>
 Minimum Product Version: 7.0.0
@@ -108,7 +108,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **username** | optional | string | Username. Required for basic_auth and password_grant. |
 **password** | optional | password | Password. Required for basic_auth and password_grant. |
-**timezone** | optional | timezone | Timezone used only to interpret and preserve legacy On Poll checkpoint state during an app upgrade. New checkpoints and SOAR-provided date ranges use UTC. |
+**timezone** | optional | timezone | Timezone used only to interpret and preserve legacy On Poll checkpoint state during an app upgrade. New checkpoints use UTC. |
 **url** | required | string | Device URL including the port, e.g. https://myservicenow.enterprise.com:8080 |
 **on_poll_table** | optional | string | Table to ingest issues from |
 **on_poll_filter** | optional | string | Optional ServiceNow encoded query appended to On Poll. Separate conditions with '^' and do not include a leading '^'. Applies to manual and scheduled polling. |

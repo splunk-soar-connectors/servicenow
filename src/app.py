@@ -44,8 +44,7 @@ class Asset(BaseAsset):
         required=False,
         description=(
             "Timezone used only to interpret and preserve legacy On Poll checkpoint "
-            "state during an app upgrade. New checkpoints and SOAR-provided date "
-            "ranges use UTC."
+            "state during an app upgrade. New checkpoints use UTC."
         ),
         category=FieldCategory.INGEST,
     )

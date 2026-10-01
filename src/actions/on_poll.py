@@ -312,17 +312,8 @@ def on_poll(
             raise ActionFailure("container_count is required for Poll Now")
         logger.info(f"Poll Now (manual): fetching up to {max_tickets} tickets")
 
-        # If start_time provided (epoch milliseconds), use it for filtering
-        if params.start_time:
-            start_time_str = _format_service_now_time(params.start_time / 1000.0)
-            query += _format_time_query(">=", start_time_str)
-            logger.info(f"Using provided start_time: {start_time_str}")
-
-        # If end_time provided (epoch milliseconds), add upper bound filter
-        if params.end_time:
-            end_time_str = _format_service_now_time(params.end_time / 1000.0)
-            query += _format_time_query("<=", end_time_str)
-            logger.info(f"Using provided end_time: {end_time_str}")
+        # Temporarily ignore Poll Now start_time and end_time to match legacy
+        # behavior while comparing ingestion results.
 
     elif state.get("first_run", True):
         # First scheduled poll
