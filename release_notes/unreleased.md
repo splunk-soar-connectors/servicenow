@@ -1,6 +1,7 @@
 **Unreleased**
 
 * Migrated the app to the Splunk SOAR SDK.
+* Minimum supported Splunk SOAR version is 7.0.0.
 * Added the `make request` action for issuing arbitrary requests to ServiceNow API endpoints.
 * Added OAuth client credentials authentication support.
 * Added the `oauth_grant_type` asset setting. Select `basic_auth`, `password_grant`, or `client_credentials` to match the asset's authentication method.
