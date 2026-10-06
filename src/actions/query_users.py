@@ -14,6 +14,8 @@
 
 """Query Users Action"""
 
+from urllib.parse import parse_qsl
+
 from soar_sdk.abstract import SOARClient
 from soar_sdk.params import Param, Params
 from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionOutput
@@ -137,30 +139,20 @@ def query_users(
 
     client = ServiceNowClient(asset)
 
-    query_param = params.query or ""
-
-    if not query_param:
-        # If no query provided, check for user_id or username
-        if params.user_id:
-            query_param = f"sysparm_query=sys_id={params.user_id}"
-            logger.debug(f"Building query from user_id: {query_param}")
-        elif params.username:
-            query_param = f"sysparm_query=user_name={params.username}"
-            logger.debug(f"Building query from username: {query_param}")
-
     endpoint = TABLE_ENDPOINT.format("sys_user")
 
     payload = {}
-    if query_param:
-        # Extract the query part from sysparm_query=... format if needed
-        if query_param.startswith("sysparm_query="):
-            query_value = query_param.replace("sysparm_query=", "")
-            payload["sysparm_query"] = query_value
-            logger.debug(f"Using query: {query_value}")
+    if params.query:
+        if params.query.startswith("sysparm_"):
+            # Preserve separate URL options and decode them before HTTPX encodes them.
+            payload = dict(parse_qsl(params.query, keep_blank_values=True))
         else:
-            # Assume it's already in the correct format
-            payload["sysparm_query"] = query_param
-            logger.debug(f"Using query: {query_param}")
+            # Also accept a bare ServiceNow encoded query.
+            payload["sysparm_query"] = params.query
+    elif params.user_id:
+        payload["sysparm_query"] = f"sys_id={params.user_id}"
+    elif params.username:
+        payload["sysparm_query"] = f"user_name={params.username}"
 
     limit = validate_positive_integer(
         "max_results", params.max_results, DEFAULT_MAX_LIMIT
