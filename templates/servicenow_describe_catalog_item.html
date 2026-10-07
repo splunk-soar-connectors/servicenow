@@ -1,5 +1,4 @@
-{% extends 'widgets/widget_template.html' %}
-{% load custom_template %}
+{% extends "widgets/widget_template.html" %}
 {% block custom_title_prop %}
   {% if title_logo %}
     style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
@@ -10,7 +9,7 @@
 {% block custom_tools %}{% endblock %}
 {% block widget_content %}
   <!-- Main Start Block -->
-  <!-- File: servicenow_describe_service_catalog.html
+  <!-- File: servicenow_describe_catalog_item.html
   Copyright (c) 2016-2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,7 +91,8 @@ and limitations under the License.
     }
 
   </style>
-  <div class="servicenow"
+  <div id="servicenow-{{ this_widget_uuid }}"
+       class="servicenow"
        style="overflow: auto;
               width: 100%;
               height: 100%;
@@ -106,15 +106,16 @@ and limitations under the License.
       {% if not result.data %}
         <h4 class="wf-h4-style">No data found</h4>
       {% else %}
+        {% set input = result.data[0] %}
         <h4 class="wf-h3-style">Info</h4>
         <table class="wf-table-vertical">
           <tr>
-            <td>Catalog SYS ID</td>
+            <td>SYS ID</td>
             <td>
               <a class="no-word-wrap"
                  href="javascript:;"
-                 onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':'{{ result.param.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                {{ result.param.sys_id }}
+                 onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':{{ input.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                {{ input.sys_id }}
                 &nbsp;
                 <span class="fa fa-caret-down" style="font-size: smaller;"></span>
               </a>
@@ -122,101 +123,76 @@ and limitations under the License.
           </tr>
         </table>
         <div class="results">
-          <h4 class="wf-h4-style">Catalog Details</h4>
+          <h4 class="wf-h4-style">Item Details</h4>
           <!--Default View-->
           <table class="wf-table-horizontal datatable">
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Description</th>
-                <th>Created By</th>
-                <th>Active</th>
+                <th>Short Description</th>
+                <th>Category Name</th>
+                <th>Category SYS ID</th>
+                <th>Catalog Name : Catalog SYS ID</th>
+                <th>Variable Details</th>
               </tr>
             </thead>
             <tbody>
               {% for data in result.data %}
                 <tr>
-                  <td>{{ data.title }}</td>
-                  <td>{{ data.description }}</td>
-                  <td>{{ data.sys_created_by }}</td>
-                  <td>{{ data.active }}</td>
+                  <td>{{ data.name }}</td>
+                  <td>{{ data.short_description }}</td>
+                  <td>{{ data.category.title }}</td>
+                  {% if data.category.sys_id %}
+                    <td>
+                      <a class="no-word-wrap"
+                         href="javascript:;"
+                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':{{ data.category.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                        {{ data.category.sys_id }}
+                        &nbsp;
+                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                      </a>
+                    </td>
+                  {% else %}
+                    <td>None</td>
+                  {% endif %}
+                  <td>
+                    {% for catalog in data.catalogs %}
+                      {{ catalog.title }} : <a class="no-word-wrap"
+    href="javascript:;"
+    onclick="context_menu(this, [{'contains': ['servicenow catalog sys id'], 'value':{{ catalog.sys_id|default("") |tojson|forceescape }} }], 0, {{ container }}, null, false);">
+                      {{ catalog.sys_id }}
+                      &nbsp;
+                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                      </a>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    <table class="wf-table-horizontal datatable">
+                      <thead>
+                        <tr>
+                          <th>Variable Name</th>
+                          <th>Variable ID</th>
+                          <th>Variable Value</th>
+                          <th>Mandatory</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for variable in data.variables %}
+                          <tr>
+                            <td>{{ variable.name }}</td>
+                            <td>{{ variable.id }}</td>
+                            {% if variable.value %}
+                              <td>{{ variable.value }}</td>
+                            {% else %}
+                              <td>None</td>
+                            {% endif %}
+                            <td>{{ variable.mandatory }}</td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </td>
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <div class="results">
-          <h4 class="wf-h4-style">Category</h4>
-          <!--Default View-->
-          <table class="wf-table-horizontal datatable">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Active</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for data in result.data %}
-                {% for category in data.categories %}
-                  <tr>
-                    <td>
-                      <a class="no-word-wrap"
-                         href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ category.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                        {{ category.sys_id }}
-                        &nbsp;
-                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                      </a>
-                    </td>
-                    <td>{{ category.title }}</td>
-                    <td>{{ category.description }}</td>
-                    <td>{{ data.active }}</td>
-                  </tr>
-                {% endfor %}
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <div class="results">
-          <h4 class="wf-h4-style">Catalog Items</h4>
-          <!--Default View-->
-          <table class="wf-table-horizontal datatable">
-            <thead>
-              <tr>
-                <th>Item SYS ID</th>
-                <th>Name</th>
-                <th>Short Description</th>
-                <th>Category SYS ID</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for data in result.data %}
-                {% for item in data.items %}
-                  <tr>
-                    <td>
-                      <a class="no-word-wrap"
-                         href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow item sys id'], 'value':'{{ item.sys_id|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                        {{ item.sys_id }}
-                        &nbsp;
-                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                      </a>
-                    </td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.short_description }}</td>
-                    <td>
-                      <a class="no-word-wrap"
-                         href="javascript:;"
-                         onclick="context_menu(this, [{'contains': ['servicenow category sys id'], 'value':'{{ item.category.value|escapejs }}' }], 0, {{ container.id }}, null, false);">
-                        {{ item.category.value }}
-                        &nbsp;
-                        <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                      </a>
-                    </td>
-                  </tr>
-                {% endfor %}
               {% endfor %}
             </tbody>
           </table>
@@ -243,7 +219,7 @@ and limitations under the License.
         }
     });
     $.fn.DataTable.ext.pager.numbers_length = 5;
-    $('.datatable').DataTable();
+    $('#servicenow-{{ this_widget_uuid }}').find('.datatable').DataTable();
   </script>
 {% endblock %}
 <!-- Main Start Block -->
