@@ -325,7 +325,10 @@ class ServiceNowClient:
         if api_uri is None:
             api_uri = API_URI
 
-        url = self.build_url(f"{api_uri}{endpoint}")
+        # HTTPX's params argument replaces the URL query, so merge it explicitly.
+        url = httpx.URL(self.build_url(f"{api_uri}{endpoint}")).copy_merge_params(
+            params
+        )
 
         try:
             with httpx.Client(auth=self.get_auth(), timeout=self.timeout) as client:
@@ -334,7 +337,6 @@ class ServiceNowClient:
                     url=url,
                     json=data,
                     headers={"Content-Type": "application/json"},
-                    params=params,
                 )
             self._response_headers = dict(response.headers)
         except ActionFailure:
@@ -431,7 +433,10 @@ class ServiceNowClient:
             if limit and len(items_list) >= limit:
                 return items_list[:limit]
 
-            if not result:
+            # ACL filtering can leave a page empty even when later records remain.
+            if not result and total_item_count <= (
+                payload["sysparm_offset"] + payload["sysparm_limit"]
+            ):
                 return items_list
 
             if (
