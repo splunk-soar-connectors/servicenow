@@ -708,8 +708,6 @@ class ServicenowConnector(BaseConnector):
 
         request_params = {"sysparm_limit": "1"}
 
-        action_result = self.add_action_result(ActionResult(param))
-
         self.save_progress(SERVICENOW_MESSAGE_GET_INCIDENT_TEST)
 
         ret_val, _response = self._make_rest_call_helper(
