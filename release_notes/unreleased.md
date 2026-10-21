@@ -1,3 +1,1 @@
 **Unreleased**
-
-* Correct test connectivity reporting after a successful connection.
