@@ -76,7 +76,7 @@ This app integrates with ServiceNow to perform investigative and generic actions
     - The app authenticates using the configured Username and Password. Saved OAuth
       credentials are ignored.
 
-  - **Case 2: password_grant**
+  - **Case 2: password**
 
     - The app uses the configured Client ID, Client Secret, Username, and Password. An
       existing refresh token is reused when available.
@@ -106,15 +106,15 @@ This table lists the configuration variables required to operate ServiceNow. The
 
 VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
-**username** | optional | string | Username. Required for basic_auth and password_grant. |
-**password** | optional | password | Password. Required for basic_auth and password_grant. |
+**username** | optional | string | Username. Required for basic_auth and password. |
+**password** | optional | password | Password. Required for basic_auth and password. |
 **timezone** | optional | timezone | Timezone used only to interpret and preserve legacy On Poll checkpoint state during an app upgrade. New checkpoints use UTC. |
 **url** | required | string | Device URL including the port, e.g. https://myservicenow.enterprise.com:8080 |
 **on_poll_table** | optional | string | Table to ingest issues from |
 **on_poll_filter** | optional | string | Optional ServiceNow encoded query appended to On Poll. Separate conditions with '^' and do not include a leading '^'. Applies to manual and scheduled polling. |
-**client_id** | optional | string | OAuth client ID. Required together with client_secret for password_grant or client_credentials; ignored when basic_auth is selected. |
-**client_secret** | optional | password | OAuth client secret. Required together with client_id for password_grant or client_credentials; ignored when basic_auth is selected. |
-**oauth_grant_type** | optional | string | Authentication mode: basic_auth uses username/password; password_grant uses client_id/client_secret plus username/password; client_credentials uses client_id/client_secret only. For client_credentials, configure an OAuth Application User in ServiceNow. |
+**client_id** | optional | string | OAuth client ID. Required together with client_secret for password or client_credentials; ignored when basic_auth is selected. |
+**client_secret** | optional | password | OAuth client secret. Required together with client_id for password or client_credentials; ignored when basic_auth is selected. |
+**oauth_grant_type** | optional | string | Authentication mode: basic_auth uses username/password; password uses client_id/client_secret plus username/password; client_credentials uses client_id/client_secret only. For client_credentials, configure an OAuth Application User in ServiceNow. |
 **first_run_container** | optional | numeric | Max container (For first run of schedule polling) |
 **max_container** | optional | numeric | Max container (For other runs of schedule polling) |
 **severity** | optional | string | Severity to apply to Containers and Artifacts ingested via On Poll |
@@ -1251,7 +1251,6 @@ DATA PATH | TYPE | CONTAINS | EXAMPLE VALUES
 action_result.status | string | | success failure |
 action_result.message | string | | |
 action_result.parameter.sys_id | string | `servicenow item sys id` `md5` | |
-action_result.data.\*.sys_id | string | `servicenow item sys id` `md5` | |
 action_result.data.\*.Additional software requirements | string | | |
 action_result.data.\*.Adobe Acrobat | string | | |
 action_result.data.\*.Adobe Photoshop | string | | |

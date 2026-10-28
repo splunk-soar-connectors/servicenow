@@ -21,7 +21,7 @@ from soar_sdk.exceptions import ActionFailure
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from src.consts import BASIC_AUTH_TYPE, PASSWORD_GRANT_AUTH_TYPE
+from src.consts import BASIC_AUTH_TYPE, PASSWORD_GRANT_TYPE
 from src.servicenow_client import ServiceNowClient
 
 
@@ -31,7 +31,7 @@ class FakeAsset:
     password = "pass"  # pragma: allowlist secret
     client_id = ""
     client_secret = "leftover-secret"  # pragma: allowlist secret
-    oauth_grant_type = PASSWORD_GRANT_AUTH_TYPE
+    oauth_grant_type = PASSWORD_GRANT_TYPE
 
 
 class BasicAuthAsset(FakeAsset):

@@ -37,6 +37,50 @@ class BasicAuthAsset:
     oauth_grant_type = BASIC_AUTH_TYPE
 
 
+@pytest.mark.parametrize("status", [301, 302, 303, 304, 307, 308, 403, 500])
+@pytest.mark.parametrize("body", ["json", "html", "empty"])
+def test_response_rejects_non_success_status(status, body):
+    if body == "json":
+        response = httpx.Response(status, json={"result": {"sys_id": "unconfirmed-id"}})
+    else:
+        response = httpx.Response(
+            status, text="<html>Redirect</html>" if body == "html" else ""
+        )
+
+    with pytest.raises(ServiceNowAPIError) as exc_info:
+        ServiceNowClient(BasicAuthAsset())._process_response(
+            response,
+            table_location_prefix="https://example.service-now.com/api/now/table",
+        )
+
+    assert exc_info.value.status_code == status
+    assert f"HTTP {status}" in str(exc_info.value)
+
+
+@pytest.mark.parametrize("status", [200, 201, 202, 206])
+def test_response_accepts_successful_json(status):
+    payload = {"result": []}
+    response = httpx.Response(status, json=payload)
+
+    assert (
+        ServiceNowClient(BasicAuthAsset())._process_response(
+            response,
+            table_location_prefix="https://example.service-now.com/api/now/table",
+        )
+        == payload
+    )
+
+
+def test_response_accepts_empty_no_content():
+    assert (
+        ServiceNowClient(BasicAuthAsset())._process_response(
+            httpx.Response(204),
+            table_location_prefix="https://example.service-now.com/api/now/table",
+        )
+        == {}
+    )
+
+
 @pytest.mark.parametrize(
     ("configured_url", "expected_url"),
     [

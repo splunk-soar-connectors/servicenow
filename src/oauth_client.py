@@ -33,7 +33,6 @@ from .consts import (
     CLIENT_CREDENTIALS_GRANT_TYPE,
     DEFAULT_REQUEST_TIMEOUT,
     OAUTH_GRANT_TYPE_STATE_KEY,
-    PASSWORD_GRANT_AUTH_TYPE,
     PASSWORD_GRANT_TYPE,
     VALID_GRANT_TYPES,
 )
@@ -44,17 +43,11 @@ if TYPE_CHECKING:
 logger = getLogger()
 
 
-def _normalize_grant_type(grant_type: str | None) -> str:
-    if grant_type in {None, PASSWORD_GRANT_TYPE}:
-        return PASSWORD_GRANT_AUTH_TYPE
-    return grant_type
-
-
 def migrate_legacy_oauth_state(
-    asset: Any, grant_type: str = PASSWORD_GRANT_AUTH_TYPE
+    asset: Any, grant_type: str = PASSWORD_GRANT_TYPE
 ) -> None:
     """Seed SDK auth state from legacy flat OAuth token state after upgrade."""
-    grant_type = _normalize_grant_type(grant_type)
+    grant_type = PASSWORD_GRANT_TYPE if grant_type is None else grant_type
     auth_state = asset.auth_state
     current_state = auth_state.get_all()
 
@@ -63,11 +56,11 @@ def migrate_legacy_oauth_state(
         if OAUTH_GRANT_TYPE_STATE_KEY not in current_state:
             migrated_state = dict(current_state)
             # Existing SDK OAuth state predates grant tracking; it can only be password grant.
-            migrated_state[OAUTH_GRANT_TYPE_STATE_KEY] = PASSWORD_GRANT_AUTH_TYPE
+            migrated_state[OAUTH_GRANT_TYPE_STATE_KEY] = PASSWORD_GRANT_TYPE
             auth_state.put_all(migrated_state)
         return
 
-    if grant_type != PASSWORD_GRANT_AUTH_TYPE:
+    if grant_type != PASSWORD_GRANT_TYPE:
         return
 
     legacy_state = auth_state.backend.load_state() or {}
@@ -106,7 +99,7 @@ def migrate_legacy_oauth_state(
         "token": sdk_token,
         "client_id": asset.client_id,
     }
-    migrated_state[OAUTH_GRANT_TYPE_STATE_KEY] = PASSWORD_GRANT_AUTH_TYPE
+    migrated_state[OAUTH_GRANT_TYPE_STATE_KEY] = PASSWORD_GRANT_TYPE
     auth_state.put_all(migrated_state)
 
 
@@ -124,11 +117,11 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
         *args: Any,
         username: str | None = None,
         password: str | None = None,
-        grant_type: str = PASSWORD_GRANT_AUTH_TYPE,
+        grant_type: str = PASSWORD_GRANT_TYPE,
         **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
-        grant_type = _normalize_grant_type(grant_type)
+        grant_type = PASSWORD_GRANT_TYPE if grant_type is None else grant_type
         if grant_type not in VALID_GRANT_TYPES:
             raise OAuthClientError(
                 "Unsupported OAuth grant type configured. Supported values are: "
@@ -146,8 +139,7 @@ class ServiceNowOAuthClient(SOARAssetOAuthClient):
 
         stored_grant_type = current_state.get(OAUTH_GRANT_TYPE_STATE_KEY)
         if stored_grant_type is None:
-            stored_grant_type = PASSWORD_GRANT_AUTH_TYPE
-        stored_grant_type = _normalize_grant_type(stored_grant_type)
+            stored_grant_type = PASSWORD_GRANT_TYPE
 
         if stored_grant_type != self._grant_type:
             logger.info(
@@ -328,7 +320,7 @@ def create_servicenow_oauth_client(
     *,
     username: str | None = None,
     password: str | None = None,
-    grant_type: str = PASSWORD_GRANT_AUTH_TYPE,
+    grant_type: str = PASSWORD_GRANT_TYPE,
     verify_ssl: bool = True,
     timeout: float = DEFAULT_REQUEST_TIMEOUT,
 ) -> ServiceNowOAuthClient:

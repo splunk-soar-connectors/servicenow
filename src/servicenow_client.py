@@ -33,7 +33,7 @@ from .consts import (
     DEFAULT_OFFSET,
     DEFAULT_REQUEST_TIMEOUT,
     MAX_PAGES,
-    PASSWORD_GRANT_AUTH_TYPE,
+    PASSWORD_GRANT_TYPE,
     SC_CAT_ITEMS_ENDPOINT,
     TABLE_ENDPOINT,
     TicketNotFoundException,
@@ -130,7 +130,7 @@ class ServiceNowClient:
     def _get_oauth_client(self) -> ServiceNowOAuthClient:
         if self._oauth_client is None:
             oauth_grant_type = getattr(
-                self.asset, "oauth_grant_type", PASSWORD_GRANT_AUTH_TYPE
+                self.asset, "oauth_grant_type", PASSWORD_GRANT_TYPE
             )
             migrate_legacy_oauth_state(self.asset, oauth_grant_type)
             self._oauth_client = create_servicenow_oauth_client(
@@ -156,7 +156,7 @@ class ServiceNowClient:
         client_secret = self.asset.client_secret
         username = self.asset.username
         password = self.asset.password
-        auth_type = getattr(self.asset, "oauth_grant_type", PASSWORD_GRANT_AUTH_TYPE)
+        auth_type = getattr(self.asset, "oauth_grant_type", PASSWORD_GRANT_TYPE)
 
         if auth_type == BASIC_AUTH_TYPE:
             if username and password:
@@ -192,9 +192,9 @@ class ServiceNowClient:
             logger.info("Using OAuth authentication")
             return OAuthBearerAuth(self._get_oauth_client(), auto_refresh=True)
 
-        # Preserve legacy assets that default to password_grant but only have
+        # Preserve legacy assets that default to password but only have
         # username/password configured for Basic Auth.
-        if auth_type == PASSWORD_GRANT_AUTH_TYPE and username and password:
+        if auth_type == PASSWORD_GRANT_TYPE and username and password:
             logger.info("Using Basic Auth authentication")
             return BasicAuth(username, password)
 
@@ -240,8 +240,8 @@ class ServiceNowClient:
         try:
             response_json = response.json()
         except json.JSONDecodeError as e:
-            # Non-JSON response - check for error status codes
-            if response.status_code >= 400:
+            # Reject non-success statuses, including unfollowed redirects.
+            if not response.is_success:
                 # Extract a clean error message from HTML or text response
                 error_message = self._extract_error_from_response(response)
                 raise ServiceNowAPIError(
@@ -257,8 +257,8 @@ class ServiceNowClient:
             # Non-error non-JSON response
             return {}
 
-        # Handle error status codes with JSON responses
-        if response.status_code >= 400:
+        # Reject non-success statuses even when the body contains valid JSON.
+        if not response.is_success:
             error_msg = self._extract_error_from_json(response_json)
             raise ServiceNowAPIError(
                 response.status_code,

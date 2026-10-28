@@ -16,6 +16,8 @@
 
 import soar_sdk
 from soar_sdk.abstract import SOARClient
+from soar_sdk.auth.client import OAuthClientError
+from soar_sdk.exceptions import ActionFailure
 from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
@@ -50,12 +52,12 @@ def test_connectivity(soar: SOARClient, asset: Asset) -> None:
             and client.asset.client_secret
         ):
             client.force_new_oauth_token()
-    except Exception as e:
+    except (ActionFailure, OAuthClientError) as e:
         error_msg = (
             f"{TEST_CONNECTIVITY_FAIL}: Failed to initialize authentication: {e}"
         )
         soar.set_message(error_msg)
-        raise Exception(error_msg) from e
+        raise ActionFailure(error_msg) from e
 
     request_params = {"sysparm_limit": "1"}
 
@@ -66,10 +68,10 @@ def test_connectivity(soar: SOARClient, asset: Asset) -> None:
             TEST_CONNECTIVITY_ENDPOINT,
             params=request_params,
         )
-    except Exception as e:
+    except ActionFailure as e:
         error_msg = f"{TEST_CONNECTIVITY_FAIL}: {e}"
         soar.set_message(error_msg)
-        raise Exception(error_msg) from e
+        raise ActionFailure(error_msg) from e
 
     logger.info(TEST_CONNECTIVITY_SUCCESS)
     success_msg = f"{TEST_CONNECTIVITY_SUCCESS} (soar_sdk v{sdk_version})"

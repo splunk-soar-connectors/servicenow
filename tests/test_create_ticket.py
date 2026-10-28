@@ -17,6 +17,8 @@ import sys
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
@@ -29,6 +31,47 @@ class FakeSoar:
 
     def set_summary(self, summary):
         self.summary = summary
+
+
+@pytest.mark.parametrize(
+    "explicit",
+    [
+        {},
+        {"short_description": None},
+        {"short_description": ""},
+        {"short_description": "override"},
+    ],
+)
+def test_create_ticket_short_description_override(monkeypatch, explicit):
+    module = importlib.import_module("src.actions.create_ticket")
+    requests = []
+
+    class FakeClient:
+        def __init__(self, asset):
+            pass
+
+        def make_rest_call(self, endpoint, data=None, method="get"):
+            requests.append((endpoint, method, data))
+            return {"result": {"sys_id": "created-id", **data}}
+
+    monkeypatch.setattr(module, "ServiceNowClient", FakeClient)
+    params = module.CreateTicketParams(
+        fields='{"short_description":"keep"}', **explicit
+    )
+    result = module.create_ticket.__wrapped__(params, FakeSoar(), object())
+
+    expected_description = explicit.get("short_description") or "keep"
+    assert requests == [
+        (
+            "/table/incident",
+            "post",
+            {
+                "short_description": expected_description,
+                "description": "\n\nAdded by Phantom for container id: 123",
+            },
+        )
+    ]
+    assert result.model_dump()["short_description"] == expected_description
 
 
 def test_create_ticket_attachment_failure_preserves_created_ticket(monkeypatch):

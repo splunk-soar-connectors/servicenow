@@ -39,14 +39,29 @@ def test_ticket_number_rejects_encoded_query_operators(ticket_number):
 
 
 @pytest.mark.parametrize(
-    ("field", "expected_query"),
+    ("selectors", "expected_query"),
     [
-        ("user_id", "sys_id=admin^ORuser_name=guest"),
-        ("username", "user_name=admin^ORuser_name=guest"),
+        ({"user_id": "admin^ORuser_name=guest"}, "sys_id=admin^ORuser_name=guest"),
+        ({"username": "admin^ORuser_name=guest"}, "user_name=admin^ORuser_name=guest"),
+        ({"username": "alice", "user_id": "bob-id"}, "user_name=alice"),
+        ({"username": "", "user_id": "bob-id"}, "sys_id=bob-id"),
+        ({"query": "", "username": "alice", "user_id": "bob-id"}, "user_name=alice"),
+        (
+            {"query": "active=true", "username": "alice", "user_id": "bob-id"},
+            "active=true",
+        ),
+        (
+            {
+                "query": "sysparm_query=active%3Dtrue",
+                "username": "alice",
+                "user_id": "bob-id",
+            },
+            "active=true",
+        ),
     ],
 )
 def test_query_users_forwards_legacy_selector_values(
-    monkeypatch, field, expected_query
+    monkeypatch, selectors, expected_query
 ):
     module = importlib.import_module("src.actions.query_users")
     captured = {}
@@ -61,8 +76,7 @@ def test_query_users_forwards_legacy_selector_values(
 
     monkeypatch.setattr(module, "ServiceNowClient", FakeClient)
 
-    values = {"max_results": 10}
-    values[field] = "admin^ORuser_name=guest"
+    values = {"max_results": 10, **selectors}
     params = module.QueryUsersParams(**values)
     soar = SimpleNamespace(
         set_summary=lambda summary: None, set_message=lambda message: None

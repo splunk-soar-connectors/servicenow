@@ -14,6 +14,8 @@
 
 """Constants for ServiceNow connector"""
 
+from soar_sdk.exceptions import ActionFailure
+
 # API Configuration
 API_URI = "/api/now"
 SC_API_URI = "/api/sn_sc"
@@ -45,16 +47,14 @@ SEARCH_MAX_LIMIT = 20
 # Authentication configuration
 BASIC_AUTH_TYPE = "basic_auth"
 PASSWORD_GRANT_TYPE = "password"  # noqa: S105  # pragma: allowlist secret
-PASSWORD_GRANT_AUTH_TYPE = "password_grant"  # noqa: S105  # pragma: allowlist secret
 CLIENT_CREDENTIALS_GRANT_TYPE = "client_credentials"
 VALID_GRANT_TYPES = {
-    PASSWORD_GRANT_AUTH_TYPE,
     PASSWORD_GRANT_TYPE,
     CLIENT_CREDENTIALS_GRANT_TYPE,
 }
 AUTH_TYPE_VALUES = [
     BASIC_AUTH_TYPE,
-    PASSWORD_GRANT_AUTH_TYPE,
+    PASSWORD_GRANT_TYPE,
     CLIENT_CREDENTIALS_GRANT_TYPE,
 ]
 OAUTH_GRANT_TYPE_STATE_KEY = "oauth_grant_type"
@@ -81,7 +81,7 @@ class UnauthorizedOAuthTokenException(Exception):
     pass
 
 
-class TicketNotFoundException(Exception):
+class TicketNotFoundException(ActionFailure):
     """Exception raised when a ticket is not found by number or sys_id"""
 
     pass

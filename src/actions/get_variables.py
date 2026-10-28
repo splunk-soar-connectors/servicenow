@@ -33,7 +33,6 @@ logger = getLogger()
 ITEM_OPT_MTOM_TABLE = "sc_item_option_mtom"
 ITEM_OPT_TABLE = "sc_item_option"
 ITEM_OPT_NEW_TABLE = "item_option_new"
-RESERVED_VARIABLE_NAMES = frozenset({"sys_id"})
 
 
 class GetVariablesParams(Params):
@@ -49,9 +48,6 @@ class GetVariablesOutput(PermissiveActionOutput):
     Dynamic output for variables with example fields.
     """
 
-    sys_id: str | None = OutputField(
-        cef_types=["servicenow item sys id", "md5"],
-    )
     Additional_software_requirements: str | None = OutputField(
         alias="Additional software requirements"
     )
@@ -70,19 +66,6 @@ class GetVariablesSummary(ActionOutput):
 def get_variables_view(outputs: list[GetVariablesOutput]) -> dict:
     """Transform get variables action results for HTML rendering."""
     return {"results": [{"data": [output.model_dump()]} for output in outputs]}
-
-
-def _normalize_variable_name(question_text: str) -> str:
-    """Avoid collisions between dynamic variable names and fixed output fields."""
-    if question_text in RESERVED_VARIABLE_NAMES:
-        normalized_name = f"variable_{question_text}"
-        logger.warning(
-            "Renaming catalog variable %r to %r to avoid an output-field collision",
-            question_text,
-            normalized_name,
-        )
-        return normalized_name
-    return question_text
 
 
 @app.action(
@@ -155,12 +138,12 @@ def get_variables(
             question_text = ""
 
         # Add to variables dictionary
-        variables[_normalize_variable_name(question_text)] = variable_value
+        variables[question_text] = variable_value
 
     soar.set_summary(GetVariablesSummary(num_variables=len(variables)))
     soar.set_message(f"Num variables: {len(variables)}")
 
-    return GetVariablesOutput(sys_id=sys_id, **variables)
+    return GetVariablesOutput(**variables)
 
 
 def _extract_reference_value(reference: Any) -> str:

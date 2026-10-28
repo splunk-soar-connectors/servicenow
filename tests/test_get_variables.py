@@ -15,6 +15,7 @@
 import importlib
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from soar_sdk.exceptions import ActionFailure
@@ -22,11 +23,49 @@ from soar_sdk.exceptions import ActionFailure
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
-def test_reserved_variable_name_is_normalized():
+@pytest.mark.parametrize(
+    "question_names",
+    [("sys_id", "variable_sys_id"), ("variable_sys_id", "sys_id"), ("requested_for",)],
+)
+def test_get_variables_preserves_question_keys(monkeypatch, question_names):
     module = importlib.import_module("src.actions.get_variables")
 
-    assert module._normalize_variable_name("sys_id") == "variable_sys_id"
-    assert module._normalize_variable_name("requested_for") == "requested_for"
+    class FakeClient:
+        def __init__(self, asset):
+            pass
+
+        def make_rest_call(self, endpoint, params=None):
+            if endpoint == "/table/sc_item_option_mtom":
+                return {
+                    "result": [
+                        {"sc_item_option": {"value": name}} for name in question_names
+                    ]
+                }
+            name = endpoint.rsplit("/", 1)[-1]
+            if endpoint.startswith("/table/sc_item_option/"):
+                return {
+                    "result": {
+                        "value": f"answer-{name}",
+                        "item_option_new": {"value": name},
+                    }
+                }
+            return {"result": {"question_text": name}}
+
+    captured = {}
+    soar = SimpleNamespace(
+        set_summary=lambda summary: captured.update(summary=summary),
+        set_message=lambda message: captured.update(message=message),
+    )
+    monkeypatch.setattr(module, "ServiceNowClient", FakeClient)
+    result = module.get_variables.__wrapped__(
+        module.GetVariablesParams(sys_id="request-item"), soar, object()
+    )
+
+    assert result.model_dump() == {name: f"answer-{name}" for name in question_names}
+    assert captured["summary"].num_variables == len(question_names)
+    assert module.get_variables_view.__wrapped__([result])["results"][0]["data"] == [
+        result.model_dump()
+    ]
 
 
 def test_get_variables_rejects_encoded_query_operators(monkeypatch):

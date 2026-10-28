@@ -66,7 +66,7 @@
     - The app authenticates using the configured Username and Password. Saved OAuth
       credentials are ignored.
 
-  - **Case 2: password_grant**
+  - **Case 2: password**
 
     - The app uses the configured Client ID, Client Secret, Username, and Password. An
       existing refresh token is reused when available.

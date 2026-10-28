@@ -18,6 +18,7 @@ from soar_sdk.abstract import SOARClient
 from soar_sdk.params import Param, Params
 from soar_sdk.action_results import OutputField, PermissiveActionOutput
 from soar_sdk.logging import getLogger
+from soar_sdk.exceptions import ActionFailure
 
 from ..app import app, Asset
 from ..consts import CATALOG_ITEMS_ENDPOINT, SC_API_URI
@@ -203,7 +204,7 @@ def describe_catalog_item(
             f"No data found for the requested item having System ID: {params.sys_id}"
         )
         soar.set_message(error_msg)
-        raise Exception(error_msg)
+        raise ActionFailure(error_msg)
 
     logger.info(
         f"Successfully retrieved catalog item details for sys_id: {params.sys_id}"

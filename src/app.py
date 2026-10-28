@@ -20,7 +20,7 @@ from soar_sdk.app import App
 from soar_sdk.asset import BaseAsset, AssetField, FieldCategory
 from soar_sdk.logging import getLogger
 
-from .consts import AUTH_TYPE_VALUES, PASSWORD_GRANT_AUTH_TYPE
+from .consts import AUTH_TYPE_VALUES, PASSWORD_GRANT_TYPE
 
 logger = getLogger()
 logger.propagate = False
@@ -30,11 +30,11 @@ class Asset(BaseAsset):
     """ServiceNow Asset Configuration"""
 
     username: str | None = AssetField(
-        description="Username. Required for basic_auth and password_grant.",
+        description="Username. Required for basic_auth and password.",
         category=FieldCategory.CONNECTIVITY,
     )
     password: str | None = AssetField(
-        description="Password. Required for basic_auth and password_grant.",
+        description="Password. Required for basic_auth and password.",
         sensitive=True,
         category=FieldCategory.CONNECTIVITY,
     )
@@ -64,14 +64,14 @@ class Asset(BaseAsset):
     )
     client_id: str | None = AssetField(
         description=(
-            "OAuth client ID. Required together with client_secret for password_grant "
+            "OAuth client ID. Required together with client_secret for password "
             "or client_credentials; ignored when basic_auth is selected."
         ),
         category=FieldCategory.CONNECTIVITY,
     )
     client_secret: str | None = AssetField(
         description=(
-            "OAuth client secret. Required together with client_id for password_grant "
+            "OAuth client secret. Required together with client_id for password "
             "or client_credentials; ignored when basic_auth is selected."
         ),
         sensitive=True,
@@ -80,12 +80,12 @@ class Asset(BaseAsset):
     oauth_grant_type: str = AssetField(
         required=False,
         description=(
-            "Authentication mode: basic_auth uses username/password; password_grant "
+            "Authentication mode: basic_auth uses username/password; password "
             "uses client_id/client_secret plus username/password; client_credentials "
             "uses client_id/client_secret only. For client_credentials, configure an "
             "OAuth Application User in ServiceNow."
         ),
-        default=PASSWORD_GRANT_AUTH_TYPE,
+        default=PASSWORD_GRANT_TYPE,
         value_list=AUTH_TYPE_VALUES,
         category=FieldCategory.CONNECTIVITY,
     )

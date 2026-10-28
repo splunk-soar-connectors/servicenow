@@ -325,7 +325,7 @@ def create_ticket(
             "Please specify at least one of: short_description, description, or fields"
         )
 
-    if params.short_description is not None:
+    if params.short_description:
         data["short_description"] = params.short_description
 
     container_id = soar.get_executing_container_id()

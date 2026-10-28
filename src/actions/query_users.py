@@ -149,10 +149,10 @@ def query_users(
         else:
             # Also accept a bare ServiceNow encoded query.
             payload["sysparm_query"] = params.query
-    elif params.user_id:
-        payload["sysparm_query"] = f"sys_id={params.user_id}"
     elif params.username:
         payload["sysparm_query"] = f"user_name={params.username}"
+    elif params.user_id:
+        payload["sysparm_query"] = f"sys_id={params.user_id}"
 
     limit = validate_positive_integer(
         "max_results", params.max_results, DEFAULT_MAX_LIMIT

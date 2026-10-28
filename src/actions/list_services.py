@@ -16,7 +16,12 @@
 
 from soar_sdk.abstract import SOARClient
 from soar_sdk.params import Param, Params
-from soar_sdk.action_results import ActionOutput, OutputField, PermissiveActionOutput
+from soar_sdk.action_results import (
+    ActionOutput,
+    ActionResult,
+    OutputField,
+    PermissiveActionOutput,
+)
 from soar_sdk.logging import getLogger
 
 from ..app import app, Asset
@@ -210,9 +215,11 @@ def list_services(
         else:
             message = "No data found"
 
-        soar.set_message(message)
-        soar.set_status("failed")
-        return []
+        result = ActionResult(
+            status=False, message=message, param=params.model_dump(mode="json")
+        )
+        result.set_summary({"services_returned": 0})
+        return result
 
     logger.info(f"Successfully retrieved {len(services)} services")
 

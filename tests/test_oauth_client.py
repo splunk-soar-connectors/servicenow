@@ -16,10 +16,12 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from urllib.parse import parse_qs
 
 import httpx
 import pytest
+from soar_sdk.auth import BasicAuth, OAuthBearerAuth
 from soar_sdk.auth.client import OAuthClientError
 from soar_sdk.auth.models import OAuthConfig
 
@@ -28,12 +30,52 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.consts import (
     CLIENT_CREDENTIALS_GRANT_TYPE,
     OAUTH_GRANT_TYPE_STATE_KEY,
-    PASSWORD_GRANT_AUTH_TYPE,
     PASSWORD_GRANT_TYPE,
 )
 from src.oauth_client import (
     ServiceNowOAuthClient,
 )
+from src.servicenow_client import ServiceNowClient
+
+
+@pytest.mark.parametrize("grant_type", [None, PASSWORD_GRANT_TYPE])
+def test_password_modes_preserve_basic_auth_fallback(grant_type):
+    asset = SimpleNamespace(
+        url="https://example.service-now.com",
+        username="user",
+        password="pass",  # pragma: allowlist secret
+        client_id=None,
+        client_secret=None,
+    )
+    if grant_type is not None:
+        asset.oauth_grant_type = grant_type
+    auth = ServiceNowClient(asset).get_auth()
+    assert isinstance(auth, BasicAuth)
+
+    def handler(request):
+        assert request.headers["Authorization"] == "Basic dXNlcjpwYXNz"
+        return httpx.Response(200, json={"result": []})
+
+    with httpx.Client(auth=auth, transport=httpx.MockTransport(handler)) as client:
+        assert client.get(f"{asset.url}/api/now/table/incident").status_code == 200
+
+
+@pytest.mark.parametrize("grant_type", [None, PASSWORD_GRANT_TYPE])
+def test_password_modes_keep_oauth_when_client_credentials_present(grant_type):
+    asset = SimpleNamespace(
+        url="https://example.service-now.com",
+        username="user",
+        password="pass",  # pragma: allowlist secret
+        client_id="client-id",
+        client_secret="client-secret",  # pragma: allowlist secret
+        auth_state=FakeAuthState(),
+    )
+    if grant_type is not None:
+        asset.oauth_grant_type = grant_type
+    client = ServiceNowClient(asset)
+    oauth_client = client._get_oauth_client()
+    assert oauth_client._grant_type == PASSWORD_GRANT_TYPE
+    assert isinstance(client.get_auth(), OAuthBearerAuth)
 
 
 class FakeBackend:
@@ -161,7 +203,7 @@ def test_password_grant_auth_type_fetches_oauth_password_grant():
             "client_secret": ["client-secret"],
         }
     ]
-    assert auth_state.state[OAUTH_GRANT_TYPE_STATE_KEY] == PASSWORD_GRANT_AUTH_TYPE
+    assert auth_state.state[OAUTH_GRANT_TYPE_STATE_KEY] == PASSWORD_GRANT_TYPE
 
 
 def test_password_grant_requires_refresh_token():
@@ -179,7 +221,7 @@ def test_password_grant_requires_refresh_token():
         client.get_valid_token()
 
 
-def test_legacy_password_auth_type_is_treated_as_password_grant():
+def test_password_mode_reuses_stored_password_token():
     requests = []
     auth_state = FakeAuthState(
         {
@@ -199,7 +241,7 @@ def test_legacy_password_auth_type_is_treated_as_password_grant():
         auth_state=auth_state,
         username="service-user",
         password="service-password",  # pragma: allowlist secret
-        grant_type=PASSWORD_GRANT_AUTH_TYPE,
+        grant_type=PASSWORD_GRANT_TYPE,
         http_client=make_http_client(
             requests, "password-token", refresh_token="password-refresh-token"
         ),
@@ -223,7 +265,7 @@ def test_grant_type_change_discards_stored_password_token():
                 },
                 "client_id": "client-id",
             },
-            OAUTH_GRANT_TYPE_STATE_KEY: PASSWORD_GRANT_AUTH_TYPE,
+            OAUTH_GRANT_TYPE_STATE_KEY: PASSWORD_GRANT_TYPE,
         }
     )
     client = ServiceNowOAuthClient(
