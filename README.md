@@ -135,7 +135,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 **on_poll_filter** | optional | string | Filter to use with On Poll separated by '^' (e.g. description=This is a test^assigned_to=test.name) |
 **client_id** | optional | string | Client ID. OAuth will be preferred if provided |
 **client_secret** | optional | password | Client Secret. Required with Client ID |
-**oauth_grant_type** | optional | string | OAuth grant type. Password requires username and password; client_credentials uses only the client ID and client secret (Default: password) |
+**oauth_grant_type** | optional | string | OAuth grant type. Password requires username and password; client_credentials uses only the client ID and client secret |
 **password** | optional | password | Password |
 **first_run_container** | optional | numeric | Max container (For first run of schedule polling) |
 **max_container** | optional | numeric | Max container (For other runs of schedule polling) |
